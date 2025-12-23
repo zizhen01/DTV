@@ -256,7 +256,7 @@ html[data-theme="light"] .nav-item.is-active .nav-icon {
 }
 
 :global(:root:not([data-theme="light"])) .app-sidebar {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.035);
 }
 
 :deep(.follow-list-component::-webkit-scrollbar) {

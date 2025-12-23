@@ -101,4 +101,12 @@ const selectAll = () => {
 :root[data-theme="light"] .loading-cate3 {
   color: var(--main-text-secondary-light, #495057);
 }
+
+:root[data-theme="light"] .cate3-item {
+  color: color-mix(in srgb, var(--primary-text) 85%, var(--secondary-text) 15%);
+}
+
+:root[data-theme="light"] .cate3-item.active {
+  color: var(--primary-text);
+}
 </style>

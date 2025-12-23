@@ -39,7 +39,7 @@ const platformLabel = (p: Platform): string => {
   display: flex; 
   align-items: center; 
   gap: 10px; 
-  margin: 8px 0;
+  margin: 0;
   padding: 0 6px;
 }
 .filter-chip {
@@ -62,10 +62,17 @@ const platformLabel = (p: Platform): string => {
   border-color: var(--accent-color);
 }
 .filter-chip.active {
-  background: var(--accent-gradient);
-  border-color: transparent;
-  color: #fff;
-  box-shadow: 0 8px 16px rgba(139, 92, 246, 0.2);
-  transform: translateY(-2px);
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #111827;
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.08);
+  transform: translateY(-1px);
+}
+
+:root[data-theme="dark"] .filter-chip.active {
+  background: #2a2f33;
+  border-color: #3b4248;
+  color: #f1f5f9;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
 }
 </style>

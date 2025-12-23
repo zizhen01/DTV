@@ -82,7 +82,11 @@ defineProps<{
 }
 
 :root[data-theme="light"] .cate1-item {
-  color: color-mix(in srgb, var(--secondary-text) 80%, var(--primary-text) 20%);
+  color: color-mix(in srgb, var(--primary-text) 85%, var(--secondary-text) 15%);
+}
+
+:root[data-theme="light"] .cate1-item.selected {
+  color: var(--primary-text);
 }
 
 :root[data-theme="dark"] .cate1-item.selected {

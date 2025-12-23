@@ -164,6 +164,15 @@
   transition: color 0.2s ease, opacity 0.2s ease;
 }
 
+:root[data-theme="dark"] .nickname {
+  color: #e7eee9;
+}
+
+:root[data-theme="dark"] .secondary-row {
+  color: #a8b5ac;
+  opacity: 0.86;
+}
+
 .streamer-item-content:hover .nickname {
   color: #f8fafc;
 }

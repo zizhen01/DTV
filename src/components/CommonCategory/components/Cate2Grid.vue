@@ -249,7 +249,11 @@ const handleToggleInternalExpand = () => {
 }
 
 :root[data-theme="light"] .cate2-card {
-  color: color-mix(in srgb, var(--secondary-text) 80%, var(--primary-text) 20%);
+  color: color-mix(in srgb, var(--primary-text) 85%, var(--secondary-text) 15%);
+}
+
+:root[data-theme="light"] .cate2-card.active {
+  color: var(--primary-text);
 }
 
 :root[data-theme="dark"] .cate2-card.active {

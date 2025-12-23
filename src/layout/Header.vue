@@ -63,7 +63,7 @@
                 </div>
                 <div class="result-line-2-main">
                   <span class="result-room-title" :title="anchor.roomTitle || '无标题'">{{ anchor.roomTitle || '无直播标题' }}</span>
-                  <span class="result-roomid styled-badge">ID: {{ anchor.webId || anchor.roomId }}</span>
+                  <span class="result-roomid styled-badge">{{ anchor.webId || anchor.roomId }}</span>
                 </div>
               </div>
 
@@ -588,7 +588,7 @@ const tryEnterRoom = (roomId: string) => {
 }
 
 .search-container {
-  width: 400px;
+  width: 360px;
   max-width: 100%;
   position: relative;
 }
@@ -651,7 +651,8 @@ const tryEnterRoom = (roomId: string) => {
   position: absolute;
   top: calc(100% + 12px);
   left: 0;
-  right: 0;
+  right: auto;
+  width: min(360px, 90vw);
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
@@ -661,7 +662,7 @@ const tryEnterRoom = (roomId: string) => {
   overflow-y: auto;
   z-index: 1001;
   border: 1px solid var(--glass-border);
-  padding: 12px;
+  padding: 8px;
   animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -673,11 +674,11 @@ const tryEnterRoom = (roomId: string) => {
 .search-result-item {
   display: flex;
   align-items: center;
-  padding: 12px;
+  padding: 8px 10px;
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: all 0.2s ease;
-  gap: 16px;
+  gap: 10px;
 }
 
 .search-result-item:hover {
@@ -686,8 +687,8 @@ const tryEnterRoom = (roomId: string) => {
 }
 
 .result-avatar {
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   overflow: hidden;
   background: var(--tertiary-bg);
@@ -710,12 +711,12 @@ const tryEnterRoom = (roomId: string) => {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 2px;
+  margin-bottom: 1px;
 }
 
 .result-name {
   font-weight: 600;
-  font-size: 15px;
+  font-size: 13px;
   color: var(--primary-text);
   white-space: nowrap;
   overflow: hidden;
@@ -723,7 +724,7 @@ const tryEnterRoom = (roomId: string) => {
 }
 
 .result-room-title {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--secondary-text);
   white-space: nowrap;
   overflow: hidden;

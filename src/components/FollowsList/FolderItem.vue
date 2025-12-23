@@ -525,6 +525,10 @@ const getStreamerItemClass = (streamer: FollowedStreamer) => {
   transition: color 0.2s ease;
 }
 
+:root[data-theme="dark"] .folder-name {
+  color: #e7eee9;
+}
+
 .folder-count {
   font-size: 10px;
   color: var(--accent-color);
@@ -606,7 +610,11 @@ const getStreamerItemClass = (streamer: FollowedStreamer) => {
 }
 
 :root[data-theme="dark"] .folder-item :deep(.secondary-row) {
-  color: rgba(203, 213, 225, 0.7);
+  color: rgba(213, 221, 230, 0.78);
+}
+
+:root[data-theme="dark"] .folder-item :deep(.streamer-item-content:hover .secondary-row) {
+  color: #e8eef5;
 }
 
 .folder-header:hover .folder-name {

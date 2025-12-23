@@ -320,7 +320,7 @@ const handleSelect = (s: FollowedStreamer) => {
 
 .overlay-content {
   overflow: auto;
-  padding: 24px 32px 36px; /* 增加底部内边距，避免内容贴底 */
+  padding: 12px 32px 92px; /* 增加底部内边距，避免内容贴底 */
 }
 
 .overlay-content::-webkit-scrollbar {
@@ -435,5 +435,29 @@ const handleSelect = (s: FollowedStreamer) => {
   transform: scale(1.1) rotate(180deg);
   border-color: var(--accent-color);
   color: var(--accent-color);
+}
+
+:root[data-theme="dark"] .follow-overlay-backdrop {
+  background: rgba(0, 0, 0, 0.28);
+}
+
+:root[data-theme="dark"] .follow-overlay-panel {
+  background: rgba(24, 30, 26, 0.9);
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.48);
+}
+
+:root[data-theme="dark"] .overlay-text-btn {
+  background: #232c24;
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+:root[data-theme="dark"] .overlay-text-btn:hover {
+  background: #2a352c;
+}
+
+:root[data-theme="dark"] .overlay-streamer-item {
+  background: #222b23;
+  border-color: rgba(255, 255, 255, 0.12);
 }
 </style>

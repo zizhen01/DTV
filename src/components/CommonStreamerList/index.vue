@@ -391,10 +391,16 @@ const goToPlayer = (roomId: string) => {
 .image-wrapper-frame {
   width: 100%;
   height: 100%;
-  clip-path: url(#squircle-clip);
   border-radius: var(--squircle-radius);
   overflow: hidden;
   position: relative;
+  clip-path: url(#squircle-clip);
+}
+
+:global(:root[data-platform="windows"]) .image-wrapper-frame {
+  clip-path: none;
+  mask: url(#squircle-mask);
+  -webkit-mask: url(#squircle-mask);
 }
 
 .preview-image-common {

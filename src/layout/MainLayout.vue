@@ -42,6 +42,10 @@
         <clipPath id="squircle-clip" clipPathUnits="objectBoundingBox">
           <path d="M0.5 0 C0.9995 0 1 0.0005 1 0.5 C1 0.9995 0.9995 1 0.5 1 C0.0005 1 0 0.9995 0 0.5 C0 0.0005 0.0005 0 0.5 0 Z" />
         </clipPath>
+        <mask id="squircle-mask" maskUnits="objectBoundingBox" maskContentUnits="objectBoundingBox">
+          <rect width="1" height="1" fill="black" />
+          <path d="M0.5 0 C0.9995 0 1 0.0005 1 0.5 C1 0.9995 0.9995 1 0.5 1 C0.0005 1 0 0.9995 0 0.5 C0 0.0005 0.0005 0 0.5 0 Z" fill="white" />
+        </mask>
       </defs>
     </svg>
   </div>
@@ -51,6 +55,7 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { getCurrentWindow } from '@tauri-apps/api/window'
+import { platform as detectPlatform } from '@tauri-apps/plugin-os'
 import type { UnlistenFn } from '@tauri-apps/api/event'
 import Sidebar from './Sidebar.vue'
 import Header from './Header.vue'
@@ -84,6 +89,12 @@ onMounted(async () => {
     unlistenResize = await currentWindow.onResized(syncWindowMaximizedState)
   } catch (error) {
     console.error('[MainLayout] Failed to listen for resize events', error)
+  }
+  try {
+    const osName = await detectPlatform()
+    document.documentElement.setAttribute('data-platform', osName)
+  } catch (error) {
+    console.error('[MainLayout] Failed to detect platform', error)
   }
 })
 
@@ -209,7 +220,7 @@ const handleFullscreenChange = (isFullscreen: boolean) => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: var(--glass-bg);
+  background: var(--content-panel-bg, var(--glass-bg));
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
   border: none;
@@ -233,7 +244,7 @@ const handleFullscreenChange = (isFullscreen: boolean) => {
   background-image: var(--ambient-bg-image), var(--page-mesh);
   background-size: cover, cover;
   background-position: center, center;
-  filter: blur(18px) saturate(1.1) brightness(0.9);
+  filter: var(--ambient-bg-filter, blur(18px) saturate(1.1) brightness(0.9));
   opacity: var(--ambient-bg-opacity);
   z-index: -1;
   pointer-events: none;
