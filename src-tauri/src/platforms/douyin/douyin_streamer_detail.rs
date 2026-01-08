@@ -11,7 +11,6 @@ use crate::StreamUrlStore;
 use regex::Regex;
 use reqwest::header::{HeaderMap, HeaderValue, REFERER, USER_AGENT};
 use serde_json::Value;
-use std::path::PathBuf;
 use tauri::{command, AppHandle, State};
 
 const QUALITY_OD: &str = "OD";
@@ -68,22 +67,18 @@ pub async fn get_douyin_live_stream_url_with_quality(
 
     let normalized_id = normalize_douyin_live_id(&requested_id);
     let DouyinRoomData { mut room } = fetch_room_data(&http_client, &normalized_id, None).await?;
-    let origin_from_html =
-        match fetch_and_save_douyin_live_page_snapshot(&http_client, &normalized_id).await {
-            Ok(origin) => {
-                if let Some(url) = origin.as_deref() {
-                    insert_origin_flv(&mut room, url);
-                }
-                origin
-            }
-            Err(err) => {
-                println!(
-                    "[Douyin Stream Detail] Failed to save live page snapshot: {}",
-                    err
-                );
-                None
-            }
-        };
+    let origin_from_html = fetch_origin_flv_from_live_page(&http_client, &normalized_id)
+        .await
+        .unwrap_or_else(|err| {
+            println!(
+                "[Douyin Stream Detail] Failed to fetch live page for origin stream: {}",
+                err
+            );
+            None
+        });
+    if let Some(url) = origin_from_html.as_deref() {
+        insert_origin_flv(&mut room, url);
+    }
     let web_rid = extract_web_rid(&room).unwrap_or_else(|| normalized_id.clone());
     let status = room
         .get("status")
@@ -309,16 +304,10 @@ fn insert_origin_flv(room: &mut Value, origin_url: &str) {
     }
 }
 
-async fn fetch_and_save_douyin_live_page_snapshot(
+async fn fetch_origin_flv_from_live_page(
     http_client: &HttpClient,
     web_id: &str,
 ) -> Result<Option<String>, String> {
-    let desktop_dir = resolve_desktop_dir()
-        .ok_or_else(|| "Unable to resolve Desktop directory for snapshot".to_string())?;
-    let safe_id = sanitize_file_stem(web_id);
-    let file_name = format!("douyin_live_{}.html", safe_id);
-    let file_path = desktop_dir.join(file_name);
-
     let url = format!("https://live.douyin.com/{}", web_id);
     let mut headers = HeaderMap::new();
     headers.insert(USER_AGENT, HeaderValue::from_static(DEFAULT_USER_AGENT));
@@ -330,39 +319,7 @@ async fn fetch_and_save_douyin_live_page_snapshot(
     let html = http_client
         .get_text_with_headers(&url, Some(headers))
         .await?;
-    let origin = extract_origin_flv_from_html(&html);
-
-    std::fs::write(&file_path, html)
-        .map_err(|e| format!("Failed to write snapshot to {}: {}", file_path.display(), e))?;
-
-    println!(
-        "[Douyin Stream Detail] Saved live page snapshot to {}",
-        file_path.display()
-    );
-    Ok(origin)
-}
-
-fn resolve_desktop_dir() -> Option<PathBuf> {
-    if let Ok(profile) = std::env::var("USERPROFILE") {
-        return Some(PathBuf::from(profile).join("Desktop"));
-    }
-    let home_drive = std::env::var("HOMEDRIVE").ok();
-    let home_path = std::env::var("HOMEPATH").ok();
-    match (home_drive, home_path) {
-        (Some(drive), Some(path)) => Some(PathBuf::from(format!("{}{}", drive, path)).join("Desktop")),
-        _ => None,
-    }
-}
-
-fn sanitize_file_stem(input: &str) -> String {
-    let mut sanitized: String = input
-        .chars()
-        .map(|c| if c.is_ascii_alphanumeric() { c } else { '_' })
-        .collect();
-    if sanitized.is_empty() {
-        sanitized.push_str("unknown");
-    }
-    sanitized
+    Ok(extract_origin_flv_from_html(&html))
 }
 
 fn extract_origin_flv_from_html(html: &str) -> Option<String> {

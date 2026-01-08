@@ -68,6 +68,17 @@ jobs:
           choco install strawberryperl nasm -y
           echo "C:\Program Files\NASM" >> $GITHUB_PATH
           echo "C:\Strawberry\perl\bin" >> $GITHUB_PATH
+          
+      - name: Disable window decorations for Windows build
+        if: matrix.platform == 'windows-latest'
+        shell: powershell
+        run: |
+          $path = "src-tauri/tauri.conf.json"
+          $text = Get-Content $path -Raw
+          if ($text -notmatch '"decorations"\s*:\s*false') {
+            $text = $text -replace '"resizable"\s*:\s*true', '"decorations": false,`n      "resizable": true'
+            Set-Content -Path $path -Value $text
+          }
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
