@@ -69,24 +69,17 @@ jobs:
           echo "C:\Program Files\NASM" >> $GITHUB_PATH
           echo "C:\Strawberry\perl\bin" >> $GITHUB_PATH
           
-      - name: Normalize tauri config encoding (Windows)
+      - name: Patch tauri config for Windows build
         if: matrix.platform == 'windows-latest'
         shell: powershell
         run: |
           $path = "src-tauri/tauri.conf.json"
-          $text = Get-Content -Path $path -Raw -Encoding utf8
-          [System.IO.File]::WriteAllText($path, $text, [System.Text.UTF8Encoding]::new($false))
-
-      - name: Disable window decorations for Windows build
-        if: matrix.platform == 'windows-latest'
-        shell: powershell
-        run: |
-          $path = "src-tauri/tauri.conf.json"
-          $text = Get-Content -Path $path -Raw -Encoding utf8
-          if ($text -notmatch '"decorations"\s*:\s*false') {
-            $text = $text -replace '"resizable"\s*:\s*true', '"decorations": false,`n      "resizable": true'
-            [System.IO.File]::WriteAllText($path, $text, [System.Text.UTF8Encoding]::new($false))
+          $json = Get-Content -Path $path -Raw -Encoding utf8 | ConvertFrom-Json
+          if ($null -ne $json.app -and $null -ne $json.app.windows -and $json.app.windows.Count -gt 0) {
+            $json.app.windows[0].decorations = $false
           }
+          $raw = $json | ConvertTo-Json -Depth 100
+          [System.IO.File]::WriteAllText($path, $raw, [System.Text.UTF8Encoding]::new($false))
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
