@@ -74,10 +74,10 @@ jobs:
         shell: powershell
         run: |
           $path = "src-tauri/tauri.conf.json"
-          $text = Get-Content $path -Raw
+          $text = Get-Content -Path $path -Raw -Encoding utf8
           if ($text -notmatch '"decorations"\s*:\s*false') {
             $text = $text -replace '"resizable"\s*:\s*true', '"decorations": false,`n      "resizable": true'
-            Set-Content -Path $path -Value $text
+            Set-Content -Path $path -Value $text -Encoding utf8
           }
 
       - name: Setup pnpm
