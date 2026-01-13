@@ -1,15 +1,15 @@
 <template>
-  <div class="filter-group">
+  <div class="flex items-center gap-2.5 px-1.5">
     <button 
-      class="filter-chip" 
-      :class="{ active: activeFilter === 'ALL' }" 
+      class="rounded-[12px] border border-[var(--glass-border)] bg-[var(--glass-bg)] px-3.5 py-1.5 text-[12px] font-bold tracking-[0.02em] text-[var(--secondary-text)] transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 hover:border-[var(--accent-color)] hover:bg-[var(--hover-bg)] hover:text-[var(--accent-color)]"
+      :class="activeFilter === 'ALL' ? 'bg-[var(--bg-secondary)] border-[var(--border)] text-[var(--text-primary)] shadow-[var(--shadow-low)] -translate-y-0.5' : ''"
       @click="$emit('update:activeFilter', 'ALL')"
     >全部</button>
     <button 
       v-for="p in visiblePlatforms" 
       :key="p" 
-      class="filter-chip" 
-      :class="{ active: activeFilter === p }" 
+      class="rounded-[12px] border border-[var(--glass-border)] bg-[var(--glass-bg)] px-3.5 py-1.5 text-[12px] font-bold tracking-[0.02em] text-[var(--secondary-text)] transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 hover:border-[var(--accent-color)] hover:bg-[var(--hover-bg)] hover:text-[var(--accent-color)]"
+      :class="activeFilter === p ? 'bg-[var(--bg-secondary)] border-[var(--border)] text-[var(--text-primary)] shadow-[var(--shadow-low)] -translate-y-0.5' : ''"
       @click="$emit('update:activeFilter', p)"
     >{{ platformLabel(p) }}</button>
   </div>
@@ -34,45 +34,3 @@ const platformLabel = (p: Platform): string => {
 };
 </script>
 
-<style scoped>
-.filter-group { 
-  display: flex; 
-  align-items: center; 
-  gap: 10px; 
-  margin: 0;
-  padding: 0 6px;
-}
-.filter-chip {
-  padding: 6px 14px;
-  border-radius: 12px;
-  border: 1px solid var(--glass-border);
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  color: var(--secondary-text);
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: 0.02em;
-}
-.filter-chip:hover {
-  background: var(--hover-bg);
-  color: var(--accent-color);
-  transform: translateY(-1px);
-  border-color: var(--accent-color);
-}
-.filter-chip.active {
-  background: #f1f5f9;
-  border-color: #cbd5e1;
-  color: #111827;
-  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.08);
-  transform: translateY(-1px);
-}
-
-:root[data-theme="dark"] .filter-chip.active {
-  background: #2a2f33;
-  border-color: #3b4248;
-  color: #f1f5f9;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
-}
-</style>

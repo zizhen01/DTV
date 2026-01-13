@@ -1,13 +1,13 @@
 <template>
-  <div class="douyin-home">
-    <div class="douyin-content">
-      <div class="left-panel">
+  <div class="flex h-full flex-col bg-transparent">
+    <div class="flex h-full flex-col">
+      <div class="z-10 w-full overflow-hidden bg-transparent [backdrop-filter:none]">
         <CommonCategory 
           :categoriesData="categoriesData"
           @category-selected="onCategorySelected" 
         />
       </div>
-      <div class="right-panel">
+      <div class="flex-1 overflow-hidden bg-transparent">
         <CommonStreamerList
           :selectedCategory="selectedCategory"
           :categoriesData="categoriesData"
@@ -38,31 +38,3 @@ function onCategorySelected(evt: CategorySelectedEvent) {
 }
 </script>
 
-<style scoped>
-.douyin-home {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background: transparent;
-}
-
-.douyin-content {
-  display: flex;
-  flex-direction: column; /* 改为纵向排列，上下布局 */
-  height: 100%;
-}
-
-.left-panel {
-  width: 100%;
-  background: transparent;
-  backdrop-filter: none;
-  z-index: 10;
-  overflow: hidden;
-}
-
-.right-panel {
-  flex: 1;
-  overflow: hidden;
-  background: transparent;
-}
-</style>

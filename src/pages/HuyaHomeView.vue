@@ -1,16 +1,16 @@
 <template>
-  <div class="huya-home-view-layout">
+  <div class="flex h-full flex-col overflow-hidden bg-transparent">
     <CommonCategory 
       :categories-data="huyaCategoriesData as any"
       @category-selected="onCategorySelected"
-      class="huya-category-section"
+      class="z-10 flex-shrink-0 bg-transparent [backdrop-filter:var(--glass-blur)]"
     />
     <CommonStreamerList 
       :selected-category="currentSelectedCategory"
       :categories-data="huyaCategoriesData as any"
       :default-page-size="120"
       playerRouteName="huyaPlayer"
-      class="huya-streamer-list-section"
+      class="flex-1 overflow-hidden bg-transparent"
     />
   </div>
 </template>
@@ -32,25 +32,3 @@ const onCategorySelected = (categoryEvent: CategorySelectedEvent) => {
 }
 </script>
 
-<style scoped>
-.huya-home-view-layout {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background: transparent;
-  overflow: hidden;
-}
-
-.huya-category-section {
-  flex-shrink: 0;
-  background: transparent;
-  backdrop-filter: var(--glass-blur);
-  z-index: 10;
-}
-
-.huya-streamer-list-section {
-  flex: 1;
-  overflow: hidden;
-  background: transparent;
-}
-</style>

@@ -1,36 +1,36 @@
 <template>
-  <div class="follow-list">
-    <div class="list-header">
-      <h3 class="header-title" aria-label="关注列表">
-        <UsersRound class="header-icon" aria-hidden="true" :stroke-width="1.9" />
+  <div class="flex h-full flex-col">
+    <div class="flex items-center justify-between gap-3 px-4 py-3">
+      <h3 class="flex items-center gap-2 text-base font-semibold" aria-label="关注列表">
+        <UsersRound class="h-4 w-4" aria-hidden="true" :stroke-width="1.9" />
       </h3>
-      <div class="header-actions">
+      <div class="flex items-center gap-2">
           <button 
             v-if="!isRefreshing"
             @click="refreshList" 
-            class="action-btn refresh-btn"
+            class="flex h-9 w-9 items-center justify-center rounded-[10px] border border-[var(--glass-border)] bg-[var(--glass-bg)] text-[var(--secondary-text)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--accent-color)] hover:bg-[var(--hover-bg)] hover:text-[var(--accent-color)]"
             title="刷新列表"
           >
-            <span class="icon">
+            <span class="flex items-center justify-center">
               <!-- 刷新按钮保留默认图标/完成勾号，刷新完成后展示 1 秒 -->
-              <svg v-if="!showCheckIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-rotate-cw-icon lucide-rotate-cw"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
-              <svg v-else xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <svg v-if="!showCheckIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+              <svg v-else xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="h-[18px] w-[18px]">
                 <path d="M20 6L9 17l-5-5" />
               </svg>
             </span>
           </button>
           <!-- 刷新转圈与进度文本合并为一个元素，转圈在左，进度在右；共享统一的圆角矩形背景 -->
-          <span v-if="isRefreshing" class="progress-with-spinner" aria-live="polite">
-            <span class="refresh-spinner-inline" aria-hidden="true"></span>
-            <span class="progress-label">{{ progressCurrent }}/{{ progressTotal }}</span>
+          <span v-if="isRefreshing" class="inline-flex h-[34px] items-center gap-1.5 rounded-[10px] border border-[var(--border)] bg-[var(--hover-bg)] px-3 text-[var(--secondary-text)]" aria-live="polite">
+            <span class="h-[14px] w-[14px] animate-spin rounded-full border-2 border-current border-t-transparent" aria-hidden="true"></span>
+            <span>{{ progressCurrent }}/{{ progressTotal }}</span>
           </span>
           <!-- 新建文件夹 -->
           <button 
-            class="action-btn create-folder-btn"
+            class="flex h-9 w-9 items-center justify-center rounded-[10px] border border-[var(--glass-border)] bg-[var(--glass-bg)] text-[var(--secondary-text)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--accent-color)] hover:bg-[var(--hover-bg)] hover:text-[var(--accent-color)]"
             @click="createNewFolder"
             title="新建文件夹"
           >
-            <span class="icon">
+            <span class="flex items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
                 <line x1="12" y1="11" x2="12" y2="17"></line>
@@ -42,10 +42,10 @@
           <button 
             ref="expandBtnRef"
             @click="openOverlay" 
-            class="action-btn expand-btn"
+            class="flex h-9 w-9 items-center justify-center rounded-[10px] border border-[var(--glass-border)] bg-[var(--glass-bg)] text-[var(--secondary-text)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--accent-color)] hover:bg-[var(--hover-bg)] hover:text-[var(--accent-color)]"
             title="展开关注列表"
           >
-            <span class="icon">
+            <span class="flex items-center justify-center">
               <ListCollapse aria-hidden="true" :stroke-width="1.9" />
             </span>
           </button>
@@ -53,24 +53,24 @@
 
       </div>
       
-      <div class="list-content" ref="listRef" @scroll.passive="handleListScroll" @mouseleave="handleListMouseLeave">
-        <div class="hover-highlight" aria-hidden="true"></div>
-        <div v-if="listItems.length === 0" class="empty-state">
-          <div class="empty-image">
+      <div class="relative flex-1 overflow-y-auto px-3 pb-3" ref="listRef" @scroll.passive="handleListScroll" @mouseleave="handleListMouseLeave">
+        <div class="pointer-events-none absolute left-0 top-0 h-8 w-full rounded-[12px] bg-[rgba(255,255,255,0.12)] opacity-0"></div>
+        <div v-if="listItems.length === 0" class="flex flex-col items-center justify-center gap-3 py-10 text-[var(--secondary-text)]">
+          <div class="text-[var(--secondary-text)]">
             <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
             </svg>
           </div>
-          <h3 class="empty-title">暂无关注主播</h3>
-          <p class="empty-text">关注主播后，他们会出现在这里</p>
+          <h3 class="text-base font-semibold text-[var(--primary-text)]">暂无关注主播</h3>
+          <p class="text-sm text-[var(--secondary-text)]">关注主播后，他们会出现在这里</p>
         </div>
 
         <TransitionGroup 
           v-else 
           tag="ul" 
           name="streamer-list"
-          class="streamers-list"
-          :class="{ 'dragging-streamer': isDragging && draggedItemType === 'streamer' }"
+          class="flex flex-col gap-2"
+          :class="{ 'pointer-events-none': isDragging && draggedItemType === 'streamer' }"
         >
           <li
             v-for="(item, index) in listItems"
@@ -111,7 +111,7 @@
             <!-- 主播项 -->
             <div
               v-else
-              class="streamer-item"
+              class="rounded-[var(--radius-sm)] bg-transparent"
               :class="[
                 getStreamerItemClass(item.data),
                 { 
@@ -1215,60 +1215,3 @@ import { ref, onMounted, computed, watch, onUnmounted } from 'vue';
   </script>
   
   <style src="./index.css" scoped></style>
-<style scoped>
-/* 让刷新按钮在刷新中显示与 FollowOverlay 相同的 spinner */
-.action-btn.refresh-btn .icon .refresh-spinner {
-  display: inline-block;
-  width: 14px;
-  height: 14px;
-  border: 2px solid currentColor;
-  border-top-color: transparent;
-  border-radius: 50%;
-}
-.action-btn.refresh-btn .icon.refreshing .refresh-spinner {
-  animation: spin 0.9s linear infinite;
-}
-
-/* 进度左侧的内联转圈样式 */
-.refresh-spinner-inline {
-  display: inline-block;
-  width: 14px;
-  height: 14px;
-  border: 2px solid currentColor;
-  border-top-color: transparent;
-  border-radius: 50%;
-  animation: spin 0.9s linear infinite;
-  margin: 0; /* 使用容器的 gap 控制间距 */
-}
-
-/* 进度与转圈合并后的容器样式：共享统一圆角矩形背景 */
-.progress-with-spinner {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 34px;
-  padding: 0 12px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  color: var(--secondary-text);
-}
-:root[data-theme="light"] .progress-with-spinner {
-  background: rgba(15, 23, 42, 0.06);
-  border-color: rgba(148, 163, 184, 0.5);
-  color: #475569;
-}
-/* 去掉进度文本自身背景，统一由容器提供 */
-.progress-with-spinner .progress-label {
-  background: transparent;
-  padding: 0;
-  margin: 0;
-}
-
-@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-/* 拖拽主播时，禁用文件夹内部主播项的指针事件，避免截获 mouseup 导致拖拽无法结束 */
-.streamers-list.dragging-streamer .folder-streamer-item {
-  pointer-events: none;
-}
-</style>

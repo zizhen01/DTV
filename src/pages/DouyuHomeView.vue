@@ -1,14 +1,14 @@
 <template>
-  <div class="home-page">
+  <div class="flex h-full min-w-0 flex-col overflow-hidden bg-transparent">
     <!-- 分类区域 -->
-    <div class="category-section" ref="categorySectionRef">
+    <div class="sticky top-0 z-10 w-full flex-shrink-0 bg-transparent [backdrop-filter:none]" ref="categorySectionRef">
       <CategoryList 
         @category-selected="handleCategorySelected"
       />
     </div>
     <!-- 主播列表区域 -->
-    <div 
-      class="live-list-section" 
+    <div
+      class="flex w-full flex-1 flex-col overflow-hidden bg-transparent"
       v-if="selectedCategoryInfo"
     >
       <CommonStreamerList
@@ -19,11 +19,11 @@
       />
     </div>
     <!-- 加载状态显示 (for default category) -->
-    <div class="loading-section" v-else-if="isLoadingDefaultCategory">
-      <div class="loading-message">正在加载默认分类...</div>
+    <div class="flex flex-1 items-center justify-center bg-transparent" v-else-if="isLoadingDefaultCategory">
+      <div class="text-base text-[var(--secondary-text)]">正在加载默认分类...</div>
     </div>
-    <div class="loading-section" v-else>
-      <div class="loading-message">请先选择一个分类。</div>
+    <div class="flex flex-1 items-center justify-center bg-transparent" v-else>
+      <div class="text-base text-[var(--secondary-text)]">请先选择一个分类。</div>
     </div>
   </div>
 </template>
@@ -134,45 +134,3 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
-.home-page {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  background: transparent;
-  min-width: 0;
-}
-
-.category-section {
-  flex-shrink: 0; 
-  z-index: 10; 
-  position: sticky; 
-  top: 0;
-  width: 100%;
-  background: transparent;
-  backdrop-filter: none;
-}
-
-.live-list-section {
-  flex-grow: 1; 
-  overflow: hidden; 
-  width: 100%;
-  background: transparent;
-  display: flex; 
-  flex-direction: column; 
-}
-
-.loading-section {
-  flex: 1; 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: transparent;
-}
-
-.loading-message {
-  color: var(--secondary-text);
-  font-size: 16px;
-}
-</style>

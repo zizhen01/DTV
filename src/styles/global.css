@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 @font-face {
   font-family: "OPPO Sans";
   src: url("../assets/fonts/OPPOSans-Regular-subset.woff2") format("woff2");
@@ -15,33 +17,42 @@
 }
 
 :root {
-  --bg-primary: #f5f5f7;
+  --bg-primary: #f8fafc;
   --bg-secondary: #ffffff;
-  --bg-tertiary: #f0f0f3;
-  --text-primary: #1d1d1f;
-  --text-secondary: #86868b;
-  --accent: #007aff;
-  --accent-hover: #0062cc;
-  --accent-glow: rgba(0, 122, 255, 0.25);
-  --platform-active-bg: #f7f7f9;
+  --bg-tertiary: #f1f5f9;
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --accent: #6366f1;
+  --accent-hover: #4f46e5;
+  --accent-glow: rgba(99, 102, 241, 0.25);
+  --platform-active-bg: #e2e8f0;
 
-  --border: rgba(0, 0, 0, 0.06);
-  --glass-bg: rgba(255, 255, 255, 0.75);
-  --glass-border: rgba(255, 255, 255, 0.3);
+  --border: rgba(15, 23, 42, 0.08);
+  --glass-bg: rgba(255, 255, 255, 0.86);
+  --glass-border: rgba(15, 23, 42, 0.08);
 
-  --shadow-low: 0 4px 16px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.12);
+  --shadow-low: 0 4px 16px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 12px 32px rgba(15, 23, 42, 0.12);
+  --shadow-lg: 0 24px 64px rgba(15, 23, 42, 0.18);
+  --shadow-soft: 0 10px 30px rgba(15, 23, 42, 0.1);
 
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
-  --radius-xl: 32px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
   --radius-full: 9999px;
 
-  --sidebar-width: 240px;
+  --sidebar-width: 256px;
   --sidebar-collapsed-width: 72px;
-  --navbar-height: 72px;
+  --navbar-height: 64px;
+
+  --surface-1: rgba(255, 255, 255, 0.9);
+  --surface-2: rgba(255, 255, 255, 0.7);
+  --surface-3: rgba(15, 23, 42, 0.04);
+  --border-strong: rgba(15, 23, 42, 0.16);
+  --ring: rgba(99, 102, 241, 0.45);
+  --text-muted: #94a3b8;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Legacy variable bridge */
   --primary-bg: var(--bg-primary);
@@ -55,15 +66,15 @@
   --dim-text: rgba(134, 134, 139, 0.8);
   --border-color: var(--border);
   --border-color-light: var(--border);
-  --glass-blur: blur(32px);
+  --glass-blur: blur(24px);
   --glass-shadow: var(--shadow-md);
   --content-panel-bg: var(--bg-secondary);
-  --color-card: rgba(255, 255, 255, 0.6);
-  --color-border: #ffffff;
+  --color-card: rgba(255, 255, 255, 0.7);
+  --color-border: rgba(15, 23, 42, 0.08);
   --card-bg: var(--bg-secondary);
   --card-shadow: var(--shadow-low);
   --card-shadow-hover: var(--shadow-md);
-  --hover-bg: rgba(0, 0, 0, 0.04);
+  --hover-bg: rgba(15, 23, 42, 0.05);
   --page-mesh: radial-gradient(at 0% 0%, rgba(0, 0, 0, 0.06) 0px, transparent 50%),
     radial-gradient(at 100% 100%, rgba(0, 0, 0, 0.04) 0px, transparent 50%);
   --ambient-bg-image: linear-gradient(180deg, rgba(0, 0, 0, 0.18) 0%, rgba(0, 0, 0, 0.55) 100%);
@@ -78,23 +89,32 @@
 }
 
 [data-theme='dark'] {
-  --bg-primary: #000000;
-  --bg-secondary: #121212;
-  --bg-tertiary: #1c1c1e;
-  --text-primary: #f5f5f7;
-  --text-secondary: #a1a1a6;
-  --accent: #0a84ff;
-  --accent-hover: #409cff;
-  --accent-glow: rgba(10, 132, 255, 0.3);
-  --platform-active-bg: rgba(255, 255, 255, 0.12);
+  --bg-primary: #0b1120;
+  --bg-secondary: #111827;
+  --bg-tertiary: #1f2937;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --accent: #818cf8;
+  --accent-hover: #6366f1;
+  --accent-glow: rgba(129, 140, 248, 0.32);
+  --platform-active-bg: rgba(148, 163, 184, 0.16);
 
-  --border: rgba(255, 255, 255, 0.1);
-  --glass-bg: rgba(20, 20, 22, 0.8);
-  --glass-border: rgba(255, 255, 255, 0.08);
+  --border: rgba(148, 163, 184, 0.18);
+  --glass-bg: rgba(15, 23, 42, 0.82);
+  --glass-border: rgba(148, 163, 184, 0.2);
 
-  --shadow-low: 0 4px 16px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 12px 48px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 32px 96px rgba(0, 0, 0, 0.6);
+  --shadow-low: 0 6px 18px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 18px 54px rgba(0, 0, 0, 0.52);
+  --shadow-lg: 0 36px 96px rgba(0, 0, 0, 0.65);
+  --shadow-soft: 0 16px 46px rgba(15, 23, 42, 0.45);
+
+  --surface-1: rgba(17, 24, 39, 0.92);
+  --surface-2: rgba(15, 23, 42, 0.7);
+  --surface-3: rgba(148, 163, 184, 0.12);
+  --border-strong: rgba(148, 163, 184, 0.32);
+  --ring: rgba(129, 140, 248, 0.5);
+  --text-muted: #94a3b8;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Legacy variable bridge */
   --primary-bg: var(--bg-primary);
@@ -108,15 +128,15 @@
   --dim-text: rgba(161, 161, 166, 0.8);
   --border-color: var(--border);
   --border-color-light: var(--border);
-  --glass-blur: blur(32px);
+  --glass-blur: blur(24px);
   --glass-shadow: var(--shadow-lg);
   --content-panel-bg: var(--bg-secondary);
-  --color-card: rgba(255, 255, 255, 0.15);
-  --color-border: rgba(255, 255, 255, 0.3);
+  --color-card: rgba(15, 23, 42, 0.6);
+  --color-border: rgba(148, 163, 184, 0.2);
   --card-bg: var(--bg-secondary);
   --card-shadow: var(--shadow-md);
   --card-shadow-hover: var(--shadow-lg);
-  --hover-bg: rgba(255, 255, 255, 0.06);
+  --hover-bg: rgba(148, 163, 184, 0.1);
   --page-mesh: radial-gradient(at 0% 0%, rgba(255, 255, 255, 0.02) 0px, transparent 50%),
     radial-gradient(at 100% 100%, rgba(0, 0, 0, 0.35) 0px, transparent 50%);
   --ambient-bg-image: linear-gradient(0deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.18));
@@ -135,15 +155,17 @@
   padding: 0;
   box-sizing: border-box;
   font-family: "OPPO Sans", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
-  transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-    color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-    border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: background-color 0.2s var(--ease-out), color 0.2s var(--ease-out), border-color 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out);
   -webkit-font-smoothing: antialiased;
 }
 
 body {
   background-color: var(--bg-primary);
+  background-image: var(--page-mesh);
   color: var(--text-primary);
+  font-size: 15px;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
   overflow: hidden;
 }
 
@@ -168,6 +190,29 @@ button {
   cursor: pointer;
   font-family: inherit;
   outline: none;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+input,
+textarea,
+select {
+  font-family: inherit;
+  color: var(--text-primary);
+}
+
+::selection {
+  background: rgba(99, 102, 241, 0.2);
+}
+
+[data-theme='dark'] ::selection {
+  background: rgba(129, 140, 248, 0.25);
 }
 
 a {
@@ -199,9 +244,10 @@ ul {
 
 .mica {
   background-color: var(--glass-bg);
-  backdrop-filter: blur(32px) saturate(220%);
-  -webkit-backdrop-filter: blur(32px) saturate(220%);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
   border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-soft);
 }
 
 .fluent-card {
@@ -209,12 +255,12 @@ ul {
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-low);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out);
 }
 
 .fluent-card:hover {
-  border-color: var(--border);
-  box-shadow: var(--shadow-low);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
 }
 
 .win-controls {

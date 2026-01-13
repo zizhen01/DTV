@@ -1,32 +1,35 @@
 <template>
-  <div class="cate2-container">
+  <div class="relative flex flex-1 flex-col overflow-visible bg-transparent px-2 pb-1.5 pt-2">
     <div
-      class="cate2-content"
-      :class="{ 'is-expanded': isExpandedInternal, 'scrollable': isExpandedInternal && hasMoreRowsInternal }"
+      class="relative overflow-hidden pb-1.5"
       ref="cate2ContentRef"
     >
-      <div class="cate2-scroll-wrapper" :class="{ 'allow-scroll': isExpandedInternal && hasMoreRowsInternal }">
-        <div class="cate2-grid" ref="cate2GridRef">
+      <div class="pointer-events-none absolute inset-x-0 bottom-0 h-[18px] bg-[linear-gradient(to_bottom,color-mix(in_srgb,var(--bg-primary)_0%,transparent),color-mix(in_srgb,var(--bg-primary)_85%,transparent))] opacity-90"></div>
+      <div
+        class="max-h-full"
+        :class="isExpandedInternal && hasMoreRowsInternal
+          ? 'overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:h-0 [&::-webkit-scrollbar]:w-0'
+          : 'overflow-hidden'"
+      >
+        <div class="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-2.5 justify-start pb-3" ref="cate2GridRef">
           <div
             v-for="cate2 in cate2List"
             :key="cate2.href"
-            class="cate2-card"
-            :class="{ 'active': selectedCate2Href === cate2.href }"
+            class="flex h-10 cursor-pointer items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--bg-tertiary)] px-3.5 text-[12.5px] font-bold text-[var(--text-secondary)]"
+            :class="selectedCate2Href === cate2.href ? 'bg-[var(--bg-secondary)] text-[var(--text-primary)] font-semibold' : ''"
             @click="$emit('select', cate2)"
           >
-            <div class="cate2-name" :title="cate2.title">{{ cate2.title }}</div>
+            <div class="truncate text-center" :title="cate2.title">{{ cate2.title }}</div>
           </div>
         </div>
       </div>
     </div>
 
-    <div v-if="shouldShowExpandButtonInternal" class="expand-button" @click="handleToggleInternalExpand">
+    <div v-if="shouldShowExpandButtonInternal" class="relative z-[5] mt-0.5 inline-flex items-center gap-1.5 self-center rounded-full border border-[var(--border)] bg-[var(--bg-secondary)] px-4 py-1.5 text-[11.5px] font-semibold text-[var(--secondary-text)] shadow-[var(--shadow-low)] transition-all duration-200 hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]" @click="handleToggleInternalExpand">
       <span>{{ isExpandedInternal ? '收起' : '展开' }}</span>
       <svg
-        class="expand-icon"
-        :class="{ 'is-expanded': isExpandedInternal }"
-        width="12"
-        height="12"
+        class="ml-0.5 h-3 w-3 transition-transform"
+        :class="{ 'rotate-180': isExpandedInternal }"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -135,171 +138,3 @@ const handleToggleInternalExpand = () => {
 };
 </script>
 
-<style scoped>
-.cate2-container {
-  padding: 8px 8px 6px;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  position: relative;
-  overflow: visible;
-  background: transparent;
-}
-
-.cate2-content {
-  position: relative;
-  height: 0;
-  padding-bottom: 6px;
-  overflow: hidden;
-  transition: none;
-}
-
-.cate2-content::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 18px;
-  background: linear-gradient(to bottom, rgba(245, 245, 247, 0), rgba(245, 245, 247, 0.85));
-  pointer-events: none;
-  opacity: 0.9;
-}
-
-:root[data-theme="dark"] .cate2-content::after {
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.6));
-}
-
-.cate2-scroll-wrapper {
-  max-height: 100%;
-  overflow: hidden;
-}
-
-.cate2-scroll-wrapper.allow-scroll {
-  overflow-y: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.cate2-scroll-wrapper.allow-scroll::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-}
-
-.cate2-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 10px;
-  justify-content: flex-start;
-  padding-bottom: 12px;
-}
-
-.cate2-card {
-  height: 40px;
-  padding: 0 14px;
-  border-radius: 16px;
-  cursor: pointer;
-  transition: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border);
-  color: var(--text-secondary);
-  box-shadow: none;
-}
-
-.cate2-card:hover {
-  color: var(--text-primary);
-  box-shadow: none;
-}
-
-.cate2-card.active {
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  font-weight: 600;
-  box-shadow: none;
-}
-
-.cate2-name {
-  font-size: 12.5px;
-  font-weight: 700;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: center;
-}
-
-.cate2-card.active {
-  /* theme-aware selected state uses glass background */
-}
-
-:root[data-theme="dark"] .cate2-card {
-  color: #cbd5d1;
-}
-
-:root[data-theme="light"] .cate2-card {
-  color: #6c7270;
-}
-
-:root[data-theme="light"] .cate2-card.active {
-  color: #1f2937;
-}
-
-:root[data-theme="dark"] .cate2-card.active {
-  background: rgba(255, 255, 255, 0.24);
-  color: #f6fbf7;
-}
-
-.expand-button {
-  position: relative;
-  align-self: center;
-  margin-top: 2px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 16px;
-  font-size: 11.5px;
-  font-weight: 600;
-  color: var(--secondary-text);
-  cursor: pointer;
-  border-radius: 999px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  transition: all 0.2s ease;
-  z-index: 5;
-  box-shadow: var(--shadow-low);
-}
-
-.expand-button:hover {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-}
-
-:root[data-theme="dark"] .expand-button {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--text-secondary);
-}
-
-:root[data-theme="dark"] .expand-button:hover {
-  background: rgba(255, 255, 255, 0.16);
-  color: var(--text-primary);
-}
-
-.expand-icon {
-  margin-left: 2px;
-  width: 12px;
-  height: 12px;
-}
-
-.expand-icon.is-expanded {
-  transform: rotate(180deg);
-}
-
-.cate2-card img {
-  width: 24px;
-  height: 24px;
-  object-fit: cover;
-  border-radius: 4px;
-}
-</style>

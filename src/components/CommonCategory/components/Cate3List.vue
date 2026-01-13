@@ -1,8 +1,8 @@
 <template>
-  <div v-if="!isLoading && (cate3List.length > 0 || hasAllOption)" class="cate3-list">
+  <div v-if="!isLoading && (cate3List.length > 0 || hasAllOption)" class="mx-2 mt-1.5 flex flex-wrap gap-2 pb-2">
     <div
-      class="cate3-item"
-      :class="{ active: selectedCate3Id === null || selectedCate3Id === 'all' }"
+      class="inline-flex h-7 cursor-pointer items-center rounded-full border border-[var(--border)] bg-[var(--bg-tertiary)] px-3 text-[11.5px] font-bold text-[var(--text-secondary)] shadow-[var(--shadow-low)] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:text-[var(--text-primary)]"
+      :class="selectedCate3Id === null || selectedCate3Id === 'all' ? 'bg-[var(--bg-secondary)] text-[var(--text-primary)] font-semibold shadow-[var(--shadow-md)]' : ''"
       @click="selectAll"
     >
       全部
@@ -10,14 +10,14 @@
     <div
       v-for="cate3 in cate3List"
       :key="cate3.id"
-      class="cate3-item"
-      :class="{ active: selectedCate3Id === cate3.id }"
+      class="inline-flex h-7 cursor-pointer items-center rounded-full border border-[var(--border)] bg-[var(--bg-tertiary)] px-3 text-[11.5px] font-bold text-[var(--text-secondary)] shadow-[var(--shadow-low)] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:text-[var(--text-primary)]"
+      :class="selectedCate3Id === cate3.id ? 'bg-[var(--bg-secondary)] text-[var(--text-primary)] font-semibold shadow-[var(--shadow-md)]' : ''"
       @click="$emit('select', cate3)"
     >
       {{ cate3.name }}
     </div>
   </div>
-  <div v-if="isLoading" class="loading-cate3">正在加载三级分类...</div>
+  <div v-if="isLoading" class="flex items-center justify-center p-2.5 text-[13px] text-[var(--cate3-loading-text-dark,rgba(255,255,255,0.5))]">正在加载三级分类...</div>
 </template>
 
 <script setup lang="ts">
@@ -51,63 +51,3 @@ const selectAll = () => {
 }
 </script>
 
-<style scoped>
-.cate3-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 6px 8px 0 8px;
-  padding-bottom: 8px;
-}
-
-.cate3-item {
-  height: 28px;
-  padding: 0 12px;
-  border-radius: 999px;
-  cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  box-sizing: border-box;
-  display: inline-flex;
-  align-items: center;
-  font-size: 11.5px;
-  font-weight: 700;
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border);
-  color: var(--text-secondary);
-  box-shadow: var(--shadow-low);
-}
-
-.cate3-item:hover {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-  transform: translateY(-1px);
-}
-
-.cate3-item.active {
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  font-weight: 600;
-  box-shadow: var(--shadow-md);
-}
-
-.loading-cate3 {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 10px;
-  color: var(--cate3-loading-text-dark, rgba(255, 255, 255, 0.5));
-  font-size: 13px;
-}
-
-:root[data-theme="light"] .loading-cate3 {
-  color: var(--main-text-secondary-light, #495057);
-}
-
-:root[data-theme="light"] .cate3-item {
-  color: #6c7270;
-}
-
-:root[data-theme="light"] .cate3-item.active {
-  color: #1f2937;
-}
-</style>

@@ -1,16 +1,11 @@
 <template>
   <aside
-    class="mica sidebar-shell"
+    class="mica z-[100] flex h-full flex-col border-r border-[var(--border)] transition-none"
     :style="{
       width: isCollapsed ? 'var(--sidebar-collapsed-width)' : 'var(--sidebar-width)',
-      height: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-      borderRight: '1px solid var(--border)',
-      transition: 'none',
     }"
   >
-    <div v-show="!isCollapsed" class="sidebar-body">
+    <div v-show="!isCollapsed" class="flex-1 min-h-0 overflow-hidden px-3 pb-3">
       <FollowList
         :followedAnchors="followedAnchors"
         @selectAnchor="emit('select-anchor', $event)"
@@ -37,15 +32,3 @@ const emit = defineEmits<{
 }>();
 </script>
 
-<style scoped>
-.sidebar-shell {
-  z-index: 100;
-}
-
-.sidebar-body {
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-  padding: 0 8px 8px;
-}
-</style>

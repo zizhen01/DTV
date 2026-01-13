@@ -1,34 +1,11 @@
 <template>
-  <div class="loading-dots" role="status" aria-live="polite" aria-label="加载中">
-    <span class="dot"></span>
-    <span class="dot"></span>
-    <span class="dot"></span>
+  <div class="inline-flex items-center gap-2.5" role="status" aria-live="polite" aria-label="加载中">
+    <span class="h-2.5 w-2.5 rounded-full bg-[color-mix(in_srgb,var(--accent-color)_70%,var(--secondary-text))] animate-bounce"></span>
+    <span class="h-2.5 w-2.5 rounded-full bg-[color-mix(in_srgb,var(--accent-color)_70%,var(--secondary-text))] animate-bounce" style="animation-delay: 0.15s"></span>
+    <span class="h-2.5 w-2.5 rounded-full bg-[color-mix(in_srgb,var(--accent-color)_70%,var(--secondary-text))] animate-bounce" style="animation-delay: 0.3s"></span>
   </div>
 </template>
 
 <script setup lang="ts">
 </script>
 
-<style scoped>
-.loading-dots {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--accent-color) 70%, var(--secondary-text));
-  animation: dot-bounce 1.1s ease-in-out infinite;
-}
-
-.dot:nth-child(2) { animation-delay: 0.15s; }
-.dot:nth-child(3) { animation-delay: 0.3s; }
-
-@keyframes dot-bounce {
-  0%, 80%, 100% { transform: translateY(0) scale(0.9); opacity: 0.55; }
-  40% { transform: translateY(-8px) scale(1.05); opacity: 1; }
-}
-</style>

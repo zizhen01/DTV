@@ -1,5 +1,5 @@
 <template>
-  <div class="player-view">
+  <div class="flex h-full w-full flex-1 flex-col items-stretch bg-transparent">
     <MainPlayer v-if="roomId" :platform="Platform.DOUYU" :room-id="roomId" :is-followed="isFollowed" @follow="handleFollow" @unfollow="handleUnfollow" @close-player="handleClosePlayer" />
     <div v-else>
       <p>无效的房间ID。</p>
@@ -42,15 +42,3 @@ const handleClosePlayer = () => {
 
 </script>
 
-<style scoped>
-.player-view {
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  height: 100%;
-  min-height: 0;
-  width: 100%;
-  background-color: transparent;
-  align-items: stretch;
-}
-</style> 

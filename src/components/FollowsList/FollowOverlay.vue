@@ -1,64 +1,76 @@
 <template>
   <teleport to="body">
-    <transition name="overlay-fade">
-      <div v-if="show" class="follow-overlay-backdrop" @click.self="emit('close')">
-        <transition name="overlay-pop">
+    <transition
+      enter-active-class="transition-opacity duration-300 ease-out"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-active-class="transition-opacity duration-300 ease-in"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
+    >
+      <div v-if="show" class="fixed inset-0 z-[1200] bg-[rgba(0,0,0,0.4)] [backdrop-filter:blur(8px)]" @click.self="emit('close')">
+        <transition
+          enter-active-class="transition duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+          enter-from-class="opacity-0 scale-90 translate-y-5"
+          enter-to-class="opacity-100 scale-100 translate-y-0"
+          leave-active-class="transition duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+          leave-from-class="opacity-100 scale-100 translate-y-0"
+          leave-to-class="opacity-0 scale-90 translate-y-5"
+        >
           <div 
             ref="panelRef"
-            class="follow-overlay-panel" 
+            class="fixed z-[1201] w-[min(1180px,calc(100vw-48px))] rounded-[var(--radius-lg)] border border-[var(--glass-border)] bg-[var(--glass-bg)] text-[var(--primary-text)] shadow-[var(--glass-shadow)] [backdrop-filter:var(--glass-blur)] [-webkit-backdrop-filter:var(--glass-blur)] [transform:translateZ(0)]"
             :style="{ top: `${panelTop}px`, left: `${panelLeft}px`, height: `${panelHeight}px` }"
           >
             <!-- 将关闭按钮移动到面板右上角 -->
-            <button class="overlay-close-btn" title="关闭" @click="emit('close')">
+            <button class="absolute -top-5 -right-5 z-[1100] flex h-11 w-11 items-center justify-center rounded-full border border-[var(--glass-border)] bg-[var(--glass-bg)] text-[var(--primary-text)] shadow-[var(--glass-shadow)] transition-all duration-400 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-110 hover:rotate-180 hover:border-[var(--accent-color)] hover:text-[var(--accent-color)]" title="关闭" @click="emit('close')">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
               </svg>
             </button>
-            <div class="overlay-header" ref="headerRef">
-              <div class="overlay-header-left">
+            <div class="flex items-center justify-start gap-4 border-b-0 px-8 py-5" ref="headerRef">
+              <div class="flex flex-1 min-w-0 items-center gap-3">
                 <!-- 移除标题：关注列表 -->
                 <slot name="filters"></slot>
               </div>
-              <div class="overlay-header-actions">
+              <div class="flex items-center gap-4">
                 <button 
-                  class="overlay-text-btn manage-action" 
-                  :class="{ active: props.isDeleteMode }"
+                  class="inline-flex items-center gap-2 rounded-[12px] border border-[var(--border-color)] bg-[var(--tertiary-bg)] px-[18px] py-2 text-[13px] font-semibold text-[var(--primary-text)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:-translate-y-0.5 hover:border-[var(--accent-color)] hover:bg-[var(--secondary-bg)] hover:text-[var(--accent-color)] hover:shadow-[var(--card-shadow)]"
+                  :class="props.isDeleteMode ? 'border-transparent bg-[var(--accent-color)] text-white' : ''"
                   @click="emit('toggle-remove')"
                 >
                   <span>{{ props.isDeleteMode ? '完成' : '管理' }}</span>
                 </button>
                 <button 
-                  class="overlay-text-btn refresh-action" 
-                  :class="{ 'is-refreshing': isRefreshing, 'just-finished': justFinished }" 
+                  class="inline-flex items-center gap-2 rounded-[12px] border border-[var(--border-color)] bg-[var(--tertiary-bg)] px-[18px] py-2 text-[13px] font-semibold text-[var(--primary-text)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:-translate-y-0.5 hover:border-[var(--accent-color)] hover:bg-[var(--secondary-bg)] hover:text-[var(--accent-color)] hover:shadow-[var(--card-shadow)] disabled:cursor-not-allowed disabled:opacity-50"
                   :disabled="isRefreshing" 
                   @click="emit('refresh')"
                 >
-                  <span class="refresh-label">刷新</span>
-                  <span class="refresh-spinner" aria-hidden="true"></span>
+                  <span>刷新</span>
+                  <span class="h-3.5 w-3.5 rounded-full border-2 border-current border-t-transparent" :class="isRefreshing ? 'visible animate-spin' : 'invisible'"></span>
                 </button>
                 <!-- 原关闭按钮已移除到面板右上角 -->
               </div>
             </div>
-            <div class="overlay-content" :style="{ height: `${Math.max(120, panelHeight - headerHeight)}px`, overflow: shouldScroll ? 'auto' : 'hidden' }">
-              <div v-if="!items || items.length === 0" class="overlay-empty">
+            <div class="overflow-auto px-8 pb-[92px] pt-3 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-[10px] [&::-webkit-scrollbar-thumb]:bg-[var(--border-color)]" :style="{ height: `${Math.max(120, panelHeight - headerHeight)}px`, overflow: shouldScroll ? 'auto' : 'hidden' }">
+              <div v-if="!items || items.length === 0" class="flex flex-col items-center justify-center gap-5 px-10 py-20 text-[var(--secondary-text)]">
                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart">
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                 </svg>
-                <p class="empty-title">暂无关注主播</p>
-                <p class="empty-text">当前筛选下暂无关注主播</p>
+                <p class="text-[18px] font-bold text-[var(--primary-text)]">暂无关注主播</p>
+                <p>当前筛选下暂无关注主播</p>
               </div>
-              <ul v-else class="overlay-streamers-list" ref="listEl">
+              <ul v-else class="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-3" ref="listEl">
                 <li 
                   v-for="s in items" 
                   :key="s.id" 
-                  class="overlay-streamer-item"
-                  :class="{ 'remove-mode': props.isDeleteMode }"
+                  class="relative overflow-hidden rounded-[var(--radius-md)] border border-[var(--border-color-light)] bg-[var(--secondary-bg)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:-translate-y-0.5 hover:border-[var(--border-color)] hover:shadow-[var(--card-shadow-hover)]"
                   @click="handleSelect(s)"
                 >
                   <button 
                     v-if="props.isDeleteMode" 
-                    class="overlay-remove-btn" 
+                    class="absolute right-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-[#ef4444] text-[16px] font-bold text-white shadow-[0_2px_8px_rgba(239,68,68,0.3)] transition-all duration-200 hover:rotate-90 hover:scale-110 hover:bg-[#dc2626]"
                     title="删除"
                     @click.stop="emit('remove', s)"
                   >
@@ -220,244 +232,3 @@ const handleSelect = (s: FollowedStreamer) => {
 };
 </script>
 
-<style scoped>
-.follow-overlay-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(8px);
-  z-index: 1200;
-}
-
-.follow-overlay-panel {
-  position: fixed;
-  width: min(1180px, calc(100vw - 48px));
-  border-radius: var(--radius-lg);
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  color: var(--primary-text);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
-  overflow: visible;
-  transform: translateZ(0);
-  z-index: 1201;
-}
-
-.overlay-header {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 16px;
-  padding: 20px 32px;
-  border-bottom: none;
-}
-
-.overlay-header-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex: 1;
-  min-width: 0;
-}
-
-.overlay-header-actions { 
-  display: flex; 
-  align-items: center; 
-  gap: 16px;
-}
-
-.overlay-text-btn {
-  background: var(--tertiary-bg);
-  border: 1px solid var(--border-color);
-  color: var(--primary-text);
-  padding: 8px 18px;
-  border-radius: 12px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 600;
-  font-size: 13px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.overlay-text-btn:hover {
-  background: var(--secondary-bg);
-  border-color: var(--accent-color);
-  color: var(--accent-color);
-  transform: translateY(-1px);
-  box-shadow: var(--card-shadow);
-}
-
-.overlay-text-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.manage-action.active {
-  background: var(--accent-color);
-  border-color: transparent;
-  color: #fff;
-}
-
-.refresh-action .refresh-spinner {
-  display: inline-block;
-  width: 14px;
-  height: 14px;
-  border: 2px solid currentColor;
-  border-top-color: transparent;
-  border-radius: 50%;
-  visibility: hidden;
-}
-
-.refresh-action.is-refreshing .refresh-spinner {
-  visibility: visible;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-.overlay-content {
-  overflow: auto;
-  padding: 12px 32px 92px; /* 增加底部内边距，避免内容贴底 */
-}
-
-.overlay-content::-webkit-scrollbar {
-  width: 4px;
-}
-
-.overlay-content::-webkit-scrollbar-thumb {
-  background: var(--border-color);
-  border-radius: 10px;
-}
-
-.overlay-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 80px 40px;
-  color: var(--secondary-text);
-  gap: 20px;
-}
-
-.empty-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--primary-text);
-}
-
-.overlay-streamers-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 12px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.overlay-streamer-item {
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color-light);
-  background: var(--secondary-bg);
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.overlay-streamer-item:hover {
-  transform: translateY(-2px);
-  border-color: var(--border-color);
-  box-shadow: var(--card-shadow-hover);
-}
-
-/* Keep follow overlay using glass-style background across themes to match search results */
-
-.overlay-remove-btn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: #ef4444;
-  color: white;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-  font-weight: bold;
-  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
-  transition: all 0.2s ease;
-  font-size: 16px;
-}
-
-.overlay-remove-btn:hover {
-  transform: scale(1.1) rotate(90deg);
-  background: #dc2626;
-}
-
-.overlay-fade-enter-active,
-.overlay-fade-leave-active { transition: opacity 0.4s ease; }
-.overlay-fade-enter-from,
-.overlay-fade-leave-to { opacity: 0; }
-
-.overlay-pop-enter-active,
-.overlay-pop-leave-active { transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
-.overlay-pop-enter-from,
-.overlay-pop-leave-to { transform: scale(0.9) translateY(20px); opacity: 0; }
-
-.overlay-close-btn {
-  position: absolute;
-  top: -20px;
-  right: -20px;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--glass-border);
-  color: var(--primary-text);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: var(--glass-shadow);
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  z-index: 1100;
-}
-
-.overlay-close-btn:hover {
-  transform: scale(1.1) rotate(180deg);
-  border-color: var(--accent-color);
-  color: var(--accent-color);
-}
-
-:root[data-theme="dark"] .follow-overlay-backdrop {
-  background: rgba(0, 0, 0, 0.28);
-}
-
-:root[data-theme="dark"] .follow-overlay-panel {
-  background: rgba(24, 30, 26, 0.9);
-  border-color: rgba(255, 255, 255, 0.14);
-  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.48);
-}
-
-:root[data-theme="dark"] .overlay-text-btn {
-  background: #232c24;
-  border-color: rgba(255, 255, 255, 0.14);
-}
-
-:root[data-theme="dark"] .overlay-text-btn:hover {
-  background: #2a352c;
-}
-
-:root[data-theme="dark"] .overlay-streamer-item {
-  background: #222b23;
-  border-color: rgba(255, 255, 255, 0.12);
-}
-</style>

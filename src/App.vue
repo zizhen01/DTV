@@ -1,5 +1,5 @@
 <template>
-  <div class="app-shell">
+  <div class="flex h-screen overflow-hidden">
     <Sidebar
       v-show="!shouldHidePlayerChrome"
       :is-collapsed="isSidebarCollapsed"
@@ -10,7 +10,7 @@
       @reorder-list="handleReorderListStore"
     />
 
-    <div class="app-main">
+    <div class="flex min-w-0 flex-1 flex-col bg-[var(--bg-primary)] transition-none">
       <Navbar
         v-show="!shouldHidePlayerChrome"
         :theme="theme"
@@ -20,7 +20,7 @@
         @select-anchor="handleSelectAnchorFromSearch"
       />
 
-      <main class="app-body" :class="{ 'app-body--player': isPlayerRoute }">
+      <main class="relative flex-1 overflow-y-auto px-4 pb-3 pt-4" :class="{ 'p-0': isPlayerRoute }">
         <router-view
           v-slot="{ Component, route }"
           @follow="handleFollowStore"
@@ -186,30 +186,3 @@ const handleFullscreenChange = (isFullscreen: boolean) => {
 };
 </script>
 
-<style scoped>
-.app-shell {
-  display: flex;
-  height: 100vh;
-  overflow: hidden;
-}
-
-.app-main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  background-color: var(--bg-primary);
-  transition: none;
-}
-
-.app-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 10px 10px 0;
-  position: relative;
-}
-
-.app-body.app-body--player {
-  padding: 0;
-}
-</style>

@@ -1,14 +1,18 @@
 <template>
-  <div class="cate1-list-container">
-    <ul class="cate1-list">
+  <div class="flex flex-shrink-0 overflow-x-auto border-none p-1 pb-2.5 shadow-none transition-all duration-200 ease-in-out [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:h-0">
+    <ul class="relative inline-flex flex-nowrap gap-[18px] bg-transparent px-2 pb-1.5">
       <li
         v-for="cate1 in cate1List"
         :key="cate1.href"
-        class="cate1-item"
-        :class="{ selected: cate1.href === selectedCate1Href }"
+        class="relative inline-flex h-8 cursor-pointer items-center rounded-md border border-transparent bg-transparent px-1 text-[12.5px] font-medium text-[var(--secondary-text)] transition-[color,transform] duration-200 ease-in-out hover:text-[var(--primary-text)]"
+        :class="cate1.href === selectedCate1Href ? 'font-bold text-[var(--text-primary)] -translate-y-0.5' : ''"
         @click="$emit('select', cate1)"
       >
-        <span class="cate1-name">{{ cate1.title }}</span>
+        <span class="tracking-[0.2px]">{{ cate1.title }}</span>
+        <span
+          class="absolute -bottom-1.5 left-[22%] right-[22%] h-1 rounded-full bg-[color-mix(in_srgb,var(--text-primary)_65%,transparent)] transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]"
+          :class="cate1.href === selectedCate1Href ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-75'"
+        ></span>
       </li>
     </ul>
   </div>
@@ -23,111 +27,3 @@ defineProps<{
 }>()
 </script>
 
-<style scoped>
-.cate1-list-container {
-  overflow-x: auto;
-  flex-shrink: 0;
-  padding: 4px 0 10px;
-  transition: all 0.2s ease;
-  border: none;
-  box-shadow: none;
-}
-
-.cate1-list {
-  list-style: none;
-  margin: 0;
-  padding: 0 8px 6px;
-  display: inline-flex;
-  gap: 18px;
-  flex-wrap: nowrap;
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  position: relative;
-}
-
-.cate1-item {
-  height: 32px;
-  padding: 0 4px;
-  display: inline-flex;
-  align-items: center;
-  cursor: pointer;
-  transition: color 0.2s ease, transform 0.2s ease;
-  font-size: 12.5px;
-  font-weight: 500;
-  border-radius: 8px;
-  white-space: nowrap;
-  color: var(--secondary-text);
-  background: transparent;
-  border: 1px solid transparent;
-  box-shadow: none;
-  position: relative;
-}
-
-.cate1-item:hover {
-  color: var(--primary-text);
-  background: transparent;
-}
-
-.cate1-item.selected {
-  background: transparent;
-  color: var(--text-primary);
-  font-weight: 700;
-  transform: translateY(-1px);
-  border-color: transparent;
-  box-shadow: none;
-}
-
-.cate1-item.selected {
-  /* selected state */
-}
-
-.cate1-item::after {
-  content: '';
-  position: absolute;
-  left: 22%;
-  right: 22%;
-  bottom: -6px;
-  height: 4px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.65);
-  clip-path: none;
-  opacity: 0;
-  transform: scaleX(0.6);
-  transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.cate1-item.selected::after {
-  opacity: 1;
-  transform: scaleX(1);
-}
-
-:root[data-theme="light"] .cate1-item::after {
-  background: rgba(0, 0, 0, 0.5);
-}
-
-:root[data-theme="dark"] .cate1-item {
-  color: #cbd5d1;
-}
-
-:root[data-theme="light"] .cate1-item {
-  color: #5f6563;
-}
-
-:root[data-theme="light"] .cate1-item.selected {
-  color: #1f2937;
-}
-
-:root[data-theme="dark"] .cate1-item.selected {
-  color: #f6fbf7;
-}
-
-.cate1-name {
-  display: inline-block;
-  letter-spacing: 0.2px;
-}
-
-.cate1-list-container::-webkit-scrollbar {
-  height: 0;
-}
-</style>

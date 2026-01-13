@@ -1,5 +1,5 @@
 <template>
-  <div class="category-list" :class="{ 'is-expanded': isExpanded }">
+  <div class="relative flex w-full flex-col overflow-hidden bg-transparent text-[var(--primary-text)] transition-none will-change-[max-height] [transform:translateZ(0)] max-h-[280px] min-h-[160px]" :class="{ 'max-h-[500px]': isExpanded }">
     <template v-if="cate1List.length > 0">
       <Cate1List
         :cate1-list="cate1List"
@@ -16,8 +16,8 @@
         @height-changed="handleCate2GridHeightChanged"
       />
     </template>
-    <div v-else class="loading-state">
-      <div class="loading-text">正在加载分类数据...</div>
+    <div v-else class="flex h-full flex-col items-center justify-center px-4 py-8 text-center text-[var(--secondary-text)]">
+      <div class="text-xs font-medium text-[var(--secondary-text)]">正在加载分类数据...</div>
     </div>
   </div>
 </template>
@@ -132,51 +132,3 @@ const handleCate2GridHeightChanged = () => {
 }
 </script>
 
-<style scoped>
-.category-list {
-  display: flex;
-  flex-direction: column;
-  background: transparent;
-  color: var(--primary-text);
-  max-height: 280px;
-  min-height: 160px;
-  overflow: hidden;
-  transition: none;
-  will-change: max-height;
-  transform: translateZ(0);
-  width: 100%;
-  position: relative;
-}
-
-.category-list.is-expanded {
-  max-height: 500px;
-}
-
-.loading-state {
-  padding: 32px 16px;
-  text-align: center;
-  color: var(--secondary-text);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-}
-
-.loading-spinner {
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--border-color);
-  border-top-color: var(--accent-color);
-  border-radius: 50%;
-  animation: none;
-  margin-bottom: 12px;
-}
-
-.loading-text {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--secondary-text);
-}
-
-</style>

@@ -1,36 +1,30 @@
-﻿<template>
+<template>
   <nav
-    class="mica navbar"
+    class="mica sticky top-0 z-50 flex h-[var(--navbar-height)] items-center gap-6 border-b border-[var(--border)] px-6 pl-4"
     data-tauri-drag-region
     :style="{
-      height: 'var(--navbar-height)',
-      display: 'flex',
-      alignItems: 'center',
-      padding: '0 32px',
-      paddingLeft: '16px',
       paddingRight: shouldShowWindowsControls && !isMacPreview ? '160px' : '16px',
-      borderBottom: '1px solid var(--border)',
-      position: 'sticky',
-      top: 0,
-      zIndex: 50,
-      gap: '32px',
     }"
   >
-    <div v-if="isMacPreview" class="mac-controls" aria-hidden="true">
-      <span class="mac-dot mac-dot--close"></span>
-      <span class="mac-dot mac-dot--min"></span>
-      <span class="mac-dot mac-dot--max"></span>
+    <div v-if="isMacPreview" class="inline-flex items-center gap-2 pl-1" aria-hidden="true">
+      <span class="h-2.5 w-2.5 rounded-full bg-[#ff5f57] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.12)]"></span>
+      <span class="h-2.5 w-2.5 rounded-full bg-[#febc2e] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.12)]"></span>
+      <span class="h-2.5 w-2.5 rounded-full bg-[#28c840] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.12)]"></span>
     </div>
 
-    <div class="platform-tabs-wrap" data-tauri-drag-region>
-      <div class="platform-tabs" ref="platformTabsRef" data-tauri-drag-region>
-        <div class="platform-highlight" :style="highlightStyles" data-tauri-drag-region />
+    <div class="flex-none" data-tauri-drag-region>
+      <div class="relative flex overflow-hidden rounded-[var(--radius-md)] bg-[var(--hover-bg)] p-1" ref="platformTabsRef" data-tauri-drag-region>
+        <div
+          class="absolute inset-y-1 left-0 z-[1] rounded-[var(--radius-sm)] bg-[var(--platform-active-bg)] shadow-[0_2px_8px_rgba(0,0,0,0.08)] transition-[transform,width,opacity] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]"
+          :style="highlightStyles"
+          data-tauri-drag-region
+        />
       <button
         v-for="platform in platforms"
         :key="platform.id"
         type="button"
-        class="platform-tab"
-        :class="{ active: activePlatform === platform.id }"
+        class="relative z-[2] rounded-[var(--radius-sm)] px-4 py-1.5 text-sm font-medium text-[var(--text-secondary)] transition-[color,transform] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-[rgba(0,0,0,0.03)]"
+        :class="{ 'font-bold text-[var(--text-primary)]': activePlatform === platform.id }"
         data-tauri-drag-region="false"
         :ref="(el) => setPlatformRef(platform.id, el)"
         @click="emit('platform-change', platform.id)"
@@ -40,15 +34,15 @@
     </div>
     </div>
 
-    <div class="nav-actions" :class="{ 'nav-actions--windows': shouldShowWindowsControls }" data-tauri-drag-region>
-      <div class="search-container" ref="searchContainerRef" data-tauri-drag-region="false">
-          <div class="search-shell" :class="{ focused: isSearchFocused }">
+    <div class="relative flex flex-1 items-center justify-end gap-3" :class="{ 'static': shouldShowWindowsControls }" data-tauri-drag-region>
+      <div class="relative ml-auto w-[min(360px,36vw)]" ref="searchContainerRef" data-tauri-drag-region="false">
+          <div class="relative z-10 flex w-full max-w-[420px] items-center rounded-[var(--radius-lg)] bg-[var(--hover-bg)] transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]" :class="{ 'scale-[1.02] shadow-[var(--shadow-lg)]': isSearchFocused }">
             <input
               v-model="searchQuery"
               type="text"
               :placeholder="placeholderText"
               data-tauri-drag-region="false"
-              class="search-input"
+              class="w-full rounded-[var(--radius-lg)] border border-transparent bg-transparent px-4 py-2.5 text-sm text-[var(--text-primary)] outline-none"
               @focus="handleFocus"
               @blur="handleBlur"
               @input="handleSearch"
@@ -56,7 +50,7 @@
             <button
               v-if="searchQuery"
               type="button"
-              class="search-clear-btn"
+              class="mr-1.5 flex h-8 w-8 items-center justify-center rounded-full text-[var(--text-secondary)] transition-all duration-200 hover:bg-[rgba(0,0,0,0.06)] hover:text-[var(--accent)]"
               data-tauri-drag-region="false"
               aria-label="清除搜索"
               @click="resetSearchState"
@@ -65,41 +59,45 @@
             </button>
           </div>
 
-          <div v-show="showResults" class="search-results-wrapper">
-            <div v-if="isLoadingSearch" class="search-loading">搜索中...</div>
-            <div v-else-if="searchError" class="search-error-message">{{ searchError }}</div>
-            <div v-else-if="searchResults.length > 0" class="search-results-list">
+          <div v-show="showResults" class="absolute left-0 right-0 top-[calc(100%+10px)] z-[1001] max-h-[480px] overflow-y-auto rounded-[var(--radius-md)] border border-[var(--glass-border)] bg-[var(--glass-bg)] p-2 shadow-[var(--glass-shadow)] [backdrop-filter:var(--glass-blur)] [-webkit-backdrop-filter:var(--glass-blur)]">
+            <div v-if="isLoadingSearch" class="px-3 py-2 text-[13px] text-[var(--secondary-text)]">搜索中...</div>
+            <div v-else-if="searchError" class="px-3 py-2 text-[13px] text-[var(--secondary-text)]">{{ searchError }}</div>
+            <div v-else-if="searchResults.length > 0" class="space-y-1">
               <div
                 v-for="anchor in searchResults"
                 :key="anchor.platform + '-' + anchor.roomId"
-                class="search-result-item"
+                class="flex items-center gap-2.5 rounded-[var(--radius-md)] px-2.5 py-2 transition-all duration-200 hover:translate-x-1 hover:bg-[var(--hover-bg)]"
                 @mousedown="selectAnchor(anchor)"
               >
-                <div class="result-avatar">
-                  <img v-if="anchor.avatar" :src="anchor.avatar" :alt="anchor.userName" class="avatar-img" />
-                  <div v-else class="avatar-placeholder">{{ anchor.userName[0] }}</div>
+                <div class="h-9 w-9 flex-shrink-0 overflow-hidden rounded-full border-2 border-[var(--border-color)] bg-[var(--tertiary-bg)]">
+                  <img v-if="anchor.avatar" :src="anchor.avatar" :alt="anchor.userName" class="h-full w-full object-cover" />
+                  <div v-else class="flex h-full w-full items-center justify-center bg-[var(--hover-bg)] text-[var(--text-primary)]">{{ anchor.userName[0] }}</div>
                 </div>
 
-                <div class="result-main-content">
-                  <div class="result-line-1-main">
-                    <span class="result-name" :title="anchor.userName">{{ anchor.userName }}</span>
-                    <span class="live-status-badge styled-badge" :class="{ 'is-live': anchor.liveStatus }">
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-2">
+                    <span class="truncate text-[13px] font-semibold text-[var(--primary-text)]" :title="anchor.userName">{{ anchor.userName }}</span>
+                    <span
+                      class="rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.5px]"
+                      :class="anchor.liveStatus ? 'border-[rgba(255,62,62,0.2)] bg-[rgba(255,62,62,0.15)] text-[#ff3e3e]' : 'border-[var(--glass-border)] bg-[var(--hover-bg)] text-[var(--secondary-text)]'"
+                    >
                       {{ anchor.liveStatus ? '直播' : '未播' }}
                     </span>
                   </div>
-                  <div class="result-line-2-main">
-                    <span class="result-room-title" :title="anchor.roomTitle || '暂无标题'">{{ anchor.roomTitle || '暂无标题' }}</span>
-                    <span class="result-roomid styled-badge">{{ anchor.webId || anchor.roomId }}</span>
+                  <div class="flex items-center gap-2">
+                    <span class="truncate text-xs text-[var(--secondary-text)]" :title="anchor.roomTitle || '暂无标题'">{{ anchor.roomTitle || '暂无标题' }}</span>
+                    <span class="rounded-full border border-[var(--glass-border)] bg-[var(--hover-bg)] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.5px] text-[var(--secondary-text)]">{{ anchor.webId || anchor.roomId }}</span>
                   </div>
                 </div>
 
-                <div class="result-meta-right">
+                <div class="flex items-center">
                   <span
-                    class="platform-tag styled-badge"
+                    class="rounded-full border border-[var(--glass-border)] bg-[var(--hover-bg)] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.5px] text-[var(--secondary-text)]"
                     :class="[
                       anchor.platform.toLowerCase(),
                       { douyu: anchor.platform === Platform.DOUYU, douyin: anchor.platform === Platform.DOUYIN, huya: anchor.platform === Platform.HUYA }
                     ]"
+                    :style="anchor.platform === Platform.DOUYU ? 'color: #ff7a1c' : anchor.platform === Platform.DOUYIN ? 'color: #fe2c55' : anchor.platform === Platform.HUYA ? 'color: #f5a623' : anchor.platform === Platform.BILIBILI ? 'color: #fb7299' : ''"
                   >
                     {{ anchor.platform === Platform.DOUYU ? '斗鱼' : (anchor.platform === Platform.DOUYIN ? '抖音' : (anchor.platform === Platform.HUYA ? '虎牙' : anchor.platform)) }}
                   </span>
@@ -107,11 +105,11 @@
               </div>
             </div>
 
-            <div v-else-if="trimmedQuery && !isLoadingSearch && !searchError" class="search-no-results">
+            <div v-else-if="trimmedQuery && !isLoadingSearch && !searchError" class="px-3 py-2 text-[13px] text-[var(--secondary-text)]">
               未找到结果
               <button
                 v-if="isPureNumeric(trimmedQuery)"
-                class="search-fallback-btn"
+                class="font-semibold text-[var(--accent)]"
                 @mousedown.prevent="tryEnterRoom(trimmedQuery)"
                 @click.prevent="tryEnterRoom(trimmedQuery)"
               >
@@ -121,13 +119,13 @@
           </div>
       </div>
 
-      <button type="button" class="nav-icon-btn github-btn" data-tauri-drag-region="false" @click="openGithub">
+      <button type="button" class="relative flex items-center justify-center rounded-[var(--radius-md)] bg-[var(--hover-bg)] p-2.5 text-[var(--text-secondary)] transition-[background-color,transform] duration-200 hover:scale-[1.03] hover:bg-[rgba(0,0,0,0.05)] active:scale-95" data-tauri-drag-region="false" @click="openGithub">
         <Github :size="20" />
-        <span class="github-badge">{{ appVersion || '-' }}</span>
+        <span class="absolute inset-x-0 bottom-0 rounded-b-[var(--radius-md)] bg-[rgba(17,24,39,0.08)] px-2 py-[2px] text-center text-[8px] font-bold uppercase leading-[1.1] tracking-[0.2px] text-[rgba(17,24,39,0.68)] opacity-95">{{ appVersion || '-' }}</span>
       </button>
       <button
         type="button"
-        class="nav-icon-btn"
+        class="flex items-center justify-center rounded-[var(--radius-md)] bg-[var(--hover-bg)] p-2.5 text-[var(--text-secondary)] transition-[background-color,transform] duration-200 hover:scale-[1.03] hover:bg-[rgba(0,0,0,0.05)] active:scale-95"
         data-tauri-drag-region="false"
         @click="toggleTheme"
       >
@@ -135,7 +133,7 @@
         <Moon v-else :size="20" />
       </button>
 
-      <div v-if="shouldShowWindowsControls && !isMacPreview" class="win-controls-wrap">
+      <div v-if="shouldShowWindowsControls && !isMacPreview" class="absolute right-[-1px] top-[-1px] flex flex-col items-end gap-1">
         <WindowsWindowControls />
       </div>
   </div>
@@ -611,434 +609,3 @@ const tryEnterRoom = (roomId: string) => {
   resetSearchState();
 };
 </script>
-<style scoped>
-.platform-tabs-wrap {
-  flex: 0 0 auto;
-}
-
-.mac-controls {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding-left: 4px;
-}
-
-.mac-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
-}
-
-.mac-dot--close {
-  background: #ff5f57;
-}
-
-.mac-dot--min {
-  background: #febc2e;
-}
-
-.mac-dot--max {
-  background: #28c840;
-}
-
-.platform-tabs {
-  display: flex;
-  background-color: rgba(0, 0, 0, 0.04);
-  padding: 4px;
-  border-radius: var(--radius-md);
-  position: relative;
-  overflow: hidden;
-}
-
-:global([data-theme='dark']) .platform-tabs {
-  background-color: rgba(255, 255, 255, 0.06);
-}
-
-.platform-tab {
-  padding: 8px 20px;
-  border-radius: var(--radius-sm);
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-  position: relative;
-  z-index: 2;
-  transition: color 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s ease;
-}
-
-.platform-tab:hover:not(.active) {
-  background-color: rgba(0, 0, 0, 0.03);
-}
-
-.platform-tab.active {
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.platform-highlight {
-  position: absolute;
-  top: 4px;
-  bottom: 4px;
-  left: 0;
-  background-color: var(--platform-active-bg);
-  border-radius: var(--radius-sm);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition:
-    transform 240ms cubic-bezier(0.16, 1, 0.3, 1),
-    width 240ms cubic-bezier(0.16, 1, 0.3, 1),
-    opacity 160ms ease;
-  z-index: 1;
-}
-
-.search-container {
-  position: relative;
-  width: min(360px, 36vw);
-}
-
-.search-shell {
-  width: 100%;
-  max-width: 420px;
-  position: relative;
-  display: flex;
-  align-items: center;
-  z-index: 10;
-  transform: scale(1);
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  background-color: rgba(0, 0, 0, 0.04);
-  border-radius: var(--radius-lg);
-}
-
-:global([data-theme='dark']) .search-shell {
-  background-color: rgba(255, 255, 255, 0.06);
-}
-
-.search-shell.focused {
-  transform: scale(1.02);
-  box-shadow: var(--shadow-lg);
-}
-
-.search-input {
-  width: 100%;
-  padding: 12px 16px;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: var(--radius-lg);
-  font-size: 0.9rem;
-  color: var(--text-primary);
-  outline: none;
-}
-
-.search-clear-btn {
-  background: transparent;
-  border: none;
-  width: 32px;
-  height: 32px;
-  margin-right: 6px;
-  border-radius: 50%;
-  cursor: pointer;
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-}
-
-.search-clear-btn:hover {
-  color: var(--accent);
-  background: rgba(0, 0, 0, 0.06);
-}
-
-.search-results-wrapper {
-  position: absolute;
-  top: calc(100% + 10px);
-  left: 0;
-  right: 0;
-  transform: none;
-  width: 100%;
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border-radius: var(--radius-md);
-  box-shadow: var(--glass-shadow);
-  max-height: 480px;
-  overflow-y: auto;
-  z-index: 1001;
-  border: 1px solid var(--glass-border);
-  padding: 8px;
-}
-
-:global([data-theme='dark']) .search-results-wrapper,
-:global(html[data-theme='dark']) .search-results-wrapper,
-:global(:root[data-theme='dark']) .search-results-wrapper {
-  background: rgba(18, 18, 20, 0.96) !important;
-  border-color: rgba(255, 255, 255, 0.08);
-}
-
-.search-result-item {
-  display: flex;
-  align-items: center;
-  padding: 8px 10px;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  gap: 10px;
-}
-
-.search-result-item:hover {
-  background: var(--hover-bg);
-  transform: translateX(4px);
-}
-
-:global([data-theme='dark']) .search-result-item:hover,
-:global(html[data-theme='dark']) .search-result-item:hover,
-:global(:root[data-theme='dark']) .search-result-item:hover {
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.result-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  overflow: hidden;
-  background: var(--tertiary-bg);
-  border: 2px solid var(--border-color);
-  flex-shrink: 0;
-}
-
-.avatar-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.result-main-content {
-  flex: 1;
-  min-width: 0;
-}
-
-.result-line-1-main {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 1px;
-}
-
-.result-name {
-  font-weight: 600;
-  font-size: 13px;
-  color: var(--primary-text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-:global([data-theme='dark']) .result-name,
-:global(html[data-theme='dark']) .result-name,
-:global(:root[data-theme='dark']) .result-name {
-  color: #f3f4f6;
-}
-
-.result-room-title {
-  font-size: 12px;
-  color: var(--secondary-text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-:global([data-theme='dark']) .result-room-title,
-:global(html[data-theme='dark']) .result-room-title,
-:global(:root[data-theme='dark']) .result-room-title {
-  color: #9ca3af;
-}
-
-.styled-badge {
-  font-size: 10px;
-  padding: 2px 10px;
-  border-radius: 100px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-:global([data-theme='dark']) .styled-badge,
-:global(html[data-theme='dark']) .styled-badge,
-:global(:root[data-theme='dark']) .styled-badge {
-  color: #e2e8f0;
-}
-
-.live-status-badge.is-live {
-  background: rgba(255, 62, 62, 0.15);
-  color: #ff3e3e;
-  border: 1px solid rgba(255, 62, 62, 0.2);
-}
-
-.platform-tag {
-  background: var(--hover-bg);
-  color: var(--secondary-text);
-  border: 1px solid var(--glass-border);
-}
-
-:global([data-theme='dark']) .platform-tag,
-:global(html[data-theme='dark']) .platform-tag,
-:global(:root[data-theme='dark']) .platform-tag {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.08);
-  color: #cbd5e1;
-}
-
-.platform-tag.douyu { color: #ff7a1c; }
-.platform-tag.douyin { color: #fe2c55; }
-.platform-tag.huya { color: #f5a623; }
-.platform-tag.bilibili { color: #fb7299; }
-
-.search-no-results {
-  padding: 12px;
-  font-size: 13px;
-  color: var(--secondary-text);
-}
-
-:global([data-theme='dark']) .search-no-results,
-:global(html[data-theme='dark']) .search-no-results,
-:global(:root[data-theme='dark']) .search-no-results,
-:global([data-theme='dark']) .search-loading,
-:global(html[data-theme='dark']) .search-loading,
-:global(:root[data-theme='dark']) .search-loading,
-:global([data-theme='dark']) .search-error-message,
-:global(html[data-theme='dark']) .search-error-message,
-:global(:root[data-theme='dark']) .search-error-message {
-  color: #cbd5e1;
-}
-
-:global([data-theme='dark']) .avatar-placeholder,
-:global(html[data-theme='dark']) .avatar-placeholder,
-:global(:root[data-theme='dark']) .avatar-placeholder {
-  background: rgba(255, 255, 255, 0.08);
-  color: #e5e7eb;
-}
-
-.search-fallback-btn {
-  background: transparent;
-  border: none;
-  color: var(--accent);
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex: 1;
-  justify-content: flex-end;
-  position: relative;
-}
-
-.nav-actions > .search-container {
-  margin-left: auto;
-}
-
-.nav-actions--windows {
-  position: static;
-  padding-right: 0;
-}
-
-.nav-actions--windows :deep(.win-controls) {
-  position: static !important;
-}
-
-.nav-icon-btn {
-  padding: 12px;
-  border-radius: var(--radius-md);
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(0, 0, 0, 0.04);
-  transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-:global([data-theme='dark']) .nav-icon-btn {
-  background-color: rgba(255, 255, 255, 0.06);
-}
-
-.nav-icon-btn:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-  transform: scale(1.05);
-}
-
-:global([data-theme='dark']) .nav-icon-btn:hover {
-  background-color: rgba(255, 255, 255, 0.08);
-}
-
-:global([data-theme='dark']) .nav-icon-btn:active {
-  background-color: rgba(255, 255, 255, 0.12);
-}
-
-.nav-icon-btn:active {
-  transform: scale(0.95);
-}
-
-.mini-spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--border-color);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: mini-spin 0.8s linear infinite;
-}
-
-@keyframes mini-spin {
-  to { transform: rotate(360deg); }
-}
-
-.win-controls-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
-  position: absolute;
-  top: -1px;
-  right: -1px;
-}
-
-.win-controls-wrap :deep(.win-controls) {
-  position: static !important;
-}
-
-.github-btn {
-  position: relative;
-  padding-top: 10px;
-  padding-right: 14px;
-}
-
-.github-badge {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  transform: none;
-  padding: 2px 8px 3px;
-  border-radius: 0 0 var(--radius-md) var(--radius-md);
-  font-size: 8px;
-  font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: 0.2px;
-  text-transform: uppercase;
-  color: rgba(17, 24, 39, 0.68);
-  background: rgba(17, 24, 39, 0.08);
-  border: none;
-  box-shadow: none;
-  opacity: 0.95;
-  text-align: center;
-}
-
-:global([data-theme='dark']) .github-badge {
-  color: rgba(226, 232, 240, 0.9);
-  background: rgba(226, 232, 240, 0.08);
-  border-top-color: rgba(226, 232, 240, 0.2);
-  border-bottom-color: rgba(226, 232, 240, 0.2);
-  opacity: 0.9;
-}
-
-</style>

@@ -1,56 +1,56 @@
 <template>
-  <div class="common-live-list-container">
-    <div v-if="isLoading && rooms.length === 0" class="loading-initial-state">
+  <div class="flex h-full w-full flex-col overflow-hidden bg-transparent">
+    <div v-if="isLoading && rooms.length === 0" class="flex flex-1 flex-col items-center justify-center gap-3 p-6 text-[var(--secondary-text)]">
       <LoadingDots />
     </div>
-    <div v-else-if="!isLoading && rooms.length === 0 && hasCategory" class="no-streamers-state">
+    <div v-else-if="!isLoading && rooms.length === 0 && hasCategory" class="flex flex-col items-center justify-center gap-3 p-6 text-[var(--secondary-text)]">
       <p>分类下暂无主播</p>
     </div>
-    <div v-else-if="!hasCategory && !isLoading" class="no-category-state">
+    <div v-else-if="!hasCategory && !isLoading" class="flex flex-col items-center justify-center gap-3 p-6 text-[var(--secondary-text)]">
        <p>请选择一个分类开始浏览</p>
     </div>
 
     <div
       v-else
       ref="scrollComponentRef"
-      class="live-grid-scroll-area"
+      class="flex-1 overflow-y-auto px-3 py-2 [--card-radius:14px] [&::-webkit-scrollbar]:w-[5px] [&::-webkit-scrollbar-thumb]:rounded-[10px] [&::-webkit-scrollbar-thumb]:bg-[var(--glass-border)]"
       @scroll.passive="handleScrollerScroll"
     >
-      <div class="live-grid-common" :style="{ '--items-per-row': itemsPerRow }">
+      <div class="grid gap-3 pb-3 [grid-template-columns:repeat(var(--items-per-row,1),minmax(0,1fr))]" :style="{ '--items-per-row': itemsPerRow }">
         <div 
           v-for="room in rooms" 
           :key="room.room_id" 
-          class="card-shadow-wrapper"
-          :class="{ 'hover-paused': isScrolling }"
+          class="relative transition-transform duration-200 will-change-transform"
+          :class="isScrolling ? 'hover:translate-y-0' : 'hover:-translate-y-1'"
           @click="goToPlayer(room.room_id)"
         >
-            <div class="streamer-card-common">
-              <div class="card-preview-common">
-                <div class="image-wrapper-frame">
+            <div class="group flex cursor-pointer flex-col rounded-[var(--card-radius)] border border-[var(--glass-border)] bg-[var(--hover-bg)] shadow-[var(--shadow-low)] transition-all duration-200 hover:shadow-[var(--shadow-md)]">
+              <div class="relative w-full overflow-hidden rounded-t-[var(--card-radius)] aspect-[16/8.5]">
+                <div class="relative h-full w-full">
                   <SmoothImage 
                     :src="room.room_cover || ''" 
                     :alt="room.title" 
-                    class="preview-image-common" 
+                    class="h-full w-full" 
                   />
-                  <div class="card-overlay-gradient"></div>
-                  <span class="viewers-count-overlay-common">
-                    <svg class="viewers-icon-common" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                  <div class="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.5)_0%,transparent_40%)]"></div>
+                  <span class="absolute right-2.5 top-2 flex items-center gap-1 rounded-full border border-[rgba(255,255,255,0.1)] bg-[rgba(0,0,0,0.4)] px-2 py-0.5 text-[9px] font-bold text-white [backdrop-filter:blur(12px)] [-webkit-backdrop-filter:blur(12px)]">
+                    <svg class="h-3 w-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
                     {{ room.viewer_count_str || '0' }} 
                   </span>
                 </div>
               </div>
-              <div class="card-info-footer-common">
-                <div class="avatar-container">
+              <div class="flex items-center gap-2.5 px-3 py-3.5">
+                <div class="flex-shrink-0">
                   <SmoothImage 
                     :src="room.avatar || ''" 
                     :alt="room.nickname" 
-                    class="streamer-avatar-common" 
+                    class="h-[38px] w-[38px] rounded-full border border-[var(--border-color)] object-cover transition-colors duration-300 group-hover:border-[var(--accent-color)]" 
                   />
                 </div>
-                <div class="text-details-common">
-                  <h3 class="room-title-common" :title="room.title">{{ room.title }}</h3>
-                  <div class="nickname-row">
-                    <span class="nickname-common">{{ room.nickname || '主播' }}</span>
+                <div class="min-w-0 flex-1">
+                  <h3 class="mb-1 truncate text-[14px] font-bold leading-[1.2] text-[var(--primary-text)]" :title="room.title">{{ room.title }}</h3>
+                  <div class="flex min-w-0 items-center">
+                    <span class="block truncate text-xs font-semibold text-[var(--secondary-text)]">{{ room.nickname || '主播' }}</span>
                   </div>
                 </div>
               </div>
@@ -58,7 +58,7 @@
         </div>
       </div>
     </div>
-    <div v-if="isLoadingMore" class="loading-more-indicator">
+    <div v-if="isLoadingMore" class="flex flex-col items-center justify-center gap-3 p-6 text-[var(--secondary-text)]">
       <LoadingDots />
     </div>
   </div>
@@ -283,205 +283,3 @@ const goToPlayer = (roomId: string) => {
 };
 </script>
 
-<style scoped>
-.common-live-list-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
-  box-sizing: border-box;
-  background: transparent;
-  overflow: hidden;
-}
-
-.loading-initial-state,
-.no-streamers-state,
-.no-category-state,
-.loading-more-indicator {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 24px;
-  color: var(--secondary-text);
-  gap: 12px;
-}
-
-.loading-initial-state { flex-grow: 1; }
-
-.live-grid-scroll-area {
-  flex-grow: 1;
-  overflow-y: auto;
-  padding: 6px 8px;
-  --card-radius: 12px;
-}
-
-.live-grid-scroll-area::-webkit-scrollbar {
-  width: 5px;
-}
-
-.live-grid-scroll-area::-webkit-scrollbar-thumb {
-  background: var(--glass-border);
-  border-radius: 10px;
-}
-
-.live-grid-common {
-  display: grid;
-  grid-template-columns: repeat(var(--items-per-row, 1), minmax(0, 1fr));
-  gap: 10px 10px;
-  margin-bottom: 10px;
-}
-
-.card-shadow-wrapper {
-  position: relative;
-  transition: transform 0.2s ease;
-  will-change: transform;
-}
-
-.card-shadow-wrapper:hover {
-  transform: translateY(-4px);
-}
-
-.card-shadow-wrapper.hover-paused,
-.card-shadow-wrapper.hover-paused:hover {
-  transform: none;
-}
-
-.streamer-card-common {
-  background: var(--hover-bg);
-  border-radius: var(--card-radius);
-  display: flex;
-  flex-direction: column;
-  cursor: pointer;
-  border: 1px solid var(--glass-border);
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-  padding: 0;
-}
-
-.streamer-card-common:hover {
-  background: var(--hover-bg);
-}
-
-:global(:root:not([data-theme="light"])) .streamer-card-common {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.12);
-}
-
-.card-preview-common {
-  width: 100%;
-  aspect-ratio: 16 / 8.5;
-  position: relative;
-  border-radius: var(--card-radius) var(--card-radius) 0 0;
-  overflow: hidden;
-}
-
-.image-wrapper-frame {
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
-
-.preview-image-common {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.card-overlay-gradient {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 40%);
-  pointer-events: none;
-}
-
-.viewers-count-overlay-common {
-  position: absolute;
-  top: 8px;
-  right: 10px;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  color: white;
-  padding: 2px 8px;
-  border-radius: 100px;
-  font-size: 9px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.card-info-footer-common {
-  display: flex;
-  padding: 12px 12px 14px;
-  gap: 10px;
-  align-items: center;
-}
-
-.avatar-container {
-  flex-shrink: 0;
-}
-
-.streamer-avatar-common {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1.5px solid var(--border-color);
-  transition: border-color 0.3s ease;
-}
-
-.streamer-card-common:hover .streamer-avatar-common {
-  border-color: var(--accent-color);
-}
-
-.text-details-common {
-  flex: 1;
-  min-width: 0;
-}
-
-.room-title-common {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--primary-text);
-  margin-bottom: 3px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 1.2;
-}
-
-.nickname-common {
-  font-size: 12px;
-  color: var(--secondary-text);
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: block;
-}
-
-.nickname-row {
-  display: flex;
-  align-items: center;
-  min-width: 0;
-}
-
-.loading-spinner, .mini-spinner {
-  width: 36px;
-  height: 36px;
-  border: 4px solid var(--border-color);
-  border-top-color: var(--accent-color);
-  border-radius: 50%;
-  animation: spin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.scroll-sentinel {
-  height: 60px;
-}
-</style>

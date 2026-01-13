@@ -1,7 +1,7 @@
 <template>
-  <div class="streamer-item-content" :class="{ big: big }">
-    <div class="item-content" @click="onClick">
-      <div ref="avatarRef" class="avatar-container" :class="{ big: big }">
+  <div class="group relative flex w-full select-none items-center justify-start overflow-hidden bg-transparent">
+    <div class="flex flex-1 min-w-0 items-center gap-2.5 px-2 py-1" @click="onClick">
+      <div ref="avatarRef" class="relative flex-shrink-0 transition-all duration-300" :class="big ? 'h-10 w-10' : 'h-8 w-8'">
         <img 
           v-if="shouldLoadAvatar"
           :src="avatarSrc"
@@ -10,217 +10,46 @@
           decoding="async"
           fetchpriority="low"
           @error="handleImgError($event, streamer)"
-          class="avatar-image"
+          class="h-full w-full rounded-full border border-[var(--border-color)] bg-[var(--tertiary-bg)] object-cover transition-all duration-300"
         >
-        <div v-else-if="canLoadAvatar" class="avatar-placeholder" aria-hidden="true"></div>
-        <div v-else class="avatar-fallback">{{ streamer.nickname[0] }}</div>
+        <div v-else-if="canLoadAvatar" class="h-full w-full rounded-full border border-[var(--border-color)] bg-[var(--tertiary-bg)]" aria-hidden="true"></div>
+        <div v-else class="flex h-full w-full items-center justify-center rounded-full bg-[var(--tertiary-bg)] text-[14px] font-bold text-[var(--primary-text)]">{{ streamer.nickname[0] }}</div>
       </div>
       
-      <div class="streamer-details">
-        <div class="primary-row">
-          <span class="nickname" :title="streamer.nickname">{{ streamer.nickname }}</span>
+      <div class="flex min-w-0 flex-1 flex-col">
+        <div class="flex items-center">
+          <span class="truncate text-[12.5px] font-bold text-[var(--text-primary)] transition-colors duration-200" :title="streamer.nickname">{{ streamer.nickname }}</span>
           <!-- 移除左侧平台名，改为右侧胶囊与状态点集成 -->
         </div>
-        <div class="secondary-row" :title="streamer.roomTitle">
+        <div class="truncate text-[11.5px] font-medium text-[var(--text-secondary)] opacity-90 transition-all duration-200 group-hover:text-[var(--text-primary)] group-hover:opacity-100" :title="streamer.roomTitle">
           {{ streamer.roomTitle || '暂无直播标题' }}
         </div>
       </div>
     </div>
 
-    <div class="status-container">
-      <div v-if="showPlatform" class="platform-badge">
-        <span class="live-indicator" :class="getLiveIndicatorClass(streamer)"></span>
-        <span class="badge-text">{{ platformLabel(streamer.platform) }}</span>
+    <div class="ml-auto flex flex-shrink-0 items-center pr-3.5">
+      <div v-if="showPlatform" class="flex items-center gap-1.5 rounded-full border border-[var(--border-color)] bg-[var(--tertiary-bg)] px-2.5 py-0.5 text-[10px] font-extrabold text-[var(--primary-text)]">
+        <span
+          class="h-2 w-2 rounded-full bg-[var(--dim-text)] transition-all duration-300"
+          :class="{
+            'bg-[#10b981]': getLiveIndicatorClass(streamer) === 'is-live',
+            'bg-[#f59e0b] shadow-[0_0_8px_#f59e0b]': getLiveIndicatorClass(streamer) === 'is-replay',
+            'bg-[var(--border-color)]': getLiveIndicatorClass(streamer) === 'is-offline'
+          }"
+        ></span>
+        <span>{{ platformLabel(streamer.platform) }}</span>
       </div>
-      <div v-else class="live-indicator" :class="getLiveIndicatorClass(streamer)"></div>
+      <div v-else class="h-2 w-2 rounded-full bg-[var(--dim-text)] transition-all duration-300"
+        :class="{
+          'bg-[#10b981]': getLiveIndicatorClass(streamer) === 'is-live',
+          'bg-[#f59e0b] shadow-[0_0_8px_#f59e0b]': getLiveIndicatorClass(streamer) === 'is-replay',
+          'bg-[var(--border-color)]': getLiveIndicatorClass(streamer) === 'is-offline'
+        }"
+      ></div>
     </div>
   </div>
 </template>
 
-<style scoped>
-.streamer-item-content {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  width: 100%;
-  user-select: none;
-  transition: background-color 0.15s ease;
-  border-radius: 0;
-  position: relative;
-  overflow: hidden;
-  border: none;
-  background: transparent;
-  margin-bottom: 0;
-}
-
-.streamer-item-content:hover {
-  background: transparent;
-  border-color: transparent;
-  transform: none;
-  z-index: 1;
-}
-
-.item-content {
-  display: flex;
-  align-items: center;
-  padding: 4px 8.5px;
-  gap: 10px;
-  flex: 1;
-  min-width: 0;
-  z-index: 2;
-}
-
-.avatar-container {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  position: relative;
-  flex: 0 0 auto;
-  transition: all 0.3s ease;
-}
-
-.avatar-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 1px solid var(--border-color);
-  background: var(--tertiary-bg);
-  transition: all 0.3s ease;
-}
-
-.avatar-container.is-live::before {
-  content: '';
-  position: absolute;
-  inset: -3px;
-  border-radius: 50%;
-  background: var(--accent-gradient);
-  padding: 2px;
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  animation: rotate-border 3s linear infinite;
-}
-
-.avatar-container.is-live .avatar-image {
-  border-color: #fff;
-  box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
-}
-
-@keyframes rotate-border {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.avatar-fallback {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--primary-text);
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--tertiary-bg);
-  border-radius: 50%;
-}
-
-.avatar-placeholder {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background: var(--tertiary-bg);
-  border: 1px solid var(--border-color);
-}
-
-.streamer-details {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 0;
-}
-
-.nickname {
-  font-weight: 700;
-  color: rgba(29, 29, 31, 0.92);
-  font-size: 12.5px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  letter-spacing: 0;
-  transition: color 0.2s ease;
-}
-
-:root[data-theme="dark"] .nickname {
-  color: rgba(229, 231, 235, 0.92);
-}
-
-.secondary-row {
-  font-size: 11.5px;
-  color: var(--text-secondary);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-weight: 500;
-  margin-top: 3px;
-  opacity: 0.9;
-  transition: color 0.2s ease, opacity 0.2s ease;
-}
-
-.streamer-item-content:hover .nickname {
-  color: var(--text-primary);
-}
-
-.streamer-item-content:hover .secondary-row {
-  color: rgba(29, 29, 31, 0.9);
-  opacity: 1;
-  text-shadow: 0 0 6px rgba(255, 255, 255, 0.35);
-}
-
-:root[data-theme="dark"] .streamer-item-content:hover .secondary-row {
-  color: rgba(229, 231, 235, 0.95);
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.25);
-}
-
-.status-container {
-  display: flex;
-  align-items: center;
-  margin-left: auto;
-  flex: 0 0 auto;
-  padding-right: 14px;
-  z-index: 2;
-}
-
-.platform-badge {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  border-radius: 20px;
-  padding: 3px 10px;
-  background: var(--tertiary-bg);
-  color: var(--primary-text);
-  font-size: 10px;
-  font-weight: 800;
-  border: 1px solid var(--border-color);
-}
-
-.live-indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--dim-text);
-  transition: all 0.3s ease;
-}
-
-.live-indicator.is-live { 
-  background: #10b981; 
-}
-
-.live-indicator.is-replay { background: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
-.live-indicator.is-offline { background: var(--border-color); }
-:root[data-theme="light"] .live-indicator.is-offline { background: #9ca3af; }
-</style>
 
 <script setup lang="ts">
 import { Platform } from '../../platforms/common/types';

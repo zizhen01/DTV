@@ -1,16 +1,16 @@
 <template>
-  <div class="bili-home-view-layout">
+  <div class="flex h-full flex-col overflow-hidden bg-transparent">
     <CommonCategory 
       :categories-data="biliCategoriesData as any"
       @category-selected="onCategorySelected"
-      class="bili-category-section"
+      class="z-10 flex-shrink-0 bg-transparent [backdrop-filter:none]"
     />
     <CommonStreamerList 
       :selected-category="currentSelectedCategory"
       :categories-data="biliCategoriesData as any"
       platformName="bilibili"
       playerRouteName="bilibiliPlayer"
-      class="bili-streamer-list-section"
+      class="flex-1 overflow-hidden bg-transparent"
     />
   </div>
 </template>
@@ -32,25 +32,3 @@ const onCategorySelected = (categoryEvent: CategorySelectedEvent) => {
 }
 </script>
 
-<style scoped>
-.bili-home-view-layout {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background: transparent;
-  overflow: hidden;
-}
-
-.bili-category-section {
-  flex-shrink: 0;
-  background: transparent;
-  backdrop-filter: none;
-  z-index: 10;
-}
-
-.bili-streamer-list-section {
-  flex: 1;
-  overflow: hidden;
-  background: transparent;
-}
-</style>

@@ -1,9 +1,9 @@
 <template>
-  <div class="category-list" :class="{ 'is-expanded': isExpanded }" ref="categoryListRootRef">
+  <div class="flex w-full flex-col overflow-hidden bg-transparent text-[var(--primary-text)] transition-none will-change-[max-height] [transform:translateZ(0)] max-h-[280px] min-h-[200px]" :class="{ 'max-h-[500px]': isExpanded }" ref="categoryListRootRef">
     <!-- 加载状态显示 -->
-    <div v-if="isLoading && !hasError" class="loading-state">
-      <div class="loading-spinner"></div>
-      <div class="loading-text">正在加载分类数据...</div>
+    <div v-if="isLoading && !hasError" class="flex h-full flex-col items-center justify-center px-5 py-10 text-center">
+      <div class="mb-4 h-[30px] w-[30px] rounded-full border-[3px] border-[var(--border-color)] border-t-[var(--accent-color)]"></div>
+      <div class="text-sm text-[var(--secondary-text)]">正在加载分类数据...</div>
     </div>
     
     <!-- 正常显示分类内容 -->
@@ -31,9 +31,9 @@
     </template>
     
     <!-- 错误状态显示 -->
-    <div v-if="hasError" class="error-state">
-      <div class="error-message">加载分类失败，请重试</div>
-      <button @click="reloadCategories" class="reload-btn">重新加载</button>
+    <div v-if="hasError" class="flex h-full flex-col items-center justify-center px-5 py-10 text-center text-[var(--secondary-text)]">
+      <div class="mb-4">加载分类失败，请重试</div>
+      <button @click="reloadCategories" class="rounded-[var(--radius-sm)] bg-[var(--accent-color)] px-5 py-2 text-[var(--accent-text)] font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:opacity-90 hover:shadow-[0_4px_12px_rgba(251,114,153,0.2)]">重新加载</button>
     </div>
   </div>
 </template>
@@ -284,83 +284,3 @@ defineExpose({
 })
 </script>
 
-<style scoped>
-.category-list {
-  display: flex;
-  flex-direction: column;
-  background: transparent;
-  color: var(--primary-text);
-  max-height: 280px;
-  min-height: 200px;
-  overflow: hidden;
-  transition: none;
-  will-change: max-height;
-  transform: translateZ(0);
-  width: 100%;
-}
-
-.category-list.is-expanded {
-  max-height: 500px;
-}
-
-.loading-state {
-  padding: 40px 20px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-}
-
-.loading-spinner {
-  width: 30px;
-  height: 30px;
-  border: 3px solid var(--border-color);
-  border-top-color: var(--accent-color);
-  border-radius: 50%;
-  animation: none;
-  margin-bottom: 15px;
-}
-
-.loading-text {
-  font-size: 14px;
-  color: var(--secondary-text);
-}
-
-.error-state {
-  padding: 40px 20px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: var(--secondary-text);
-}
-
-.error-message {
-  margin-bottom: 15px;
-}
-
-.reload-btn {
-  padding: 8px 20px;
-  border: none;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  background: var(--accent-color);
-  color: var(--accent-text);
-  font-weight: 600;
-  transition: all 0.2s ease;
-}
-
-.reload-btn:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(251, 114, 153, 0.2);
-}
-
-.cate2-content {
-  transition: none;
-}
-</style>

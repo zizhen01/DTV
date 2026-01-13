@@ -1,42 +1,42 @@
 <template>
-  <div class="win-controls" data-tauri-drag-region="none">
+  <div class="flex h-8 w-[138px] items-stretch overflow-hidden bg-transparent shadow-none [-webkit-app-region:no-drag]" data-tauri-drag-region="none">
     <button
       type="button"
-      class="win-control win-control--minimize"
+      class="flex h-8 w-[46px] items-center justify-center bg-transparent text-[var(--text-primary)] transition-colors duration-150 [-webkit-app-region:no-drag] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[rgba(88,142,255,0.8)] hover:bg-[var(--hover-bg)] active:bg-[color-mix(in_srgb,var(--text-primary)_18%,transparent)]"
       @mousedown="preventWindowDrag"
       @click="handleMinimize"
       aria-label="最小化窗口"
       data-tauri-drag-region="none"
     >
-      <svg class="win-icon" viewBox="0 0 12 12" aria-hidden="true">
+      <svg class="h-[14px] w-[14px] fill-none stroke-current stroke-[1.15] [stroke-linecap:round] [stroke-linejoin:round] [vector-effect:non-scaling-stroke] [shape-rendering:geometricPrecision]" viewBox="0 0 12 12" aria-hidden="true">
         <path d="M2 6h8" />
       </svg>
     </button>
     <button
       type="button"
-      class="win-control win-control--maximize"
+      class="flex h-8 w-[46px] items-center justify-center bg-transparent text-[var(--text-primary)] transition-colors duration-150 [-webkit-app-region:no-drag] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[rgba(88,142,255,0.8)] hover:bg-[var(--hover-bg)] active:bg-[color-mix(in_srgb,var(--text-primary)_18%,transparent)]"
       @mousedown="preventWindowDrag"
       @click="handleMaximize"
       :aria-label="isMaximized ? '还原窗口' : '最大化窗口'"
       data-tauri-drag-region="none"
     >
-      <svg v-if="!isMaximized" class="win-icon" viewBox="0 0 12 12" aria-hidden="true">
+      <svg v-if="!isMaximized" class="h-[14px] w-[14px] fill-none stroke-current stroke-[1.15] [stroke-linecap:round] [stroke-linejoin:round] [vector-effect:non-scaling-stroke] [shape-rendering:geometricPrecision]" viewBox="0 0 12 12" aria-hidden="true">
         <rect x="2" y="2" width="8" height="8" rx="1" ry="1" />
       </svg>
-      <svg v-else class="win-icon is-restore" viewBox="0 0 12 12" aria-hidden="true">
+      <svg v-else class="h-[14px] w-[14px] fill-none stroke-current stroke-[1.15] [stroke-linecap:round] [stroke-linejoin:round] [vector-effect:non-scaling-stroke] [shape-rendering:geometricPrecision]" viewBox="0 0 12 12" aria-hidden="true">
         <path d="M4 2h6v6h-2" />
         <rect x="2" y="4" width="6" height="6" rx="1" ry="1" />
       </svg>
     </button>
     <button
       type="button"
-      class="win-control win-control--close"
+      class="flex h-8 w-[46px] items-center justify-center bg-transparent text-[var(--text-primary)] transition-colors duration-150 [-webkit-app-region:no-drag] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[rgba(88,142,255,0.8)] hover:bg-[#e81123] hover:text-white active:bg-[#c50f1f] active:text-white"
       @mousedown="preventWindowDrag"
       @click="handleClose"
       aria-label="关闭窗口"
       data-tauri-drag-region="none"
     >
-      <svg class="win-icon" viewBox="0 0 12 12" aria-hidden="true">
+      <svg class="h-[15px] w-[15px] fill-none stroke-current stroke-[1.1] [stroke-linecap:square] [stroke-linejoin:round] [vector-effect:non-scaling-stroke] [shape-rendering:geometricPrecision]" viewBox="0 0 12 12" aria-hidden="true">
         <path d="M3.25 3.25l5.5 5.5M8.75 3.25l-5.5 5.5" />
       </svg>
     </button>
@@ -124,106 +124,3 @@ onBeforeUnmount(async () => {
 });
 </script>
 
-<style scoped>
-.win-controls {
-  display: flex;
-  align-items: stretch;
-  background-color: transparent;
-  border-radius: 0;
-  overflow: hidden;
-  height: 32px;
-  width: 138px;
-  box-shadow: none;
-  -webkit-app-region: no-drag;
-}
-
-.win-control {
-  width: 46px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.9);
-  cursor: pointer;
-  transition: background-color 0.12s ease, color 0.12s ease;
-  -webkit-app-region: no-drag;
-}
-
-.win-control:focus-visible {
-  outline: 2px solid rgba(88, 142, 255, 0.8);
-  outline-offset: -2px;
-}
-
-.win-control:hover {
-  background-color: rgba(255, 255, 255, 0.12);
-}
-
-.win-control:active {
-  background-color: rgba(255, 255, 255, 0.18);
-}
-
-.win-control--close {
-  color: rgba(255, 255, 255, 0.92);
-}
-
-.win-control--close:hover {
-  background-color: #e81123;
-  color: #ffffff;
-}
-
-.win-control--close:active {
-  background-color: #c50f1f;
-  color: #ffffff;
-}
-
-.win-icon {
-  width: 14px;
-  height: 14px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.15;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  vector-effect: non-scaling-stroke;
-  shape-rendering: geometricPrecision;
-}
-
-.win-control--close .win-icon {
-  width: 15px;
-  height: 15px;
-  stroke-linecap: square;
-  stroke-width: 1.1;
-}
-
-.win-icon.is-restore path:first-of-type {
-  fill: none;
-}
-
-:global(:root[data-theme="light"] .win-controls .win-control) {
-  color: #111318;
-}
-
-:global(:root[data-theme="light"] .win-controls .win-control:hover) {
-  background-color: rgba(17, 19, 24, 0.08);
-}
-
-:global(:root[data-theme="light"] .win-controls .win-control:active) {
-  background-color: rgba(17, 19, 24, 0.16);
-}
-
-:global(:root[data-theme="light"] .win-controls .win-control--close) {
-  color: #111318;
-}
-
-:global(:root[data-theme="light"] .win-controls .win-control--close:hover) {
-  background-color: #e81123;
-  color: #ffffff;
-}
-
-:global(:root[data-theme="light"] .win-controls .win-control--close:active) {
-  background-color: #c50f1f;
-  color: #ffffff;
-}
-</style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="player-view">
+  <div class="flex h-full w-full flex-1 flex-col items-stretch bg-transparent text-white">
     <MainPlayer
       :key="playerKey"
       :room-id="props.roomId"
@@ -79,16 +79,3 @@ const handlePlayerReload = () => {
 
 </script>
 
-<style scoped>
-.player-view {
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  height: 100%;
-  min-height: 0;
-  width: 100%;
-  background-color: transparent;
-  color: white;
-  align-items: stretch;
-}
-</style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="player-view">
+  <div class="flex h-full w-full flex-1 flex-col items-stretch justify-center bg-transparent text-center text-[var(--primary-text)]">
     <MainPlayer 
       v-if="roomId && !isLoadingDetails"
       :room-id="roomId" 
@@ -16,16 +16,16 @@
       @fullscreen-change="handlePlayerFullscreenChange"
       @request-refresh-details="handleRefreshDetails"
       @request-player-reload="handlePlayerReload" />
-    <div v-else-if="roomId && isLoadingDetails" class="loading-details loading-player">
+    <div v-else-if="roomId && isLoadingDetails" class="flex flex-1 items-center justify-center">
       <LoadingDots />
     </div>
-    <div v-else-if="detailsError" class="invalid-room">
-      <p>错误: {{ detailsError }}</p>
-      <button @click="router.back()">返回</button>
+    <div v-else-if="detailsError" class="flex flex-1 flex-col items-center justify-center gap-3">
+      <p class="px-5 text-[1.1em]">错误: {{ detailsError }}</p>
+      <button class="mt-2 rounded-md bg-[var(--accent)] px-5 py-2.5 text-base text-white" @click="router.back()">返回</button>
     </div>
-    <div v-else class="invalid-room">
-      <p>无效的斗鱼房间ID。</p>
-      <button @click="router.back()">返回</button>
+    <div v-else class="flex flex-1 flex-col items-center justify-center gap-3">
+      <p class="px-5 text-[1.1em]">无效的斗鱼房间ID。</p>
+      <button class="mt-2 rounded-md bg-[var(--accent)] px-5 py-2.5 text-base text-white" @click="router.back()">返回</button>
     </div>
   </div>
 </template>
@@ -185,47 +185,3 @@ onMounted(() => {
 
 </script>
 
-<style scoped>
-.player-view {
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  height: 100%;
-  min-height: 0;
-  width: 100%;
-  background-color: transparent;
-  color: white;
-  justify-content: center;
-  align-items: stretch;
-  text-align: center;
-}
-.invalid-room p {
-  padding: 10px 20px;
-  font-size: 1.1em;
-}
-.invalid-room button {
-  padding: 10px 20px;
-  font-size: 1em;
-  cursor: pointer;
-  background-color: #5c16c5;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  margin-top: 15px;
-}
-
-/* Day Mode Styles */
-:root[data-theme="light"] .player-view {
-  background-color: transparent;
-  color: var(--main-text-primary-light, #212529);
-}
-
-:root[data-theme="light"] .invalid-room p {
-  color: var(--main-text-primary-light, #212529);
-}
-
-:root[data-theme="light"] .invalid-room button {
-  background-color: var(--primary-color-light, #007bff);
-  color: white; /* Assuming button text remains white for contrast on primary color */
-}
-</style> 
