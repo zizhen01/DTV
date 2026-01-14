@@ -10,7 +10,6 @@
   </a>
 </p>
 
-
 ## 说明
 
 1. 本项目基于 Tauri 2.0 开发，体积小，占用率低，实测可以在10年前的双核、4GB内存的电脑上流畅运行
@@ -19,12 +18,12 @@
 
 ### 支持平台
 
-| 平台 | 直播流 | 弹幕 | 搜索 |
-| --- | --- | --- | --- |
-| 斗鱼 | ✅ | ✅ | ✅ |
-| 虎牙 | ✅ | ✅ | ✅ |
-| bilibili | ✅ | ✅ | ✅ |
-| 抖音 | ✅ | ✅ | 仅房间号 |
+| 平台     | 直播流 | 弹幕 | 搜索     |
+| -------- | ------ | ---- | -------- |
+| 斗鱼     | ✅     | ✅   | ✅       |
+| 虎牙     | ✅     | ✅   | ✅       |
+| bilibili | ✅     | ✅   | ✅       |
+| 抖音     | ✅     | ✅   | 仅房间号 |
 
 ## 功能
 
@@ -36,13 +35,10 @@
 
 ## 软件截图
 
-
-
 <div align="center">
   <p>夜间模式</p>
   <img src="images/iShot_dark.webp" alt="mac-夜间模式" style="width: 100%; max-width: 800px; display: block; margin-left: auto; margin-right: auto;">
 </div>
-
 
 <br>
 
@@ -59,9 +55,6 @@
 </div>
 
 <br>
-
-
-
 
 ## 安装方式
 
@@ -89,9 +82,9 @@ pnpm tauri build      # 构建当前系统的安装包
 pnpm tauri build --target aarch64-apple-darwin
 ```
 
-##  参考
+## 参考
 
-- 斗鱼直播流获取参考了 [@wbt5/real-url](https://github.com/wbt5/real-url)  
+- 斗鱼直播流获取参考了 [@wbt5/real-url](https://github.com/wbt5/real-url)
 - 抖音弹幕参考了[@saermart/DouyinLiveWebFetcher](https://github.com/saermart/DouyinLiveWebFetcher)
 - 虎牙参考了https://github.com/liuchuancong/pure_live https://github.com/ihmily/DouyinLiveRecorder
 - b站弹幕参考了https://github.com/xfgryujk/blivedm

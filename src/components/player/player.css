@@ -220,7 +220,7 @@
   background: #000;
 }
 
-.video-player>.xgplayer {
+.video-player > .xgplayer {
   width: 100%;
   height: 100%;
   position: absolute;
@@ -251,7 +251,15 @@
     -1px 1px 0 var(--danmu-stroke-color, #444444),
     1px -1px 0 var(--danmu-stroke-color, #444444),
     -1px -1px 0 var(--danmu-stroke-color, #444444);
-  font-family: var(--danmu-font-family, "OPPO Sans", "Microsoft YaHei", "PingFang SC", "Helvetica Neue", Arial, sans-serif);
+  font-family: var(
+    --danmu-font-family,
+    "OPPO Sans",
+    "Microsoft YaHei",
+    "PingFang SC",
+    "Helvetica Neue",
+    Arial,
+    sans-serif
+  );
 }
 
 @keyframes player-control-spin {
@@ -331,7 +339,7 @@
 
 .xgplayer-quality-control.is-switching::after,
 .xgplayer-line-control.is-switching::after {
-  content: '';
+  content: "";
   width: 12px;
   height: 12px;
   margin-left: 4px;
@@ -393,7 +401,10 @@
   background: rgba(255, 255, 255, 0.9);
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
   transform: translateX(1px);
-  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    background 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .xgplayer-danmu-toggle:not(.is-off) .danmu-toggle-switch .switch-track {
@@ -449,7 +460,9 @@
   background: #ffffff;
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
   margin-top: -5px;
 }
 
@@ -460,7 +473,9 @@
   background: #ffffff;
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
   transform: translateY(-2px);
 }
 
@@ -517,7 +532,9 @@
   transform: translateY(8px);
   pointer-events: none;
   visibility: hidden;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
   will-change: opacity, transform;
 }
 
@@ -541,7 +558,9 @@
   justify-content: space-between;
   gap: 12px;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
 .xgplayer-quality-item .quality-name {
@@ -592,7 +611,9 @@
   transform: translateY(8px);
   pointer-events: none;
   visibility: hidden;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
   will-change: opacity, transform;
 }
 
@@ -677,7 +698,8 @@
   transition: background 0.2s ease;
 }
 
-.xgplayer-danmu-settings-panel input[type="range"]::-webkit-slider-runnable-track {
+.xgplayer-danmu-settings-panel
+  input[type="range"]::-webkit-slider-runnable-track {
   height: 4px;
   border-radius: 999px;
   background: transparent;
@@ -717,26 +739,6 @@
   transform: scale(1.15);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* 主播信息 */
 .streamer-info {
   box-shadow: none;
@@ -757,7 +759,10 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-left: none;
   box-shadow: none;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    opacity 0.3s ease;
 }
 
 .danmu-panel:hover {
@@ -778,12 +783,12 @@ html.web-fs-active .danmu-panel {
 }
 
 /* 处理网页全屏模式 - 更强的选择器 (保留作为备份方案) */
-:deep(.xgplayer-is-fullscreen)~.danmu-panel,
-:deep(.xgplayer-is-cssfullscreen)~.danmu-panel,
-:deep(.xgplayer.xgplayer-is-fullscreen)~.danmu-panel,
-:deep(.xgplayer.xgplayer-is-cssfullscreen)~.danmu-panel,
-:deep(.xgplayer-is-fullscreen)+.danmu-panel,
-:deep(.xgplayer-is-cssfullscreen)+.danmu-panel,
+:deep(.xgplayer-is-fullscreen) ~ .danmu-panel,
+:deep(.xgplayer-is-cssfullscreen) ~ .danmu-panel,
+:deep(.xgplayer.xgplayer-is-fullscreen) ~ .danmu-panel,
+:deep(.xgplayer.xgplayer-is-cssfullscreen) ~ .danmu-panel,
+:deep(.xgplayer-is-fullscreen) + .danmu-panel,
+:deep(.xgplayer-is-cssfullscreen) + .danmu-panel,
 .player-layout:has(:deep(.xgplayer-is-fullscreen)) .danmu-panel,
 .player-layout:has(:deep(.xgplayer-is-cssfullscreen)) .danmu-panel {
   display: none !important;
@@ -792,12 +797,12 @@ html.web-fs-active .danmu-panel {
 }
 
 /* Windows/WebView 兼容：隐藏弹幕面板 */
-.xgplayer-is-fullscreen~.danmu-panel,
-.xgplayer-is-cssfullscreen~.danmu-panel,
-.xgplayer.xgplayer-is-fullscreen~.danmu-panel,
-.xgplayer.xgplayer-is-cssfullscreen~.danmu-panel,
-.xgplayer-is-fullscreen+.danmu-panel,
-.xgplayer-is-cssfullscreen+.danmu-panel {
+.xgplayer-is-fullscreen ~ .danmu-panel,
+.xgplayer-is-cssfullscreen ~ .danmu-panel,
+.xgplayer.xgplayer-is-fullscreen ~ .danmu-panel,
+.xgplayer.xgplayer-is-cssfullscreen ~ .danmu-panel,
+.xgplayer-is-fullscreen + .danmu-panel,
+.xgplayer-is-cssfullscreen + .danmu-panel {
   display: none !important;
   visibility: hidden !important;
   opacity: 0 !important;
@@ -865,7 +870,9 @@ html.web-fs-active .danmu-panel {
 }
 
 .player-page.web-fs .player-layout .main-content,
-.player-page:has(:deep(.xgplayer-is-cssfullscreen)) .player-layout .main-content,
+.player-page:has(:deep(.xgplayer-is-cssfullscreen))
+  .player-layout
+  .main-content,
 .player-page:has(:deep(.xgplayer-is-fullscreen)) .player-layout .main-content {
   padding-left: 0 !important;
 }
@@ -1016,11 +1023,15 @@ html.web-fs-active .danmu-panel {
 }
 
 .loading-player .spinner::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: -12px;
   border-radius: 50%;
-  background: radial-gradient(circle, var(--loader-glow) 0%, rgba(0, 0, 0, 0) 70%);
+  background: radial-gradient(
+    circle,
+    var(--loader-glow) 0%,
+    rgba(0, 0, 0, 0) 70%
+  );
   opacity: 0.35;
   filter: blur(16px);
   animation: spinner-ambient 2s ease-in-out infinite;
@@ -1035,21 +1046,32 @@ html.web-fs-active .danmu-panel {
 }
 
 .loading-player .spinner-track::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: calc(var(--loader-stroke) * 1.9);
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 45%, transparent 100%);
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.02) 45%,
+    transparent 100%
+  );
 }
 
 .loading-player .spinner-head {
   position: absolute;
   inset: calc(var(--loader-stroke) * -0.5);
   border-radius: 50%;
-  background: conic-gradient(var(--loader-accent) 0deg,
-      var(--loader-accent) 140deg,
-      rgba(255, 255, 255, 0) 140deg);
-  mask: radial-gradient(farthest-side, rgba(0, 0, 0, 0) calc(100% - var(--loader-stroke) * 2.25), #000 calc(100% - var(--loader-stroke) * 1.9));
+  background: conic-gradient(
+    var(--loader-accent) 0deg,
+    var(--loader-accent) 140deg,
+    rgba(255, 255, 255, 0) 140deg
+  );
+  mask: radial-gradient(
+    farthest-side,
+    rgba(0, 0, 0, 0) calc(100% - var(--loader-stroke) * 2.25),
+    #000 calc(100% - var(--loader-stroke) * 1.9)
+  );
   animation: spinner-spin 0.9s linear infinite;
 }
 
@@ -1061,7 +1083,7 @@ html.web-fs-active .danmu-panel {
 }
 
 .loading-player .spinner-dot::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0%;
   left: 50%;
@@ -1075,7 +1097,7 @@ html.web-fs-active .danmu-panel {
 }
 
 .loading-player .spinner-dot::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 50%;
@@ -1083,7 +1105,11 @@ html.web-fs-active .danmu-panel {
   height: 3px;
   border-radius: 999px;
   transform: translate(-50%, -50%);
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0));
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.7),
+    rgba(255, 255, 255, 0)
+  );
   opacity: 0.6;
   filter: blur(0.5px);
 }
@@ -1099,7 +1125,6 @@ html.web-fs-active .danmu-panel {
 }
 
 @keyframes spinner-dot-bloom {
-
   0%,
   100% {
     transform: translate(-50%, -55%) scale(0.94);
@@ -1113,7 +1138,6 @@ html.web-fs-active .danmu-panel {
 }
 
 @keyframes spinner-ambient {
-
   0%,
   100% {
     opacity: 0.35;
@@ -1147,7 +1171,7 @@ html.web-fs-active .danmu-panel {
   margin-top: 25px;
   /* Increased margin-top slightly */
   padding: 12px 28px;
-  background-color: #FB7299;
+  background-color: #fb7299;
   color: white;
   border: none;
   border-radius: 10px;
@@ -1390,7 +1414,9 @@ html.web-fs-active .danmu-panel {
 }
 
 :root[data-theme="light"] .loading-player .spinner-dot::before {
-  box-shadow: 0 4px 12px rgba(70, 80, 120, 0.22), 0 0 10px var(--loader-glow);
+  box-shadow:
+    0 4px 12px rgba(70, 80, 120, 0.22),
+    0 0 10px var(--loader-glow);
 }
 
 :root[data-theme="light"] .empty-player h3,

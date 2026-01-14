@@ -1,14 +1,14 @@
-export type SupportedPlatform = 'douyu' | 'bilibili' | 'douyin' | 'huya'; // Add other platforms as needed 
+export type SupportedPlatform = "douyu" | "bilibili" | "douyin" | "huya"; // Add other platforms as needed
 export type UiPlatform = SupportedPlatform;
- 
+
 export enum Platform {
-  DOUYU = 'DOUYU',
-  DOUYIN = 'DOUYIN',
-  HUYA = 'HUYA',
-  BILIBILI = 'BILIBILI'
+  DOUYU = "DOUYU",
+  DOUYIN = "DOUYIN",
+  HUYA = "HUYA",
+  BILIBILI = "BILIBILI",
 }
 
-export type LiveStatus = 'LIVE' | 'REPLAY' | 'OFFLINE' | 'UNKNOWN';
+export type LiveStatus = "LIVE" | "REPLAY" | "OFFLINE" | "UNKNOWN";
 
 export interface BaseStreamer {
   platform: Platform;
@@ -32,6 +32,7 @@ export interface LiveStreamer extends BaseStreamer {
 export interface FollowedStreamer extends BaseStreamer {
   roomTitle?: string; // May not always be available or up-to-date for offline followed streamers
   followedAt?: number;
+  lastViewedAt?: number;
   currentRoomId?: string; // 最近解析到的真实房间ID（如抖音 room_id）
 }
 
@@ -64,20 +65,20 @@ export interface StreamerDetails {
 export interface CommonDanmakuMessage {
   id?: string; // Optional unique ID for the message for keying in lists
   platform: SupportedPlatform;
-  type: 'chat' | 'gift' | 'system' | 'enter' | 'other'; // General categories
+  type: "chat" | "gift" | "system" | "enter" | "other"; // General categories
   sender: {
     uid?: string;
     nickname: string;
     level?: number | string; // User level
-    badgeName?: string;    // Fan badge name
-    badgeLevel?: number;   // Fan badge level
+    badgeName?: string; // Fan badge name
+    badgeLevel?: number; // Fan badge level
     // Add other sender details if common across platforms
   };
   content: string; // The main text of the danmaku
   timestamp?: number; // Optional: when the message was sent/received
   color?: string; // Danmaku text color, if specified
   // Platform-specific raw data can be included if needed for advanced use cases
-  rawData?: any; 
+  rawData?: any;
 }
 
 export interface StreamQuality {
@@ -90,7 +91,7 @@ export interface StreamPlaybackDetails {
   platform: SupportedPlatform;
   roomId: string;
   primaryUrl: string; // The main URL to play (e.g., highest quality or default)
-  format?: 'm3u8' | 'flv' | 'mp4' | 'other'; // Optional: format of the primaryUrl
+  format?: "m3u8" | "flv" | "mp4" | "other"; // Optional: format of the primaryUrl
   qualityOptions?: StreamQuality[];
 }
 
@@ -122,7 +123,7 @@ export interface StreamVariant {
 export interface LiveStreamInfo {
   title?: string | null;
   anchor_name?: string | null; // Douyin uses this
-  avatar?: string | null;      // Douyin uses this
+  avatar?: string | null; // Douyin uses this
   stream_url?: string | null;
   status?: number | null; // Add status field, consistent with Rust struct
   error_message?: string | null;

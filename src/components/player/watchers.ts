@@ -1,10 +1,17 @@
-import { watch, type ComputedRef, type Ref, type ShallowRef } from 'vue';
+import { watch, type ComputedRef, type Ref, type ShallowRef } from "vue";
 
-import { sanitizeDanmuArea, sanitizeDanmuOpacity } from './constants';
-import type { DanmuUserSettings } from './constants';
-import type { DanmuSettingsControl, DanmuToggleControl, LineControl, QualityControl, RefreshControl, LineOption } from './plugins';
-import { Platform as StreamingPlatform } from '../../platforms/common/types';
-import type { DanmakuMessage, DanmuOverlayInstance } from './types';
+import { sanitizeDanmuArea, sanitizeDanmuOpacity } from "./constants";
+import type { DanmuUserSettings } from "./constants";
+import type {
+  DanmuSettingsControl,
+  DanmuToggleControl,
+  LineControl,
+  QualityControl,
+  RefreshControl,
+  LineOption,
+} from "./plugins";
+import { Platform as StreamingPlatform } from "../../platforms/common/types";
+import type { DanmakuMessage, DanmuOverlayInstance } from "./types";
 
 export interface PlayerProps {
   roomId: string | null;
@@ -29,7 +36,10 @@ export interface PlayerWatcherContext {
   lineOptions: ComputedRef<LineOption[]>;
   currentLine: Ref<string | null>;
   getLineLabel: (key?: string | null) => string;
-  persistLinePreference: (platform?: StreamingPlatform | null, lineKey?: string | null) => void;
+  persistLinePreference: (
+    platform?: StreamingPlatform | null,
+    lineKey?: string | null,
+  ) => void;
   props: PlayerProps;
   resolveStoredLine: (platform?: StreamingPlatform | null) => string | null;
   isDanmuEnabled: Ref<boolean>;
@@ -60,7 +70,10 @@ export interface PlayerWatcherContext {
     oldRoomIdForCleanup?: string | null,
     oldPlatformForCleanup?: StreamingPlatform | null,
   ) => Promise<void>;
-  stopCurrentDanmakuListener: (platform?: StreamingPlatform, roomId?: string | null | undefined) => Promise<void>;
+  stopCurrentDanmakuListener: (
+    platform?: StreamingPlatform,
+    roomId?: string | null | undefined,
+  ) => Promise<void>;
   stopDouyuProxy: () => Promise<void>;
   destroyPlayerInstance: () => void;
   isLoadingStream: Ref<boolean>;
@@ -175,7 +188,12 @@ export const registerPlayerWatchers = (ctx: PlayerWatcherContext) => {
 
   watch(isDanmuEnabled, (enabled) => {
     danmuTogglePlugin.value?.setState(enabled);
-    syncDanmuEnabledState(danmuInstance.value, danmuSettings, enabled, playerRoot());
+    syncDanmuEnabledState(
+      danmuInstance.value,
+      danmuSettings,
+      enabled,
+      playerRoot(),
+    );
     persistCurrentDanmuPreferences();
   });
 
@@ -198,54 +216,107 @@ export const registerPlayerWatchers = (ctx: PlayerWatcherContext) => {
     });
   });
 
-  watch(() => danmuSettings.color, (color) => {
-    danmuSettingsPlugin.value?.setSettings({ color });
-    persistCurrentDanmuPreferences();
-  });
+  watch(
+    () => danmuSettings.color,
+    (color) => {
+      danmuSettingsPlugin.value?.setSettings({ color });
+      persistCurrentDanmuPreferences();
+    },
+  );
 
-  watch(() => danmuSettings.strokeColor, (strokeColor) => {
-    danmuSettingsPlugin.value?.setSettings({ strokeColor });
-    applyDanmuOverlayPreferences(danmuInstance.value, danmuSettings, isDanmuEnabled.value, playerRoot());
-    persistCurrentDanmuPreferences();
-  });
+  watch(
+    () => danmuSettings.strokeColor,
+    (strokeColor) => {
+      danmuSettingsPlugin.value?.setSettings({ strokeColor });
+      applyDanmuOverlayPreferences(
+        danmuInstance.value,
+        danmuSettings,
+        isDanmuEnabled.value,
+        playerRoot(),
+      );
+      persistCurrentDanmuPreferences();
+    },
+  );
 
-  watch(() => danmuSettings.fontSize, (fontSize) => {
-    danmuSettingsPlugin.value?.setSettings({ fontSize });
-    applyDanmuOverlayPreferences(danmuInstance.value, danmuSettings, isDanmuEnabled.value, playerRoot());
-    persistCurrentDanmuPreferences();
-  });
+  watch(
+    () => danmuSettings.fontSize,
+    (fontSize) => {
+      danmuSettingsPlugin.value?.setSettings({ fontSize });
+      applyDanmuOverlayPreferences(
+        danmuInstance.value,
+        danmuSettings,
+        isDanmuEnabled.value,
+        playerRoot(),
+      );
+      persistCurrentDanmuPreferences();
+    },
+  );
 
-  watch(() => danmuSettings.duration, (duration) => {
-    danmuSettingsPlugin.value?.setSettings({ duration });
-    applyDanmuOverlayPreferences(danmuInstance.value, danmuSettings, isDanmuEnabled.value, playerRoot());
-    persistCurrentDanmuPreferences();
-  });
+  watch(
+    () => danmuSettings.duration,
+    (duration) => {
+      danmuSettingsPlugin.value?.setSettings({ duration });
+      applyDanmuOverlayPreferences(
+        danmuInstance.value,
+        danmuSettings,
+        isDanmuEnabled.value,
+        playerRoot(),
+      );
+      persistCurrentDanmuPreferences();
+    },
+  );
 
-  watch(() => danmuSettings.area, (area) => {
-    const normalizedArea = sanitizeDanmuArea(area);
-    if (normalizedArea !== area) {
-      danmuSettings.area = normalizedArea;
-      return;
-    }
-    danmuSettingsPlugin.value?.setSettings({ area: normalizedArea });
-    applyDanmuOverlayPreferences(danmuInstance.value, danmuSettings, isDanmuEnabled.value, playerRoot());
-    persistCurrentDanmuPreferences();
-  });
+  watch(
+    () => danmuSettings.area,
+    (area) => {
+      const normalizedArea = sanitizeDanmuArea(area);
+      if (normalizedArea !== area) {
+        danmuSettings.area = normalizedArea;
+        return;
+      }
+      danmuSettingsPlugin.value?.setSettings({ area: normalizedArea });
+      applyDanmuOverlayPreferences(
+        danmuInstance.value,
+        danmuSettings,
+        isDanmuEnabled.value,
+        playerRoot(),
+      );
+      persistCurrentDanmuPreferences();
+    },
+  );
 
-  watch(() => danmuSettings.opacity, (opacity) => {
-    const normalizedOpacity = sanitizeDanmuOpacity(opacity);
-    if (normalizedOpacity !== opacity) {
-      danmuSettings.opacity = normalizedOpacity;
-      return;
-    }
-    danmuSettingsPlugin.value?.setSettings({ opacity: normalizedOpacity });
-    applyDanmuOverlayPreferences(danmuInstance.value, danmuSettings, isDanmuEnabled.value, playerRoot());
-    persistCurrentDanmuPreferences();
-  });
+  watch(
+    () => danmuSettings.opacity,
+    (opacity) => {
+      const normalizedOpacity = sanitizeDanmuOpacity(opacity);
+      if (normalizedOpacity !== opacity) {
+        danmuSettings.opacity = normalizedOpacity;
+        return;
+      }
+      danmuSettingsPlugin.value?.setSettings({ opacity: normalizedOpacity });
+      applyDanmuOverlayPreferences(
+        danmuInstance.value,
+        danmuSettings,
+        isDanmuEnabled.value,
+        playerRoot(),
+      );
+      persistCurrentDanmuPreferences();
+    },
+  );
 
   watch(danmuInstance, (instance) => {
-    applyDanmuOverlayPreferences(instance, danmuSettings, isDanmuEnabled.value, playerRoot());
-    syncDanmuEnabledState(instance, danmuSettings, isDanmuEnabled.value, playerRoot());
+    applyDanmuOverlayPreferences(
+      instance,
+      danmuSettings,
+      isDanmuEnabled.value,
+      playerRoot(),
+    );
+    syncDanmuEnabledState(
+      instance,
+      danmuSettings,
+      isDanmuEnabled.value,
+      playerRoot(),
+    );
   });
 
   watch(currentQuality, (quality) => {
@@ -263,7 +334,15 @@ export const registerPlayerWatchers = (ctx: PlayerWatcherContext) => {
       () => props.isLive,
     ],
     async (
-      [newRoomId, newPlatform, newStreamUrl, newAvatar, newTitle, newAnchorName, newIsLive],
+      [
+        newRoomId,
+        newPlatform,
+        newStreamUrl,
+        newAvatar,
+        newTitle,
+        newAnchorName,
+        newIsLive,
+      ],
       [oldRoomId, oldPlatform, oldStreamUrl],
     ) => {
       if (newPlatform === StreamingPlatform.DOUYU) {
@@ -276,19 +355,33 @@ export const registerPlayerWatchers = (ctx: PlayerWatcherContext) => {
       }
 
       if (newRoomId && newPlatform) {
-        if (!(props.initialError && props.initialError.includes('主播未开播'))) {
+        if (
+          !(props.initialError && props.initialError.includes("主播未开播"))
+        ) {
           isOfflineError.value = false;
         }
 
-        const isInitialCall = oldRoomId === undefined && oldPlatform === undefined;
-        const hasSwitchedStream = newRoomId !== oldRoomId || newPlatform !== oldPlatform;
-        const douyinStreamUrlChanged = newPlatform === StreamingPlatform.DOUYIN && newStreamUrl !== oldStreamUrl;
+        const isInitialCall =
+          oldRoomId === undefined && oldPlatform === undefined;
+        const hasSwitchedStream =
+          newRoomId !== oldRoomId || newPlatform !== oldPlatform;
+        const douyinStreamUrlChanged =
+          newPlatform === StreamingPlatform.DOUYIN &&
+          newStreamUrl !== oldStreamUrl;
 
-        const needsReInit = hasSwitchedStream || isInitialCall || douyinStreamUrlChanged;
+        const needsReInit =
+          hasSwitchedStream || isInitialCall || douyinStreamUrlChanged;
 
         if (needsReInit) {
           initializeQualityPreference();
-          initializePlayerAndStream(newRoomId, newPlatform, newStreamUrl, false, oldRoomId, oldPlatform);
+          initializePlayerAndStream(
+            newRoomId,
+            newPlatform,
+            newStreamUrl,
+            false,
+            oldRoomId,
+            oldPlatform,
+          );
         }
       } else if (!newRoomId) {
         if (oldRoomId && oldPlatform !== null && oldPlatform !== undefined) {
@@ -309,7 +402,7 @@ export const registerPlayerWatchers = (ctx: PlayerWatcherContext) => {
       }
       if (!props.roomId || props.platform == null) {
         if (props.initialError) {
-          if (props.initialError.includes('主播未开播')) {
+          if (props.initialError.includes("主播未开播")) {
             streamError.value = props.initialError;
             isOfflineError.value = true;
           } else {

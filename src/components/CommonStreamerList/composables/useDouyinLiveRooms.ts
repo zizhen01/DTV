@@ -1,11 +1,11 @@
-import { ref } from 'vue';
-import type { Ref } from 'vue';
-import { invoke } from '@tauri-apps/api/core';
-import type { CommonStreamer } from '../../../platforms/common/streamerTypes';
+import { ref } from "vue";
+import type { Ref } from "vue";
+import { invoke } from "@tauri-apps/api/core";
+import type { CommonStreamer } from "../../../platforms/common/streamerTypes";
 
 export function useDouyinLiveRooms(
   partitionId: Ref<string | null>,
-  partitionTypeId: Ref<string | null>
+  partitionTypeId: Ref<string | null>,
 ) {
   const rooms = ref<CommonStreamer[]>([]) as Ref<CommonStreamer[]>;
   const isLoading = ref(false);
@@ -17,10 +17,10 @@ export function useDouyinLiveRooms(
 
   const fetchAndSetMsToken = async () => {
     try {
-      currentMsToken.value = await invoke<string>('generate_douyin_ms_token');
+      currentMsToken.value = await invoke<string>("generate_douyin_ms_token");
     } catch (e) {
-      console.error('[useDouyinLiveRoomsCommon] Failed to fetch msToken:', e);
-      error.value = 'Failed to initialize session token.';
+      console.error("[useDouyinLiveRoomsCommon] Failed to fetch msToken:", e);
+      error.value = "Failed to initialize session token.";
       currentMsToken.value = null;
       return false;
     }
@@ -28,15 +28,17 @@ export function useDouyinLiveRooms(
   };
 
   const mapRawRoomToCommonStreamer = (rawRoom: any): CommonStreamer => {
-    const webId = rawRoom.web_rid?.toString?.() || '';
+    const webId = rawRoom.web_rid?.toString?.() || "";
     return {
       room_id: webId || `N/A_RID_${Math.random()}`,
-      title: rawRoom.title || '未知标题',
-      nickname: rawRoom.owner_nickname || '未知主播',
-      avatar: rawRoom.avatar_url || '',
-      room_cover: rawRoom.cover_url || 'https://via.placeholder.com/320x180.png?text=No+Image',
-      viewer_count_str: rawRoom.user_count_str || '0 人',
-      platform: 'douyin',
+      title: rawRoom.title || "未知标题",
+      nickname: rawRoom.owner_nickname || "未知主播",
+      avatar: rawRoom.avatar_url || "",
+      room_cover:
+        rawRoom.cover_url ||
+        "https://via.placeholder.com/320x180.png?text=No+Image",
+      viewer_count_str: rawRoom.user_count_str || "0 人",
+      platform: "douyin",
       web_id: webId,
     };
   };
@@ -50,8 +52,11 @@ export function useDouyinLiveRooms(
     }
 
     if (!currentMsToken.value) {
-      console.error('[useDouyinLiveRoomsCommon] msToken is not set. Aborting fetchRooms.');
-      error.value = 'Session token is missing. Please refresh or select category again.';
+      console.error(
+        "[useDouyinLiveRoomsCommon] msToken is not set. Aborting fetchRooms.",
+      );
+      error.value =
+        "Session token is missing. Please refresh or select category again.";
       if (!isLoadMore) isLoading.value = false;
       else isLoadingMore.value = false;
       hasMore.value = false;
@@ -66,7 +71,7 @@ export function useDouyinLiveRooms(
     error.value = null;
 
     try {
-      const response = await invoke<any>('fetch_douyin_partition_rooms', {
+      const response = await invoke<any>("fetch_douyin_partition_rooms", {
         partition: partitionId.value,
         partitionType: partitionTypeId.value,
         offset: offset,
@@ -83,16 +88,20 @@ export function useDouyinLiveRooms(
         }
 
         hasMore.value = Boolean(response.has_more);
-        const nextOffset = response.next_offset ?? (offset + newRooms.length);
-        currentOffset.value = typeof nextOffset === 'string' ? Number(nextOffset) : nextOffset;
+        const nextOffset = response.next_offset ?? offset + newRooms.length;
+        currentOffset.value =
+          typeof nextOffset === "string" ? Number(nextOffset) : nextOffset;
       } else {
-        console.warn('[useDouyinLiveRoomsCommon] No rooms array in response or invalid structure (expected response.rooms to be an array).');
+        console.warn(
+          "[useDouyinLiveRoomsCommon] No rooms array in response or invalid structure (expected response.rooms to be an array).",
+        );
         if (!isLoadMore) rooms.value = [];
         hasMore.value = false;
       }
     } catch (e: any) {
-      console.error('[useDouyinLiveRoomsCommon] Error fetching rooms:', e);
-      error.value = typeof e === 'string' ? e : (e?.message || 'Failed to fetch rooms');
+      console.error("[useDouyinLiveRoomsCommon] Error fetching rooms:", e);
+      error.value =
+        typeof e === "string" ? e : e?.message || "Failed to fetch rooms";
       if (!isLoadMore) {
         hasMore.value = false;
         rooms.value = [];
@@ -120,14 +129,20 @@ export function useDouyinLiveRooms(
         await fetchRooms(currentOffset.value, true);
       }
     } else {
-      if (!error.value) error.value = 'Failed to initialize session. Cannot load rooms.';
+      if (!error.value)
+        error.value = "Failed to initialize session. Cannot load rooms.";
       isLoading.value = false;
       hasMore.value = false;
     }
   };
 
   const loadMoreRooms = () => {
-    if (hasMore.value && !isLoading.value && !isLoadingMore.value && currentMsToken.value) {
+    if (
+      hasMore.value &&
+      !isLoading.value &&
+      !isLoadingMore.value &&
+      currentMsToken.value
+    ) {
       fetchRooms(currentOffset.value, true);
     }
   };

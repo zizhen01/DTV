@@ -1,81 +1,240 @@
 <template>
-  <nav class="sticky top-0 z-50 flex py-2 items-center px-5 " data-tauri-drag-region :style="{
-    paddingRight: shouldShowWindowsControls && !isMacPreview ? '160px' : '20px',
-  }">
+  <nav
+    class="sticky top-0 z-50 flex items-center border-b border-border-main bg-surface-low/80 px-5 py-2 shadow-md backdrop-blur-md"
+    data-tauri-drag-region
+    :style="{
+      paddingRight:
+        shouldShowWindowsControls && !isMacPreview ? '160px' : '20px',
+    }"
+  >
+    <div class="flex w-full items-center gap-4" data-tauri-drag-region>
+      <!-- Balanced Flex Spacer for left side -->
+      <div
+        class="flex flex-1 items-center justify-start"
+        data-tauri-drag-region
+      ></div>
 
+      <!-- Center Search Area -->
+      <div
+        class="relative flex flex-none items-center gap-3"
+        data-tauri-drag-region
+      >
+        <button
+          type="button"
+          class="flex h-10 w-10 items-center justify-center rounded-full border border-border-main bg-surface-mid text-text-muted hover:scale-[1.03] hover:bg-surface-high"
+          aria-label="首页"
+          @click="goHome"
+        >
+          <Home :size="18" />
+        </button>
 
-    <div class="flex w-full items-center gap-2" data-tauri-drag-region>
-      <div class="flex flex-1"> </div>
-      <div class="size-10 rounded-full bg-white/30"></div>
-      <div class="relative flex-none" data-tauri-drag-region>
-       
-        <div class="relative w-130 max-w-full" ref="searchContainerRef" data-tauri-drag-region="false">
+        <div
+          class="relative w-130 max-w-full"
+          ref="searchContainerRef"
+          data-tauri-drag-region="false"
+        >
           <div
-            class="relative z-1000 flex h-10 w-full items-center gap-2 rounded-full bg-neutral-700   px-4 text-sm   transition-transform duration-200"
-            :class="{ '  ring-1': isSearchFocused }">
-            <Search class="size-4" />
-            <input v-model="searchQuery" type="text" :placeholder="placeholderText" data-tauri-drag-region="false"
-              class="w-full bg-transparent text-sm  outline-none" @focus="handleFocus" @blur="handleBlur"
-              @input="handleSearch" />
-            <button v-if="searchQuery" type="button"
-              class="flex h-7 w-7 items-center justify-center rounded-full  transition-all duration-200 "
-              data-tauri-drag-region="false" aria-label="清除搜索" @click="resetSearchState">
+            class="relative z-1000 flex h-10 w-full items-center gap-2 rounded-full border border-border-main bg-surface-high/50 px-4 text-sm text-text-main dark:bg-neutral-800"
+            :class="{ 'shadow-md ring-1 ring-brand/50': isSearchFocused }"
+          >
+            <Search class="size-4 text-text-muted" />
+            <input
+              v-model="searchQuery"
+              type="text"
+              :placeholder="placeholderText"
+              data-tauri-drag-region="false"
+              class="w-full bg-transparent text-sm outline-none placeholder:text-text-muted"
+              @focus="handleFocus"
+              @blur="handleBlur"
+              @input="handleSearch"
+            />
+            <button
+              v-if="searchQuery"
+              type="button"
+              class="flex h-7 w-7 items-center justify-center rounded-full text-text-muted hover:bg-surface-high"
+              data-tauri-drag-region="false"
+              aria-label="清除搜索"
+              @click="resetSearchState"
+            >
               <X :size="14" />
             </button>
           </div>
 
-          <div v-show="showResults && trimmedQuery"
-            class="absolute left-0 right-0 top-[calc(100%+12px)] z-[1001] max-h-[480px] overflow-y-auto  border   p-2">
-            <div v-if="isLoadingSearch" class="px-3 py-2 text-[13px]">搜索中...</div>
-            <div v-else-if="searchError" class="px-3 py-2 text-[13px]">{{ searchError }}
+          <div
+            v-show="showResults && trimmedQuery"
+            class="scrollbar-none absolute top-[calc(100%+12px)] right-0 left-0 z-[1001] max-h-[520px] overflow-y-auto rounded-xl border border-border-strong bg-surface-low/95 p-3 shadow-2xl backdrop-blur-xl dark:bg-neutral-900/95"
+          >
+            <!-- Loading/Error -->
+            <div
+              v-if="isLoadingSearch"
+              class="flex items-center justify-center gap-3 py-8 text-text-muted"
+            >
+              <div
+                class="size-4 animate-spin rounded-full border-2 border-brand border-t-transparent"
+              ></div>
+              <span class="text-sm font-medium">搜索中...</span>
             </div>
-            <div v-else-if="searchResults.length > 0" class="space-y-1">
-              <div v-for="anchor in searchResults" :key="anchor.platform + '-' + anchor.roomId"
-                class="flex items-center gap-2.5  px-2.5 py-2 transition-all duration-200 hover:translate-x-1"
-                @mousedown="selectAnchor(anchor)">
-                <div class="h-9 w-9 flex-shrink-0 overflow-hidden rounded-full border-2 ">
-                  <img v-if="anchor.avatar" :src="anchor.avatar" :alt="anchor.userName"
-                    class="h-full w-full object-cover" />
-                  <div v-else class="flex h-full w-full items-center justify-center ">{{
-                    anchor.userName[0] }}</div>
-                </div>
+            <div
+              v-else-if="searchError"
+              class="rounded-lg border border-red-500/10 bg-red-500/5 px-3 py-4 text-center text-sm text-red-500"
+            >
+              {{ searchError }}
+            </div>
 
-                <div class="min-w-0 flex-1">
-                  <div class="flex items-center gap-2">
-                    <span class="truncate text-[13px] font-semibold" :title="anchor.userName">{{ anchor.userName
-                    }}</span>
-                    <span class="rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.5px]"
-                      :class="anchor.liveStatus ? 'border-[rgba(168,85,247,0.3)] bg-[rgba(168,85,247,0.22)]' : 'border-[var(--border)] '">
-                      {{ anchor.liveStatus ? '直播' : '未播' }}
-                    </span>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <span class="truncate text-xs" :title="anchor.roomTitle || '暂无标题'">{{
-                      anchor.roomTitle || '暂无标题' }}</span>
+            <!-- Category Results -->
+            <div
+              v-if="categoryResults.length > 0 && !isLoadingSearch"
+              class="mb-4"
+            >
+              <div
+                class="mb-1 flex items-center gap-2 px-2 py-1 text-[10px] font-black tracking-widest text-text-muted uppercase"
+              >
+                <Tag class="size-3" /> 分类
+              </div>
+              <div class="grid grid-cols-1 gap-1">
+                <div
+                  v-for="cat in categoryResults"
+                  :key="cat.platform + '-' + cat.id"
+                  class="group flex cursor-pointer items-center justify-between gap-3 rounded-lg px-3 py-2 hover:bg-surface-high"
+                  @mousedown="selectCategory(cat)"
+                >
+                  <div class="flex items-center gap-3 overflow-hidden">
+                    <div
+                      class="flex size-8 items-center justify-center rounded bg-surface-mid text-text-muted group-hover:bg-brand/20 group-hover:text-brand"
+                    >
+                      <Tag class="size-4" />
+                    </div>
                     <span
-                      class="rounded-full border   px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.5px]">{{
-                        anchor.webId || anchor.roomId }}</span>
+                      class="truncate text-sm font-semibold text-text-main"
+                      >{{ cat.name }}</span
+                    >
                   </div>
-                </div>
-
-                <div class="flex items-center">
-                  <span class="rounded-full border   px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.5px]"
-                    :class="[
-                      anchor.platform.toLowerCase(),
-                      { douyu: anchor.platform === Platform.DOUYU, douyin: anchor.platform === Platform.DOUYIN, huya: anchor.platform === Platform.HUYA }
-                    ]"
-                    :style="anchor.platform === Platform.DOUYU ? 'color: #ff7a1c' : anchor.platform === Platform.DOUYIN ? 'color: #fe2c55' : anchor.platform === Platform.HUYA ? 'color: #f5a623' : anchor.platform === Platform.BILIBILI ? 'color: #fb7299' : ''">
-                    {{ anchor.platform === Platform.DOUYU ? '斗鱼' : (anchor.platform === Platform.DOUYIN ? '抖音' :
-                      (anchor.platform === Platform.HUYA ? '虎牙' : anchor.platform)) }}
-                  </span>
+                  <span
+                    class="rounded bg-surface-mid px-2 py-0.5 text-[10px] font-bold tracking-wider text-text-muted uppercase"
+                    >{{ cat.platform }}</span
+                  >
                 </div>
               </div>
             </div>
 
-            <div v-else-if="trimmedQuery && !isLoadingSearch && !searchError" class="px-3 py-2 text-[13px]">
-              未找到结果
-              <button v-if="isPureNumeric(trimmedQuery)" class="font-semibold"
-                @mousedown.prevent="tryEnterRoom(trimmedQuery)" @click.prevent="tryEnterRoom(trimmedQuery)">
+            <!-- Anchor Results -->
+            <div v-if="searchResults.length > 0 && !isLoadingSearch">
+              <div
+                class="mb-1 flex items-center gap-2 px-2 py-1 text-[10px] font-black tracking-widest text-text-muted uppercase"
+              >
+                <User class="size-3" /> 主播与房间
+              </div>
+              <div class="space-y-1">
+                <div
+                  v-for="anchor in searchResults"
+                  :key="anchor.platform + '-' + anchor.roomId"
+                  class="group flex cursor-pointer items-center gap-3 rounded-lg px-2.5 py-2.5 hover:bg-surface-high"
+                  @mousedown="selectAnchor(anchor)"
+                >
+                  <div
+                    class="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full border border-border-main shadow-lg"
+                  >
+                    <img
+                      v-if="anchor.avatar"
+                      :src="anchor.avatar"
+                      :alt="anchor.userName"
+                      class="h-full w-full object-cover group-hover:scale-110"
+                    />
+                    <div
+                      v-else
+                      class="flex h-full w-full items-center justify-center bg-surface-mid text-lg font-bold text-text-muted"
+                    >
+                      {{ anchor.userName[0] }}
+                    </div>
+                  </div>
+
+                  <div class="min-w-0 flex-1">
+                    <div class="mb-0.5 flex items-center gap-2">
+                      <span
+                        class="truncate text-sm font-bold text-text-main group-hover:text-brand"
+                        :title="anchor.userName"
+                      >
+                        {{ anchor.userName }}
+                      </span>
+                      <span
+                        v-if="anchor.liveStatus"
+                        class="flex size-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]"
+                      ></span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span
+                        class="truncate text-xs font-medium text-text-dim"
+                        :title="anchor.roomTitle || '暂无标题'"
+                      >
+                        {{ anchor.roomTitle || "暂无标题" }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="flex flex-col items-end gap-1.5">
+                    <span
+                      class="rounded border border-border-main bg-surface-mid px-2 py-0.5 text-[10px] font-black tracking-[0.5px] uppercase group-hover:border-brand/30 group-hover:bg-brand/20 group-hover:text-brand"
+                      :style="
+                        anchor.platform === Platform.DOUYU
+                          ? 'color: #ff7a1c'
+                          : anchor.platform === Platform.DOUYIN
+                            ? 'color: #fe2c55'
+                            : anchor.platform === Platform.HUYA
+                              ? 'color: #f5a623'
+                              : anchor.platform === Platform.BILIBILI
+                                ? 'color: #fb7299'
+                                : ''
+                      "
+                    >
+                      {{
+                        anchor.platform === Platform.DOUYU
+                          ? "斗鱼"
+                          : anchor.platform === Platform.DOUYIN
+                            ? "抖音"
+                            : anchor.platform === Platform.HUYA
+                              ? "虎牙"
+                              : anchor.platform
+                      }}
+                    </span>
+                    <span
+                      class="flex items-center gap-1 font-mono text-[9px] text-text-muted"
+                    >
+                      <Hash class="size-2.5" />
+                      {{ anchor.webId || anchor.roomId }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Empty State / Direct Join -->
+            <div
+              v-if="
+                trimmedQuery &&
+                !isLoadingSearch &&
+                searchResults.length === 0 &&
+                categoryResults.length === 0
+              "
+              class="flex flex-col items-center justify-center px-6 py-12 text-center"
+            >
+              <div
+                class="mb-4 flex size-16 items-center justify-center rounded-full bg-surface-mid text-text-muted"
+              >
+                <Search class="size-8" />
+              </div>
+              <p class="mb-1 text-sm font-medium text-text-main">
+                未找到相关结果
+              </p>
+              <p class="mb-6 text-xs text-text-muted">
+                试试搜索其他关键词或直接输入房间号
+              </p>
+
+              <button
+                v-if="isPureNumeric(trimmedQuery)"
+                class="rounded-full bg-brand px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-brand/20 hover:bg-brand-hover active:scale-95"
+                @mousedown.prevent="tryEnterRoom(trimmedQuery)"
+                @click.prevent="tryEnterRoom(trimmedQuery)"
+              >
                 进入房间 {{ trimmedQuery }}
               </button>
             </div>
@@ -83,60 +242,81 @@
         </div>
       </div>
 
-      <div class="flex flex-1 items-center justify-end gap-2" data-tauri-drag-region="false">
-        <!-- History Popover -->
-        <div class="relative" ref="historyContainerRef">
-          <button type="button"
-            class="flex h-10 w-10 items-center justify-center rounded-full border transition-all duration-200 hover:scale-[1.03]"
-            :class="{ 'bg-[var(--surface-3)]': showHistory }" @click="toggleHistory">
-            <History :size="18" />
+      <div
+        class="flex flex-1 items-center justify-end gap-2"
+        data-tauri-drag-region="false"
+      >
+        <button
+          type="button"
+          class="flex h-10 w-10 items-center justify-center rounded-full border border-border-main bg-surface-mid text-text-muted hover:scale-[1.03] hover:bg-surface-high"
+          @click="openGithub"
+        >
+          <Github :size="18" />
+        </button>
+        <div class="relative" ref="colorPaletteRef">
+          <button
+            type="button"
+            class="flex h-10 w-10 items-center justify-center rounded-full border border-border-main bg-surface-mid text-text-muted hover:scale-[1.03] hover:bg-surface-high"
+            @click="changeThemeColor"
+            :class="{ 'text-brand border-brand/30 bg-brand/10': showColorPalette }"
+            title="切换主题色"
+          >
+            <Palette :size="18" />
           </button>
 
-          <div v-if="showHistory"
-            class="absolute right-0 top-[calc(100%+12px)] z-[1001] w-72 max-h-[480px] overflow-y-auto border p-2">
-            <div class="px-3 py-2 text-xs font-bold uppercase tracking-wider border-b mb-2">
-              最近播放
+          <!-- Color Palette Popover -->
+          <div
+            v-if="showColorPalette"
+            class="absolute right-0 top-[calc(100%+12px)] z-[1001] w-48 rounded-xl border border-border-strong bg-surface-low/95 p-3 shadow-2xl backdrop-blur-xl dark:bg-neutral-900/95"
+          >
+            <div class="mb-3 px-1 text-[10px] font-black uppercase tracking-widest text-text-muted">
+              选择主题色
             </div>
-            <div v-if="recentItems.length === 0" class="px-3 py-8 text-center text-sm">
-              暂无播放记录
+            <div class="grid grid-cols-4 gap-2">
+              <button
+                v-for="color in availableColors"
+                :key="color.value"
+                @click="selectThemeColor(color.value)"
+                class="size-8 rounded-full border-2 transition-transform hover:scale-110 active:scale-95"
+                :style="{ backgroundColor: color.value, borderColor: themeStore.primaryColor === color.value ? 'white' : 'transparent' }"
+                :title="color.name"
+              ></button>
             </div>
-            <div v-else class="space-y-1">
-              <button v-for="streamer in recentItems" :key="streamer.id"
-                class="flex w-full items-center gap-3 p-2 text-left transition-all duration-200 group"
-                @click="handleSelectHistory(streamer)">
-                <div class="flex size-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-full border">
-                  <img v-if="streamer.avatarUrl" :src="streamer.avatarUrl" :alt="streamer.nickname"
-                    class="h-full w-full object-cover" />
-                  <div v-else class="text-[10px] font-bold">LIVE</div>
+
+            <!-- RGB Picker -->
+            <div class="mt-4 pt-3 border-t border-white/5 flex flex-col gap-2">
+              <div class="px-1 text-[10px] font-black uppercase tracking-widest text-text-muted">
+                自定义 RGB
+              </div>
+              <div class="flex items-center gap-3 bg-surface-mid p-2 rounded-lg border border-border-main">
+                <input 
+                  type="color" 
+                  :value="themeStore.primaryColor"
+                  @input="(e) => selectThemeColor((e.target as HTMLInputElement).value)"
+                  class="size-10 rounded border-0 bg-transparent cursor-pointer"
+                />
+                <div class="flex flex-col min-w-0">
+                  <span class="text-[10px] font-mono text-text-muted uppercase">Hex Code</span>
+                  <span class="text-xs font-bold text-text-main font-mono truncate uppercase">{{ themeStore.primaryColor }}</span>
                 </div>
-                <div class="min-w-0 flex-1 flex flex-col justify-center">
-                  <div class="truncate text-[13px] font-semibold">{{ streamer.nickname || '未知主播' }}</div>
-                  <div class="truncate text-[11px]">{{ streamer.platform }} · {{ streamer.roomTitle || '正在直播' }}</div>
-                </div>
-              </button>
+              </div>
             </div>
           </div>
         </div>
-
-        <button type="button"
-          class="flex h-10 w-10 items-center justify-center rounded-full border transition-all duration-200 hover:scale-[1.03]"
-          @click="openGithub">
-          <Github :size="18" />
-        </button>
-        <button type="button"
-          class="flex h-10 w-10 items-center justify-center rounded-full border    transition-all duration-200 hover:scale-[1.03]">
-          <Bell :size="18" />
-        </button>
-        <button type="button"
-          class="flex h-10 w-10 items-center justify-center rounded-full border    transition-all duration-200 hover:scale-[1.03]"
-          @click="toggleTheme">
+        <button
+          type="button"
+          class="flex h-10 w-10 items-center justify-center rounded-full border border-border-main bg-surface-mid text-text-muted hover:scale-[1.03] hover:bg-surface-high"
+          @click="toggleTheme"
+        >
           <Sun v-if="effectiveTheme === 'dark'" :size="18" />
           <Moon v-else :size="18" />
         </button>
       </div>
 
-      <div v-if="shouldShowWindowsControls && !isMacPreview"
-        class="absolute right-[-1px] top-[-1px] flex flex-col items-end gap-1">
+      <div
+        v-if="shouldShowWindowsControls && !isMacPreview"
+        class="absolute top-[-1px] right-[-1px] flex flex-col items-end gap-1"
+      >
         <WindowsWindowControls />
       </div>
     </div>
@@ -144,18 +324,79 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
-import { invoke } from '@tauri-apps/api/core';
-import { platform as detectPlatform } from '@tauri-apps/plugin-os';
-import { openUrl } from '@tauri-apps/plugin-opener';
-import { useRoute } from 'vue-router';
-import { Bell, Github, Menu, Moon, Search, Sun, X, History } from 'lucide-vue-next';
-import { onClickOutside } from '@vueuse/core';
-import WindowsWindowControls from '../window-controls/WindowsWindowControls.vue';
-import { useThemeStore } from '../../stores/theme';
-import { useFollowStore } from '../../stores/followStore';
-import { Platform, type UiPlatform } from '../../platforms/common/types';
-import type { FollowedStreamer } from '../../platforms/common/types';
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { invoke } from "@tauri-apps/api/core";
+import { platform as detectPlatform } from "@tauri-apps/plugin-os";
+import { openUrl } from "@tauri-apps/plugin-opener";
+import { useRoute, useRouter } from "vue-router";
+import {
+  Github,
+  Moon,
+  Search,
+  Sun,
+  X,
+  Tag,
+  User,
+  Hash,
+  Home,
+  Palette,
+} from "lucide-vue-next";
+import { onClickOutside } from "@vueuse/core";
+import WindowsWindowControls from "../window-controls/WindowsWindowControls.vue";
+import { useThemeStore } from "../../stores/theme";
+import { useFollowStore } from "../../stores/followStore";
+import { Platform, type UiPlatform } from "../../platforms/common/types";
+import type { FollowedStreamer } from "../../platforms/common/types";
+import { huyaCategoriesData } from "../../platforms/huya/huyaCategoriesData";
+import { douyinCategoriesData } from "../../platforms/douyin/douyinCategoriesData";
+import { biliCategoriesData } from "../../platforms/bilibili/biliCategoriesData";
+import Fuse from "fuse.js";
+
+interface CategorySearchResult {
+  type: "category";
+  platform: Platform;
+  name: string;
+  id: string;
+  href: string;
+}
+
+// Prepare categories for indexing once
+const flatCategories = [
+  ...huyaCategoriesData.flatMap((c1) =>
+    (c1.subcategories || []).map((c2: any) => ({
+      name: c2.title,
+      id: String(c2.id || c2.href),
+      href: c2.href,
+      platform: Platform.HUYA,
+    })),
+  ),
+  ...douyinCategoriesData.flatMap((c1) =>
+    (c1.subcategories || []).map((c2: any) => ({
+      name: c2.title,
+      id: String(c2.href),
+      href: c2.href,
+      platform: Platform.DOUYIN,
+    })),
+  ),
+  ...biliCategoriesData.flatMap((c1) =>
+    (c1.subcategories || []).map((c2: any) => ({
+      name: c2.title,
+      id: String(c2.id || c2.href),
+      href: c2.href,
+      platform: Platform.BILIBILI,
+    })),
+  ),
+];
+
+const fuse = new Fuse(flatCategories, {
+  keys: [
+    { name: "name", weight: 0.7 },
+    { name: "id", weight: 0.3 },
+  ],
+  threshold: 0.35,
+  distance: 100,
+  minMatchCharLength: 1,
+});
 
 interface DouyinApiStreamInfo {
   title?: string | null;
@@ -199,60 +440,127 @@ interface SearchResultItem {
 }
 
 const props = defineProps<{
-  theme: 'light' | 'dark';
+  theme: "light" | "dark";
   searchQuery?: string;
-  activePlatform: UiPlatform | 'all';
+  activePlatform: UiPlatform | "all";
 }>();
 
 const emit = defineEmits<{
-  (event: 'theme-toggle'): void;
-  (event: 'search-change', value: string): void;
-  (event: 'platform-change', value: UiPlatform | 'all'): void;
-  (event: 'select-anchor', payload: { id: string; platform: Platform; nickname: string; avatarUrl: string | null; currentRoomId?: string }): void;
+  (event: "theme-toggle"): void;
+  (event: "search-change", value: string): void;
+  (event: "platform-change", value: UiPlatform | "all"): void;
+  (
+    event: "select-anchor",
+    payload: {
+      id: string;
+      platform: Platform;
+      nickname: string;
+      avatarUrl: string | null;
+      currentRoomId?: string;
+    },
+  ): void;
 }>();
 
-const searchQuery = ref(props.searchQuery ?? '');
+const searchQuery = ref(props.searchQuery ?? "");
 const trimmedQuery = computed(() => searchQuery.value.trim());
 const searchResults = ref<SearchResultItem[]>([]);
+const categoryResults = ref<CategorySearchResult[]>([]);
 const showResults = ref(false);
 const searchError = ref<string | null>(null);
 const isLoadingSearch = ref(false);
 const isSearchFocused = ref(false);
 const searchContainerRef = ref<HTMLElement | null>(null);
-const historyContainerRef = ref<HTMLElement | null>(null);
-const showHistory = ref(false);
+const colorPaletteRef = ref<HTMLElement | null>(null);
+const showColorPalette = ref(false);
 
 const themeStore = useThemeStore();
 const followStore = useFollowStore();
 const effectiveTheme = computed(() => themeStore.getEffectiveTheme());
 const route = useRoute();
+const router = useRouter();
 
-const recentItems = computed(() => followStore.getFollowedStreamers.slice(0, 12));
+const availableColors = [
+  { name: "红色", value: "#ef4444" },
+  { name: "橙色", value: "#f97316" },
+  { name: "琥珀", value: "#f59e0b" },
+  { name: "翠绿", value: "#10b981" },
+  { name: "青色", value: "#06b6d4" },
+  { name: "蓝色", value: "#3b82f6" },
+  { name: "靛蓝", value: "#6366f1" },
+  { name: "紫罗兰", value: "#8b5cf6" },
+  { name: "紫色", value: "#a855f7" },
+  { name: "洋红", value: "#d946ef" },
+  { name: "粉色", value: "#ec4899" },
+];
 
-const toggleHistory = () => {
-  showHistory.value = !showHistory.value;
+const goHome = () => {
+  router.push({ name: "PlatformHome" });
 };
 
-onClickOutside(historyContainerRef, () => {
-  showHistory.value = false;
+const changeThemeColor = () => {
+  showColorPalette.value = !showColorPalette.value;
+};
+
+const selectThemeColor = (color: string) => {
+  themeStore.setPrimaryColor(color);
+  showColorPalette.value = false;
+};
+
+onClickOutside(colorPaletteRef, () => {
+  showColorPalette.value = false;
 });
 
-const handleSelectHistory = (streamer: FollowedStreamer) => {
-  emit('select-anchor', {
-    id: streamer.id,
-    platform: streamer.platform,
-    nickname: streamer.nickname,
-    avatarUrl: streamer.avatarUrl,
-    currentRoomId: streamer.currentRoomId
+const performLocalCategorySearch = (query: string): CategorySearchResult[] => {
+  if (!query) return [];
+
+  const q = query.toLowerCase();
+
+  // 1. Precise substring match (guarantees results like "999" -> "9999")
+  const substringMatches = flatCategories.filter(
+    (c) => c.id.toLowerCase().includes(q) || c.name.toLowerCase().includes(q),
+  );
+
+  // 2. Fuzzy match via Fuse.js
+  const fuseResults = fuse.search(query).map((r) => r.item);
+
+  // 3. Combine and deduplicate
+  const combined = [...substringMatches, ...fuseResults];
+  const seen = new Set<string>();
+  const uniqueResults: CategorySearchResult[] = [];
+
+  for (const res of combined) {
+    const key = `${res.platform}-${res.id}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      uniqueResults.push({
+        type: "category",
+        ...res,
+      } as CategorySearchResult);
+    }
+    if (uniqueResults.length >= 10) break;
+  }
+
+  return uniqueResults;
+};
+
+const selectCategory = (cat: CategorySearchResult) => {
+  // Navigation to platform home with category usually happens via router.
+  // Currently PlatformHomeView manages its own selection based on platform change.
+  // We can pass the category via query params or just rely on platform switch.
+  // For now, let's navigate to the platform.
+  router.push({
+    name: "PlatformHome",
+    params: { platform: cat.platform.toLowerCase() },
   });
-  showHistory.value = false;
+  showResults.value = false;
+  resetSearchState();
 };
 
 const detectedPlatform = ref<string | null>(null);
 const isMacPreview = false;
 const isWindowsPlatform = computed(() => {
-  const name = detectedPlatform.value?.toLowerCase() ?? '';
-  return name.startsWith('win');
+  const name = detectedPlatform.value?.toLowerCase() ?? "";
+  return name.startsWith("win");
 });
 const shouldShowWindowsControls = computed(() => isWindowsPlatform.value);
 
@@ -260,10 +568,10 @@ const proxyBase = ref<string | null>(null);
 const ensureProxyStarted = async () => {
   if (!proxyBase.value) {
     try {
-      const base = await invoke<string>('start_static_proxy_server');
+      const base = await invoke<string>("start_static_proxy_server");
       proxyBase.value = base;
     } catch (e) {
-      console.error('[Navbar] Failed to start static proxy server', e);
+      console.error("[Navbar] Failed to start static proxy server", e);
     }
   }
 };
@@ -284,35 +592,30 @@ const currentPlatform = computed<Platform>(() => {
 });
 
 const placeholderText = computed(() => {
-  if (currentPlatform.value === Platform.DOUYU) return '搜索斗鱼主播名称/房间号';
-  if (currentPlatform.value === Platform.HUYA) return '搜索虎牙主播名称/房间号';
-  if (currentPlatform.value === Platform.DOUYIN) return '搜索抖音房间号';
-  if (currentPlatform.value === Platform.BILIBILI) return '搜索B站主播名称/房间号';
-  return '搜索主播/房间';
+  return "搜索主播名称/房间号，热门游戏，分区";
 });
 
 onMounted(async () => {
   try {
     detectedPlatform.value = await detectPlatform();
   } catch (error) {
-    console.error('[Navbar] Failed to detect platform', error);
-    if (typeof navigator !== 'undefined') {
+    console.error("[Navbar] Failed to detect platform", error);
+    if (typeof navigator !== "undefined") {
       const ua = navigator.userAgent.toLowerCase();
-      if (ua.includes('windows')) {
-        detectedPlatform.value = 'windows';
+      if (ua.includes("windows")) {
+        detectedPlatform.value = "windows";
       }
     }
   }
 });
 
 onMounted(() => {
-  if (isMacPreview && typeof document !== 'undefined') {
-    document.documentElement.setAttribute('data-platform', 'darwin');
-  } else if (typeof document !== 'undefined') {
-    document.documentElement.removeAttribute('data-platform');
+  if (isMacPreview && typeof document !== "undefined") {
+    document.documentElement.setAttribute("data-platform", "darwin");
+  } else if (typeof document !== "undefined") {
+    document.documentElement.removeAttribute("data-platform");
   }
 });
-
 
 const handleDocumentMouseDown = (event: MouseEvent) => {
   const target = event.target;
@@ -324,26 +627,30 @@ const handleDocumentMouseDown = (event: MouseEvent) => {
 };
 
 onMounted(() => {
-  document.addEventListener('mousedown', handleDocumentMouseDown);
+  document.addEventListener("mousedown", handleDocumentMouseDown);
 });
 
 onBeforeUnmount(() => {
-  document.removeEventListener('mousedown', handleDocumentMouseDown);
+  document.removeEventListener("mousedown", handleDocumentMouseDown);
 });
 
 const toggleTheme = () => {
-  emit('theme-toggle');
+  emit("theme-toggle");
 };
 
 const openGithub = async () => {
   try {
-    await openUrl('https://github.com/chen-zeong/DTV/releases');
+    await openUrl("https://github.com/chen-zeong/DTV/releases");
   } catch (error) {
-    if (typeof window !== 'undefined') {
-      window.open('https://github.com/chen-zeong/DTV/releases', '_blank', 'noopener,noreferrer');
+    if (typeof window !== "undefined") {
+      window.open(
+        "https://github.com/chen-zeong/DTV/releases",
+        "_blank",
+        "noopener,noreferrer",
+      );
       return;
     }
-    console.error('[Navbar] Failed to open GitHub', error);
+    console.error("[Navbar] Failed to open GitHub", error);
   }
 };
 
@@ -356,8 +663,9 @@ const resetSearchState = () => {
     clearTimeout(searchTimeout);
     searchTimeout = null;
   }
-  searchQuery.value = '';
+  searchQuery.value = "";
   searchResults.value = [];
+  categoryResults.value = [];
   searchError.value = null;
   showResults.value = false;
   isLoadingSearch.value = false;
@@ -369,7 +677,7 @@ const handleSearch = () => {
   }
   searchError.value = null;
   isLoadingSearch.value = true;
-  emit('search-change', searchQuery.value);
+  emit("search-change", searchQuery.value);
 
   searchTimeout = window.setTimeout(() => {
     performSearchBasedOnInput();
@@ -380,12 +688,21 @@ const performSearchBasedOnInput = async () => {
   const query = trimmedQuery.value;
   if (!query) {
     searchResults.value = [];
+    categoryResults.value = [];
     showResults.value = false;
     isLoadingSearch.value = false;
     return;
   }
   searchQuery.value = query;
 
+  // Clear previous results
+  searchResults.value = [];
+  categoryResults.value = [];
+
+  // Local Category Search (Synchronous)
+  categoryResults.value = performLocalCategorySearch(query);
+
+  // Platform specific Anchor Search
   if (currentPlatform.value === Platform.DOUYIN) {
     await performDouyinIdSearch(query);
   } else if (currentPlatform.value === Platform.HUYA) {
@@ -399,78 +716,75 @@ const performSearchBasedOnInput = async () => {
 };
 
 const performDouyinIdSearch = async (userInputRoomId: string) => {
-  searchResults.value = [];
-  searchError.value = null;
-  isLoadingSearch.value = true;
   try {
     const payloadData = { args: { room_id_str: userInputRoomId } };
-    const douyinInfo = await invoke<DouyinApiStreamInfo>('fetch_douyin_streamer_info', {
-      payload: payloadData,
-    });
-    isLoadingSearch.value = false;
+    const douyinInfo = await invoke<DouyinApiStreamInfo>(
+      "fetch_douyin_streamer_info",
+      {
+        payload: payloadData,
+      },
+    );
     if (douyinInfo?.anchor_name) {
       const isLive = douyinInfo.status === 2;
       const webId = (douyinInfo as any).web_rid ?? userInputRoomId;
-      searchResults.value = [{
-        platform: Platform.DOUYIN,
-        roomId: webId,
-        webId,
-        userName: douyinInfo.anchor_name || '抖音主播',
-        roomTitle: douyinInfo.title || null,
-        avatar: douyinInfo.avatar || null,
-        liveStatus: isLive,
-        rawStatus: douyinInfo.status,
-      }];
-    } else {
-      searchError.value = '搜索失败，请重试。';
+      searchResults.value = [
+        {
+          platform: Platform.DOUYIN,
+          roomId: webId,
+          webId,
+          userName: douyinInfo.anchor_name || "抖音主播",
+          roomTitle: douyinInfo.title || null,
+          avatar: douyinInfo.avatar || null,
+          liveStatus: isLive,
+          rawStatus: douyinInfo.status,
+        },
+      ];
     }
   } catch (e) {
-    isLoadingSearch.value = false;
-    searchError.value = '搜索失败，请重试。';
+    console.error("Douyin search error:", e);
+    // Only set error on actual failure
+    searchError.value = "搜索服务暂时不可用";
   }
   showResults.value = true;
 };
 
 const performHuyaSearch = async (keyword: string) => {
-  searchResults.value = [];
-  searchError.value = null;
-  isLoadingSearch.value = true;
   try {
-    const items = await invoke<HuyaAnchorItem[]>('search_huya_anchors', { keyword, page: 1 });
+    const items = await invoke<HuyaAnchorItem[]>("search_huya_anchors", {
+      keyword,
+      page: 1,
+    });
     await ensureProxyStarted();
-    isLoadingSearch.value = false;
     if (Array.isArray(items) && items.length > 0) {
-      searchResults.value = items.map((item): SearchResultItem => ({
-        platform: Platform.HUYA,
-        roomId: item.room_id,
-        userName: item.user_name || '虎牙主播',
-        roomTitle: item.title || null,
-        avatar: proxify(item.avatar || null),
-        liveStatus: !!item.live_status,
-      }));
-      searchError.value = null;
+      searchResults.value = items.map(
+        (item): SearchResultItem => ({
+          platform: Platform.HUYA,
+          roomId: item.room_id,
+          userName: item.user_name || "虎牙主播",
+          roomTitle: item.title || null,
+          avatar: proxify(item.avatar || null),
+          liveStatus: !!item.live_status,
+        }),
+      );
     }
   } catch (e) {
-    isLoadingSearch.value = false;
-    searchError.value = '搜索失败，请重试。';
+    console.error("Huya search error:", e);
+    searchError.value = "搜索服务暂时不可用";
   }
   showResults.value = true;
 };
 
 const performDouyuSearch = async (keyword: string) => {
-  searchResults.value = [];
-  searchError.value = null;
-  isLoadingSearch.value = true;
   try {
-    const response = await invoke<string>('search_anchor', { keyword });
-    isLoadingSearch.value = false;
+    const response = await invoke<string>("search_anchor", { keyword });
     const data = JSON.parse(response);
     if (data.error === 0 && data.data && data.data.relateUser) {
       searchResults.value = data.data.relateUser
         .filter((item: any) => item.type === 1)
         .map((item: any): SearchResultItem => {
           const anchorInfo = item.anchorInfo;
-          const isReallyLive = anchorInfo.isLive === 1 && anchorInfo.videoLoop !== 1;
+          const isReallyLive =
+            anchorInfo.isLive === 1 && anchorInfo.videoLoop !== 1;
           return {
             platform: Platform.DOUYU,
             roomId: anchorInfo.rid.toString(),
@@ -482,33 +796,30 @@ const performDouyuSearch = async (keyword: string) => {
             category: anchorInfo.cateName,
           };
         });
-      searchError.value = null;
-    } else {
-      searchError.value = '搜索失败，请重试。';
     }
   } catch (e) {
-    isLoadingSearch.value = false;
-    searchError.value = '搜索失败，请重试。';
+    console.error("Douyu search error:", e);
+    searchError.value = "搜索服务暂时不可用";
   }
   showResults.value = true;
 };
 
 const performBilibiliSearch = async (keyword: string) => {
-  searchResults.value = [];
-  searchError.value = null;
-  isLoadingSearch.value = true;
   try {
-    const response = await invoke<BilibiliSearchItem[]>('search_bilibili_rooms', {
-      keyword,
-      page: 1,
-    });
+    const response = await invoke<BilibiliSearchItem[]>(
+      "search_bilibili_rooms",
+      {
+        keyword,
+        page: 1,
+      },
+    );
     await ensureProxyStarted();
     if (Array.isArray(response) && response.length > 0) {
       searchResults.value = response.map((item) => ({
         platform: Platform.BILIBILI,
         roomId: item.room_id,
         webId: item.room_id,
-        userName: item.anchor || 'B站主播',
+        userName: item.anchor || "B站主播",
         roomTitle: item.title || null,
         avatar: proxify(item.avatar),
         liveStatus: item.is_live,
@@ -517,9 +828,9 @@ const performBilibiliSearch = async (keyword: string) => {
       }));
     }
   } catch (e) {
-    searchError.value = '搜索失败，请重试。';
+    console.error("Bilibili search error:", e);
+    searchError.value = "搜索服务暂时不可用";
   } finally {
-    isLoadingSearch.value = false;
     showResults.value = true;
   }
 };
@@ -539,7 +850,7 @@ const handleBlur = () => {
 };
 
 const selectAnchor = (anchor: SearchResultItem) => {
-  emit('select-anchor', {
+  emit("select-anchor", {
     id: anchor.webId || anchor.roomId,
     platform: anchor.platform,
     nickname: anchor.userName,
@@ -551,7 +862,7 @@ const selectAnchor = (anchor: SearchResultItem) => {
 
 const tryEnterRoom = (roomId: string) => {
   if (!roomId) return;
-  emit('select-anchor', {
+  emit("select-anchor", {
     id: roomId,
     platform: currentPlatform.value,
     nickname: roomId,

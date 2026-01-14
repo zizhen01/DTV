@@ -10,7 +10,7 @@ export interface Category2 {
 }
 
 export interface CategorySelectedEvent {
-  type: 'cate2';
+  type: "cate2";
   cate1Href: string;
   cate2Href: string;
   cate1Name: string;

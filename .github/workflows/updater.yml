@@ -8,15 +8,15 @@ permissions:
 on:
   push:
     tags:
-      - 'v*.*.*'
-      - '*.*'
-      - '*.*.*'
+      - "v*.*.*"
+      - "*.*"
+      - "*.*.*"
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to build (e.g., v1.0.0 or 1.0)'
+        description: "Version to build (e.g., v1.0.0 or 1.0)"
         required: false
-        default: 'manual'
+        default: "manual"
 
 jobs:
   build-updater:
@@ -24,18 +24,18 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - platform: 'ubuntu-22.04'
-            args: ''
-            arch: 'x64'
-          - platform: 'macos-15-intel'
-            args: ''
-            arch: 'x64'
-          - platform: 'macos-latest'
-            args: ''
-            arch: 'aarch64'
-          - platform: 'windows-latest'
-            args: ''
-            arch: 'x64'
+          - platform: "ubuntu-22.04"
+            args: ""
+            arch: "x64"
+          - platform: "macos-15-intel"
+            args: ""
+            arch: "x64"
+          - platform: "macos-latest"
+            args: ""
+            arch: "aarch64"
+          - platform: "windows-latest"
+            args: ""
+            arch: "x64"
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -70,7 +70,7 @@ jobs:
           choco install strawberryperl nasm -y
           echo "C:\\Program Files\\NASM" >> $GITHUB_PATH
           echo "C:\\Strawberry\\perl\\bin" >> $GITHUB_PATH
-          
+
       - name: Patch tauri config for Windows build
         if: matrix.platform == 'windows-latest'
         shell: powershell
@@ -92,8 +92,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
+          node-version: "20"
+          cache: "pnpm"
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -101,7 +101,7 @@ jobs:
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
-          workspaces: './src-tauri -> target'
+          workspaces: "./src-tauri -> target"
 
       - name: Install frontend dependencies
         run: pnpm install
@@ -114,7 +114,7 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           tagName: ${{ github.event.inputs.version || github.ref_name }}
-          releaseName: 'DTV ${{ github.event.inputs.version || github.ref_name }}'
+          releaseName: "DTV ${{ github.event.inputs.version || github.ref_name }}"
           releaseBody: |
             ## 🔄 Updater metadata
             This release includes signed updater artifacts (latest.json).

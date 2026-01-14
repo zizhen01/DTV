@@ -1,4 +1,4 @@
-declare module 'danmu.js' {
+declare module "danmu.js" {
   export default class DanmuJs {
     constructor(options: any);
     start(): void;

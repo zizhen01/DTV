@@ -1,7 +1,7 @@
-import { ref } from 'vue';
-import type { Ref } from 'vue';
-import { invoke } from '@tauri-apps/api/core';
-import type { CommonStreamer } from '../../../platforms/common/streamerTypes';
+import { ref } from "vue";
+import type { Ref } from "vue";
+import { invoke } from "@tauri-apps/api/core";
+import type { CommonStreamer } from "../../../platforms/common/streamerTypes";
 
 interface DouyuStreamer {
   rid: string;
@@ -28,8 +28,8 @@ interface LiveListApiResponse {
 const PAGE_SIZE = 20;
 
 export function useDouyuLiveRooms(
-  categoryTypeRef: Ref<'cate2' | 'cate3' | null>,
-  categoryIdRef: Ref<string | null>
+  categoryTypeRef: Ref<"cate2" | "cate3" | null>,
+  categoryIdRef: Ref<string | null>,
 ) {
   const rooms = ref<CommonStreamer[]>([]);
   const isLoading = ref(false);
@@ -38,13 +38,13 @@ export function useDouyuLiveRooms(
   const currentPage = ref(0);
 
   const mapDouyuItemToCommon = (item: DouyuStreamer): CommonStreamer => ({
-    room_id: item.rid?.toString() || '',
-    title: item.roomName || '',
-    nickname: item.nickname || '',
-    avatar: item.avatar || '',
-    room_cover: item.roomSrc || '',
-    viewer_count_str: item.hn || '0',
-    platform: 'douyu',
+    room_id: item.rid?.toString() || "",
+    title: item.roomName || "",
+    nickname: item.nickname || "",
+    avatar: item.avatar || "",
+    room_cover: item.roomSrc || "",
+    viewer_count_str: item.hn || "0",
+    platform: "douyu",
   });
 
   const fetchRooms = async (pageToFetch: number, isLoadMore: boolean) => {
@@ -60,20 +60,24 @@ export function useDouyuLiveRooms(
     if (isLoadMore) isLoadingMore.value = true;
     else isLoading.value = true;
 
-    let command = '';
+    let command = "";
     let params: Record<string, unknown> = {};
-    if (categoryType === 'cate2') {
-      command = 'fetch_live_list';
-      params = { cate2: categoryId, offset: pageToFetch * PAGE_SIZE, limit: PAGE_SIZE };
+    if (categoryType === "cate2") {
+      command = "fetch_live_list";
+      params = {
+        cate2: categoryId,
+        offset: pageToFetch * PAGE_SIZE,
+        limit: PAGE_SIZE,
+      };
     } else {
-      command = 'fetch_live_list_for_cate3';
+      command = "fetch_live_list_for_cate3";
       params = { cate3Id: categoryId, page: pageToFetch + 1, limit: PAGE_SIZE };
     }
 
     try {
       const resp = await invoke<LiveListApiResponse>(command, params);
       if (resp.error !== 0 || !resp.data) {
-        throw new Error(resp.msg || '斗鱼接口返回错误');
+        throw new Error(resp.msg || "斗鱼接口返回错误");
       }
 
       const newRooms = (resp.data.list || []).map(mapDouyuItemToCommon);
@@ -84,14 +88,15 @@ export function useDouyuLiveRooms(
         const totalFetched = (pageToFetch + 1) * PAGE_SIZE;
         hasMore.value = resp.data.total > totalFetched && newRooms.length > 0;
       } else if (resp.data.page_count !== undefined) {
-        hasMore.value = pageToFetch + 1 < resp.data.page_count && newRooms.length > 0;
+        hasMore.value =
+          pageToFetch + 1 < resp.data.page_count && newRooms.length > 0;
       } else {
         hasMore.value = newRooms.length === PAGE_SIZE;
       }
 
       currentPage.value = pageToFetch;
     } catch (e) {
-      console.error('[useDouyuLiveRooms] invoke error', e);
+      console.error("[useDouyuLiveRooms] invoke error", e);
       if (pageToFetch === 0) rooms.value = [];
       hasMore.value = false;
     } finally {

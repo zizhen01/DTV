@@ -1,12 +1,12 @@
-import { createApp } from 'vue';
-import { createPinia } from 'pinia';
-import App from './App.vue';
-import router from './router';
-import { createPinia } from 'pinia';
-import { useFollowStore } from './stores/followStore';
-import App from './App.vue'; 
-import { useThemeStore } from './stores/theme';
-import { check } from '@tauri-apps/plugin-updater';
+import { createApp } from "vue";
+import { createPinia } from "pinia";
+import App from "./App.vue";
+import router from "./router";
+import { createPinia } from "pinia";
+import { useFollowStore } from "./stores/followStore";
+import App from "./App.vue";
+import { useThemeStore } from "./stores/theme";
+import { check } from "@tauri-apps/plugin-updater";
 
 const app = createApp(App);
 const pinia = createPinia();
@@ -14,19 +14,18 @@ const pinia = createPinia();
 app.use(pinia);
 app.use(router);
 
-const followStore = useFollowStore(); 
+const followStore = useFollowStore();
 try {
   followStore.loadFollowedStreamers();
 } catch (error) {
-  console.error('[main.ts] Error initializing follow store:', error);
+  console.error("[main.ts] Error initializing follow store:", error);
 }
-
 
 const themeStore = useThemeStore();
 try {
-  themeStore.initTheme(); 
+  themeStore.initTheme();
 } catch (error) {
-  console.error('[main.ts] Error initializing theme store:', error);
+  console.error("[main.ts] Error initializing theme store:", error);
 }
 
 const maybeCheckForUpdates = async () => {
@@ -34,16 +33,18 @@ const maybeCheckForUpdates = async () => {
   try {
     const update = await check();
     if (update?.available) {
-      const notes = update.body ? `\n\n${update.body}` : '';
-      const shouldUpdate = window.confirm(`发现新版本 ${update.version}，是否立即更新？${notes}`);
+      const notes = update.body ? `\n\n${update.body}` : "";
+      const shouldUpdate = window.confirm(
+        `发现新版本 ${update.version}，是否立即更新？${notes}`,
+      );
       if (!shouldUpdate) return;
       await update.downloadAndInstall();
     }
   } catch (error) {
-    console.error('[main.ts] Auto update check failed:', error);
+    console.error("[main.ts] Auto update check failed:", error);
   }
 };
 
 void maybeCheckForUpdates();
 
-app.mount('#app');
+app.mount("#app");

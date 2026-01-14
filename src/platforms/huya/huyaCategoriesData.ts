@@ -1,3 +1,3 @@
-import huyaGames from '../../data/categories/huya_categories.json'
+import huyaGames from "../../data/categories/huya_categories.json";
 
-export const huyaCategoriesData = huyaGames
+export const huyaCategoriesData = huyaGames;

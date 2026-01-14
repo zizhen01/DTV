@@ -1,14 +1,26 @@
-import type { Ref } from 'vue';
+import type { Ref } from "vue";
 
-import { Platform as StreamingPlatform } from '../../platforms/common/types';
-import { startBilibiliDanmakuListener, stopBilibiliDanmaku } from '../../platforms/bilibili/playerHelper';
-import { startDouyinDanmakuListener, stopDouyinDanmaku } from '../../platforms/douyin/playerHelper';
-import { startDouyuDanmakuListener, stopDouyuDanmaku } from '../../platforms/douyu/playerHelper';
-import { startHuyaDanmakuListener, stopHuyaDanmaku } from '../../platforms/huya/playerHelper';
+import { Platform as StreamingPlatform } from "../../platforms/common/types";
+import {
+  startBilibiliDanmakuListener,
+  stopBilibiliDanmaku,
+} from "../../platforms/bilibili/playerHelper";
+import {
+  startDouyinDanmakuListener,
+  stopDouyinDanmaku,
+} from "../../platforms/douyin/playerHelper";
+import {
+  startDouyuDanmakuListener,
+  stopDouyuDanmaku,
+} from "../../platforms/douyu/playerHelper";
+import {
+  startHuyaDanmakuListener,
+  stopHuyaDanmaku,
+} from "../../platforms/huya/playerHelper";
 
-import type { DanmuUserSettings } from './constants';
-import type { PlayerProps } from './watchers';
-import type { DanmakuMessage, DanmuOverlayInstance } from './types';
+import type { DanmuUserSettings } from "./constants";
+import type { PlayerProps } from "./watchers";
+import type { DanmakuMessage, DanmuOverlayInstance } from "./types";
 
 export interface DanmakuManagerContext {
   danmakuMessages: Ref<DanmakuMessage[]>;
@@ -31,7 +43,9 @@ export const startCurrentDanmakuListener = async (
 
   ctx.isDanmakuListenerActive.value = true;
   if (!danmuOverlay) {
-    console.warn('[Player] Danmu overlay instance missing, incoming danmaku will not render on video but list will update.');
+    console.warn(
+      "[Player] Danmu overlay instance missing, incoming danmaku will not render on video but list will update.",
+    );
   }
 
   try {
@@ -43,47 +57,73 @@ export const startCurrentDanmakuListener = async (
         style: {
           color: ctx.danmuSettings.color,
           fontSize: ctx.danmuSettings.fontSize,
-          '--danmu-stroke-color': ctx.danmuSettings.strokeColor,
+          "--danmu-stroke-color": ctx.danmuSettings.strokeColor,
         },
       }),
     };
     let stopFn: (() => void) | null = null;
     if (platform === StreamingPlatform.DOUYU) {
-      stopFn = await startDouyuDanmakuListener(roomId, danmuOverlay, ctx.danmakuMessages, renderOptions);
+      stopFn = await startDouyuDanmakuListener(
+        roomId,
+        danmuOverlay,
+        ctx.danmakuMessages,
+        renderOptions,
+      );
     } else if (platform === StreamingPlatform.DOUYIN) {
-      stopFn = await startDouyinDanmakuListener(roomId, danmuOverlay, ctx.danmakuMessages, renderOptions);
+      stopFn = await startDouyinDanmakuListener(
+        roomId,
+        danmuOverlay,
+        ctx.danmakuMessages,
+        renderOptions,
+      );
     } else if (platform === StreamingPlatform.HUYA) {
-      stopFn = await startHuyaDanmakuListener(roomId, danmuOverlay, ctx.danmakuMessages, renderOptions);
+      stopFn = await startHuyaDanmakuListener(
+        roomId,
+        danmuOverlay,
+        ctx.danmakuMessages,
+        renderOptions,
+      );
     } else if (platform === StreamingPlatform.BILIBILI) {
-      stopFn = await startBilibiliDanmakuListener(roomId, danmuOverlay, ctx.danmakuMessages, ctx.props.cookie || undefined, renderOptions);
+      stopFn = await startBilibiliDanmakuListener(
+        roomId,
+        danmuOverlay,
+        ctx.danmakuMessages,
+        ctx.props.cookie || undefined,
+        renderOptions,
+      );
     }
 
     if (stopFn) {
       ctx.unlistenDanmakuFn.value = stopFn;
       const successMessage: DanmakuMessage = {
         id: `system-conn-${Date.now()}`,
-        nickname: '系统消息',
-        content: '弹幕连接成功！',
+        nickname: "系统消息",
+        content: "弹幕连接成功！",
         isSystem: true,
-        type: 'success',
-        color: '#28a745',
+        type: "success",
+        color: "#28a745",
       };
       ctx.danmakuMessages.value.push(successMessage);
     } else {
-      console.warn(`[Player] Danmaku listener for ${platform}/${roomId} did not return a stop function.`);
+      console.warn(
+        `[Player] Danmaku listener for ${platform}/${roomId} did not return a stop function.`,
+      );
       ctx.isDanmakuListenerActive.value = false;
     }
   } catch (error) {
-    console.error(`[Player] Failed to start danmaku listener for ${platform}/${roomId}:`, error);
+    console.error(
+      `[Player] Failed to start danmaku listener for ${platform}/${roomId}:`,
+      error,
+    );
     ctx.isDanmakuListenerActive.value = false;
 
     const errorMessage: DanmakuMessage = {
       id: `system-err-${Date.now()}`,
-      nickname: '系统消息',
-      content: '弹幕连接失败，请尝试刷新播放器。',
+      nickname: "系统消息",
+      content: "弹幕连接失败，请尝试刷新播放器。",
       isSystem: true,
-      type: 'error',
-      color: '#dc3545',
+      type: "error",
+      color: "#dc3545",
     };
     ctx.danmakuMessages.value.push(errorMessage);
   }
@@ -108,12 +148,17 @@ export const stopCurrentDanmakuListener = async (
       ctx.unlistenDanmakuFn.value = null;
     }
   } else if (ctx.unlistenDanmakuFn.value) {
-    console.warn('[Player] stopCurrentDanmakuListener called without platform, but a global unlistenDanmakuFn exists. Calling it now.');
+    console.warn(
+      "[Player] stopCurrentDanmakuListener called without platform, but a global unlistenDanmakuFn exists. Calling it now.",
+    );
     try {
       ctx.unlistenDanmakuFn.value();
       ctx.unlistenDanmakuFn.value = null;
     } catch (error) {
-      console.error('[Player] Error executing fallback unlistenDanmakuFn:', error);
+      console.error(
+        "[Player] Error executing fallback unlistenDanmakuFn:",
+        error,
+      );
       ctx.unlistenDanmakuFn.value = null;
     }
   }

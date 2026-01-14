@@ -1,4 +1,4 @@
-import Plugin, { POSITIONS } from 'xgplayer/es/plugin/plugin.js';
+import Plugin, { POSITIONS } from "xgplayer/es/plugin/plugin.js";
 
 import {
   DANMU_OPACITY_MAX,
@@ -6,17 +6,19 @@ import {
   ICONS,
   sanitizeDanmuArea,
   sanitizeDanmuOpacity,
-} from './constants';
-import type { DanmuUserSettings } from './constants';
+} from "./constants";
+import type { DanmuUserSettings } from "./constants";
 
 export class DanmuToggleControl extends Plugin {
-  static override pluginName = 'danmuToggle';
+  static override pluginName = "danmuToggle";
   static override defaultConfig = {
     position: POSITIONS.CONTROLS_RIGHT,
     index: 4,
     disable: false,
     getState: (() => true) as () => boolean,
-    onToggle: (async (_value: boolean) => {}) as (value: boolean) => Promise<void> | void,
+    onToggle: (async (_value: boolean) => {}) as (
+      value: boolean,
+    ) => Promise<void> | void,
   };
 
   private handleClick: ((event: Event) => void) | null = null;
@@ -26,26 +28,29 @@ export class DanmuToggleControl extends Plugin {
     if (this.config.disable) {
       return;
     }
-    this.isActive = typeof this.config.getState === 'function' ? !!this.config.getState() : true;
+    this.isActive =
+      typeof this.config.getState === "function"
+        ? !!this.config.getState()
+        : true;
     this.updateState();
     this.handleClick = (event: Event) => {
       event.preventDefault();
       event.stopPropagation();
       this.toggle();
     };
-    this.bind(['click', 'touchend'], this.handleClick);
+    this.bind(["click", "touchend"], this.handleClick);
   }
 
   override destroy() {
     if (this.handleClick) {
-      this.unbind(['click', 'touchend'], this.handleClick);
+      this.unbind(["click", "touchend"], this.handleClick);
       this.handleClick = null;
     }
   }
 
   override render() {
     if (this.config.disable) {
-      return '';
+      return "";
     }
     return `<xg-icon class="xgplayer-danmu-toggle" title="" role="button" aria-pressed="${this.isActive}">
       <span class="danmu-toggle-label">弹幕</span>
@@ -60,7 +65,7 @@ export class DanmuToggleControl extends Plugin {
     this.isActive = !this.isActive;
     this.updateState();
     const callback = this.config.onToggle;
-    if (typeof callback === 'function') {
+    if (typeof callback === "function") {
       callback(this.isActive);
     }
   }
@@ -70,8 +75,8 @@ export class DanmuToggleControl extends Plugin {
     if (!root) {
       return;
     }
-    root.classList.toggle('is-off', !this.isActive);
-    root.setAttribute('aria-pressed', this.isActive ? 'true' : 'false');
+    root.classList.toggle("is-off", !this.isActive);
+    root.setAttribute("aria-pressed", this.isActive ? "true" : "false");
   }
 
   setState(isActive: boolean) {
@@ -81,21 +86,23 @@ export class DanmuToggleControl extends Plugin {
 }
 
 export class DanmuSettingsControl extends Plugin {
-  static override pluginName = 'danmuSettings';
+  static override pluginName = "danmuSettings";
   static override defaultConfig = {
     position: POSITIONS.CONTROLS_RIGHT,
     index: 4,
     disable: false,
     getSettings: (() => ({
-      color: '#ffffff',
-      strokeColor: '#444444',
-      fontSize: '20px',
+      color: "#ffffff",
+      strokeColor: "#444444",
+      fontSize: "20px",
       duration: 10000,
       area: 0.5,
-      mode: 'scroll',
+      mode: "scroll",
       opacity: 1,
     })) as () => DanmuUserSettings,
-    onChange: (async (_partial: Partial<DanmuUserSettings>) => {}) as (partial: Partial<DanmuUserSettings>) => Promise<void> | void,
+    onChange: (async (_partial: Partial<DanmuUserSettings>) => {}) as (
+      partial: Partial<DanmuUserSettings>,
+    ) => Promise<void> | void,
   };
 
   private panel: HTMLElement | null = null;
@@ -106,12 +113,12 @@ export class DanmuSettingsControl extends Plugin {
   private hoverCloseTimer: ReturnType<typeof setTimeout> | null = null;
   private isOpen = false;
   private currentSettings: DanmuUserSettings = {
-    color: '#ffffff',
-    strokeColor: '#444444',
-    fontSize: '20px',
+    color: "#ffffff",
+    strokeColor: "#444444",
+    fontSize: "20px",
     duration: 10000,
     area: 0.5,
-    mode: 'scroll',
+    mode: "scroll",
     opacity: 1,
   };
   private textColorInput: HTMLInputElement | null = null;
@@ -125,13 +132,16 @@ export class DanmuSettingsControl extends Plugin {
     if (this.config.disable) {
       return;
     }
-    this.currentSettings = typeof this.config.getSettings === 'function'
-      ? this.config.getSettings()
-      : this.currentSettings;
+    this.currentSettings =
+      typeof this.config.getSettings === "function"
+        ? this.config.getSettings()
+        : this.currentSettings;
     this.currentSettings.area = sanitizeDanmuArea(this.currentSettings.area);
-    this.currentSettings.opacity = sanitizeDanmuOpacity(this.currentSettings.opacity);
-    if (typeof this.currentSettings.strokeColor !== 'string') {
-      this.currentSettings.strokeColor = '#444444';
+    this.currentSettings.opacity = sanitizeDanmuOpacity(
+      this.currentSettings.opacity,
+    );
+    if (typeof this.currentSettings.strokeColor !== "string") {
+      this.currentSettings.strokeColor = "#444444";
     }
 
     this.createPanel();
@@ -143,15 +153,15 @@ export class DanmuSettingsControl extends Plugin {
       this.togglePanel();
     };
 
-    this.bind(['click', 'touchend'], this.handleToggle);
+    this.bind(["click", "touchend"], this.handleToggle);
 
-    if (typeof document !== 'undefined') {
+    if (typeof document !== "undefined") {
       this.handleDocumentClick = (event: MouseEvent) => {
         if (!this.root.contains(event.target as Node)) {
           this.closePanel();
         }
       };
-      document.addEventListener('click', this.handleDocumentClick);
+      document.addEventListener("click", this.handleDocumentClick);
     }
 
     this.handleHoverEnter = () => {
@@ -170,32 +180,32 @@ export class DanmuSettingsControl extends Plugin {
         this.closePanel();
       }, 220);
     };
-    this.bind('mouseenter', this.handleHoverEnter);
-    this.bind('mouseleave', this.handleHoverLeave);
+    this.bind("mouseenter", this.handleHoverEnter);
+    this.bind("mouseleave", this.handleHoverLeave);
   }
 
   override destroy() {
     if (this.handleToggle) {
-      this.unbind(['click', 'touchend'], this.handleToggle);
+      this.unbind(["click", "touchend"], this.handleToggle);
       this.handleToggle = null;
     }
     if (this.handleDocumentClick) {
-      document.removeEventListener('click', this.handleDocumentClick);
+      document.removeEventListener("click", this.handleDocumentClick);
       this.handleDocumentClick = null;
     }
     if (this.handleHoverEnter) {
-      this.unbind('mouseenter', this.handleHoverEnter);
+      this.unbind("mouseenter", this.handleHoverEnter);
       this.handleHoverEnter = null;
     }
     if (this.handleHoverLeave) {
-      this.unbind('mouseleave', this.handleHoverLeave);
+      this.unbind("mouseleave", this.handleHoverLeave);
       this.handleHoverLeave = null;
     }
     if (this.hoverCloseTimer) {
       clearTimeout(this.hoverCloseTimer);
       this.hoverCloseTimer = null;
     }
-    (this.root as HTMLElement | null)?.classList.remove('menu-open');
+    (this.root as HTMLElement | null)?.classList.remove("menu-open");
     this.panel?.remove();
     this.panel = null;
     this.textColorInput = null;
@@ -208,7 +218,7 @@ export class DanmuSettingsControl extends Plugin {
 
   override render() {
     if (this.config.disable) {
-      return '';
+      return "";
     }
     return `<xg-icon class="xgplayer-danmu-settings" title="">
       ${ICONS.cog}
@@ -216,8 +226,8 @@ export class DanmuSettingsControl extends Plugin {
   }
 
   private createPanel() {
-    this.panel = document.createElement('div');
-    this.panel.className = 'xgplayer-danmu-settings-panel';
+    this.panel = document.createElement("div");
+    this.panel.className = "xgplayer-danmu-settings-panel";
     this.panel.innerHTML = `
       <div class="settings-shell">
         <div class="settings-body">
@@ -250,29 +260,41 @@ export class DanmuSettingsControl extends Plugin {
     `;
     this.root.appendChild(this.panel);
 
-    this.panel.addEventListener('click', (event) => {
+    this.panel.addEventListener("click", (event) => {
       event.stopPropagation();
     });
-    this.panel.addEventListener('pointerdown', (event) => {
+    this.panel.addEventListener("pointerdown", (event) => {
       event.stopPropagation();
     });
-    this.panel.addEventListener('mousedown', (event) => {
+    this.panel.addEventListener("mousedown", (event) => {
       event.stopPropagation();
     });
 
-    this.textColorInput = this.panel.querySelector<HTMLInputElement>('.danmu-setting-color');
-    this.strokeColorInput = this.panel.querySelector<HTMLInputElement>('.danmu-setting-stroke-color');
-    this.fontSizeSlider = this.panel.querySelector<HTMLInputElement>('.danmu-setting-font-range');
-    this.durationSlider = this.panel.querySelector<HTMLInputElement>('.danmu-setting-duration-range');
-    this.areaSlider = this.panel.querySelector<HTMLInputElement>('.danmu-setting-area-range');
-    this.opacitySlider = this.panel.querySelector<HTMLInputElement>('.danmu-setting-opacity-range');
+    this.textColorInput = this.panel.querySelector<HTMLInputElement>(
+      ".danmu-setting-color",
+    );
+    this.strokeColorInput = this.panel.querySelector<HTMLInputElement>(
+      ".danmu-setting-stroke-color",
+    );
+    this.fontSizeSlider = this.panel.querySelector<HTMLInputElement>(
+      ".danmu-setting-font-range",
+    );
+    this.durationSlider = this.panel.querySelector<HTMLInputElement>(
+      ".danmu-setting-duration-range",
+    );
+    this.areaSlider = this.panel.querySelector<HTMLInputElement>(
+      ".danmu-setting-area-range",
+    );
+    this.opacitySlider = this.panel.querySelector<HTMLInputElement>(
+      ".danmu-setting-opacity-range",
+    );
 
-    this.textColorInput?.addEventListener('input', (event) => {
+    this.textColorInput?.addEventListener("input", (event) => {
       const value = (event.target as HTMLInputElement).value;
       this.currentSettings.color = value;
       this.emitChange({ color: value });
     });
-    this.strokeColorInput?.addEventListener('input', (event) => {
+    this.strokeColorInput?.addEventListener("input", (event) => {
       const value = (event.target as HTMLInputElement).value;
       this.currentSettings.strokeColor = value;
       this.emitChange({ strokeColor: value });
@@ -286,17 +308,19 @@ export class DanmuSettingsControl extends Plugin {
       formatter: (value: number) => string,
     ) => {
       const updateDisplay = (value: number) => {
-        const label = this.panel?.querySelector<HTMLSpanElement>(displaySelector);
+        const label =
+          this.panel?.querySelector<HTMLSpanElement>(displaySelector);
         if (label) {
           label.textContent = formatter(value);
         }
       };
-      el?.addEventListener('input', (event) => {
+      el?.addEventListener("input", (event) => {
         const rawValue = (event.target as HTMLInputElement).value;
         const numericValue = Number(rawValue);
         updateDisplay(numericValue);
         const nextValue = transform(rawValue);
-        (this.currentSettings as Record<string, unknown>)[key as string] = nextValue;
+        (this.currentSettings as Record<string, unknown>)[key as string] =
+          nextValue;
         this.emitChange({ [key]: nextValue } as Partial<DanmuUserSettings>);
         this.updateSliderVisual(el);
       });
@@ -308,40 +332,42 @@ export class DanmuSettingsControl extends Plugin {
 
     handleRange(
       this.fontSizeSlider,
-      'fontSize',
+      "fontSize",
       (value) => `${Math.min(30, Math.max(14, Number(value)))}px`,
-      '.font-size-value',
+      ".font-size-value",
       (value) => `${Math.min(30, Math.max(14, value))}px`,
     );
 
     handleRange(
       this.durationSlider,
-      'duration',
+      "duration",
       (value) => {
         const numeric = Number(value);
-        const clamped = Number.isFinite(numeric) ? Math.min(20000, Math.max(3000, numeric)) : 10000;
+        const clamped = Number.isFinite(numeric)
+          ? Math.min(20000, Math.max(3000, numeric))
+          : 10000;
         return clamped;
       },
-      '.speed-value',
+      ".speed-value",
       (value) => this.formatDurationLabel(value),
     );
 
     handleRange(
       this.areaSlider,
-      'area',
+      "area",
       (value) => {
         const numeric = Number(value);
         return sanitizeDanmuArea(numeric);
       },
-      '.area-value',
+      ".area-value",
       (value) => this.formatAreaLabel(value),
     );
 
     handleRange(
       this.opacitySlider,
-      'opacity',
+      "opacity",
       (value) => sanitizeDanmuOpacity(Number(value)),
-      '.opacity-value',
+      ".opacity-value",
       (value) => this.formatOpacityLabel(value),
     );
   }
@@ -375,8 +401,8 @@ export class DanmuSettingsControl extends Plugin {
       this.hoverCloseTimer = null;
     }
     this.isOpen = true;
-    this.panel.classList.add('show');
-    this.root.classList.add('menu-open');
+    this.panel.classList.add("show");
+    this.root.classList.add("menu-open");
     this.updateInputs();
   }
 
@@ -389,8 +415,8 @@ export class DanmuSettingsControl extends Plugin {
       this.hoverCloseTimer = null;
     }
     this.isOpen = false;
-    this.panel.classList.remove('show');
-    this.root.classList.remove('menu-open');
+    this.panel.classList.remove("show");
+    this.root.classList.remove("menu-open");
   }
 
   private updateInputs() {
@@ -405,17 +431,24 @@ export class DanmuSettingsControl extends Plugin {
     }
     if (this.fontSizeSlider) {
       const numericFont = parseInt(this.currentSettings.fontSize, 10);
-      this.fontSizeSlider.value = String(Math.min(30, Math.max(14, numericFont)));
-      const fontLabel = this.panel.querySelector<HTMLSpanElement>('.font-size-value');
+      this.fontSizeSlider.value = String(
+        Math.min(30, Math.max(14, numericFont)),
+      );
+      const fontLabel =
+        this.panel.querySelector<HTMLSpanElement>(".font-size-value");
       if (fontLabel) {
         fontLabel.textContent = `${Math.min(30, Math.max(14, numericFont))}px`;
       }
       this.updateSliderVisual(this.fontSizeSlider);
     }
     if (this.durationSlider) {
-      const durationValue = Math.min(20000, Math.max(3000, this.currentSettings.duration));
+      const durationValue = Math.min(
+        20000,
+        Math.max(3000, this.currentSettings.duration),
+      );
       this.durationSlider.value = String(durationValue);
-      const speedLabel = this.panel.querySelector<HTMLSpanElement>('.speed-value');
+      const speedLabel =
+        this.panel.querySelector<HTMLSpanElement>(".speed-value");
       if (speedLabel) {
         speedLabel.textContent = this.formatDurationLabel(durationValue);
       }
@@ -424,7 +457,8 @@ export class DanmuSettingsControl extends Plugin {
     if (this.areaSlider) {
       const areaValue = sanitizeDanmuArea(this.currentSettings.area);
       this.areaSlider.value = String(areaValue);
-      const areaLabel = this.panel.querySelector<HTMLSpanElement>('.area-value');
+      const areaLabel =
+        this.panel.querySelector<HTMLSpanElement>(".area-value");
       if (areaLabel) {
         areaLabel.textContent = this.formatAreaLabel(areaValue);
       }
@@ -433,7 +467,8 @@ export class DanmuSettingsControl extends Plugin {
     if (this.opacitySlider) {
       const opacityValue = sanitizeDanmuOpacity(this.currentSettings.opacity);
       this.opacitySlider.value = String(opacityValue);
-      const opacityLabel = this.panel.querySelector<HTMLSpanElement>('.opacity-value');
+      const opacityLabel =
+        this.panel.querySelector<HTMLSpanElement>(".opacity-value");
       if (opacityLabel) {
         opacityLabel.textContent = this.formatOpacityLabel(opacityValue);
       }
@@ -444,29 +479,29 @@ export class DanmuSettingsControl extends Plugin {
   private formatDurationLabel(value: number): string {
     const clamped = Math.min(20000, Math.max(3000, value));
     if (clamped <= 4500) {
-      return '极快';
+      return "极快";
     }
     if (clamped <= 7500) {
-      return '很快';
+      return "很快";
     }
     if (clamped <= 10000) {
-      return '标准';
+      return "标准";
     }
     if (clamped <= 14000) {
-      return '稍慢';
+      return "稍慢";
     }
-    return '慢速';
+    return "慢速";
   }
 
   private formatAreaLabel(value: number): string {
     const clamped = sanitizeDanmuArea(value);
     if (clamped <= 0.25) {
-      return '上 1/4';
+      return "上 1/4";
     }
     if (clamped <= 0.5) {
-      return '上 1/2';
+      return "上 1/2";
     }
-    return '上 3/4';
+    return "上 3/4";
   }
 
   private formatOpacityLabel(value: number): string {
@@ -476,28 +511,31 @@ export class DanmuSettingsControl extends Plugin {
 
   private emitChange(partial: Partial<DanmuUserSettings>) {
     const callback = this.config.onChange;
-    if (typeof callback === 'function') {
+    if (typeof callback === "function") {
       callback(partial);
     }
   }
 
   setSettings(settings: Partial<DanmuUserSettings>) {
     const normalized: Partial<DanmuUserSettings> = { ...settings };
-    if (typeof normalized.area === 'number') {
+    if (typeof normalized.area === "number") {
       normalized.area = sanitizeDanmuArea(normalized.area);
     }
-    if (typeof normalized.opacity === 'number') {
+    if (typeof normalized.opacity === "number") {
       normalized.opacity = sanitizeDanmuOpacity(normalized.opacity);
     }
-    if (typeof normalized.strokeColor !== 'undefined' && typeof normalized.strokeColor !== 'string') {
+    if (
+      typeof normalized.strokeColor !== "undefined" &&
+      typeof normalized.strokeColor !== "string"
+    ) {
       delete (normalized as any).strokeColor;
     }
     this.currentSettings = {
       ...this.currentSettings,
       ...normalized,
     };
-    if (typeof this.currentSettings.strokeColor !== 'string') {
-      this.currentSettings.strokeColor = '#444444';
+    if (typeof this.currentSettings.strokeColor !== "string") {
+      this.currentSettings.strokeColor = "#444444";
     }
     this.updateInputs();
   }

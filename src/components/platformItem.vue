@@ -1,14 +1,22 @@
 <template>
-    <button type="button"
-        class="flex relative rounded w-full h-16 bg-neutral-800 hover:bg-neutral-800/30 cursor-pointer">
-        <div class="size-16 aspect-square rounded absolute bg-amber-500"></div>
-        <slot class="flex-1 font-medium text-md z-100 pl-32" />
-    </button>
+  <button
+    type="button"
+    class="group relative flex h-14 w-full cursor-pointer overflow-hidden rounded-lg border border-border-main bg-surface-mid shadow-sm hover:bg-surface-high"
+  >
+    <div
+      class="aspect-square size-14 rounded-l-lg bg-brand group-hover:scale-110"
+    ></div>
+    <div
+      class="flex flex-1 items-center pl-4 text-sm font-bold text-text-main group-hover:text-brand"
+    >
+      <slot />
+    </div>
+  </button>
 </template>
 
 <script setup lang="ts">
 defineProps({
-    active: { type: Boolean, default: false },
-})
-defineEmits(['click'])
+  active: { type: Boolean, default: false },
+});
+defineEmits(["click"]);
 </script>

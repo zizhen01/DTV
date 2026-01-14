@@ -1,9 +1,9 @@
-import Plugin, { POSITIONS } from 'xgplayer/es/plugin/plugin.js';
+import Plugin, { POSITIONS } from "xgplayer/es/plugin/plugin.js";
 
-import { ICONS, loadStoredVolume, persistStoredVolume } from './constants';
+import { ICONS, loadStoredVolume, persistStoredVolume } from "./constants";
 
 export class VolumeControl extends Plugin {
-  static override pluginName = 'volumeControl';
+  static override pluginName = "volumeControl";
   static override defaultConfig = {
     position: POSITIONS.CONTROLS_LEFT,
     index: 3,
@@ -19,7 +19,7 @@ export class VolumeControl extends Plugin {
 
   override render() {
     if (this.config.disable) {
-      return '';
+      return "";
     }
     return `<xg-icon class="xgplayer-volume-control" title="音量/静音切换">
       <div class="volume-icon">
@@ -34,9 +34,9 @@ export class VolumeControl extends Plugin {
     if (this.config.disable) {
       return;
     }
-    this.volumeIcon = this.find('.volume-icon') as HTMLElement | null;
-    this.slider = this.find('.volume-slider') as HTMLInputElement | null;
-    this.valueLabel = this.find('.volume-value') as HTMLElement | null;
+    this.volumeIcon = this.find(".volume-icon") as HTMLElement | null;
+    this.slider = this.find(".volume-slider") as HTMLInputElement | null;
+    this.valueLabel = this.find(".volume-value") as HTMLElement | null;
 
     const updateUI = (volume: number) => {
       const clamped = Math.max(0, Math.min(1, volume));
@@ -51,7 +51,10 @@ export class VolumeControl extends Plugin {
         this.valueLabel.textContent = `${Math.round(clamped * 100)}%`;
       }
       if (this.volumeIcon) {
-        this.volumeIcon.setAttribute('data-muted', clamped === 0 ? 'true' : 'false');
+        this.volumeIcon.setAttribute(
+          "data-muted",
+          clamped === 0 ? "true" : "false",
+        );
       }
     };
 
@@ -71,7 +74,7 @@ export class VolumeControl extends Plugin {
 
     updateUI(this.player.volume ?? storedVolume ?? 1);
 
-    this.slider?.addEventListener('input', (event) => {
+    this.slider?.addEventListener("input", (event) => {
       const value = Number((event.target as HTMLInputElement).value);
       const clampedPercent = Math.max(0, Math.min(100, value));
       const normalized = clampedPercent / 100;
@@ -105,10 +108,10 @@ export class VolumeControl extends Plugin {
       }
     };
 
-    this.volumeIcon?.addEventListener('click', this.handleIconClick);
+    this.volumeIcon?.addEventListener("click", this.handleIconClick);
     if (this.volumeIcon) {
-      this.volumeIcon.setAttribute('title', '点击静音 / 取消静音');
-      this.volumeIcon.style.cursor = 'pointer';
+      this.volumeIcon.setAttribute("title", "点击静音 / 取消静音");
+      this.volumeIcon.style.cursor = "pointer";
     }
 
     this.onVolumeChange = () => {
@@ -116,16 +119,16 @@ export class VolumeControl extends Plugin {
       updateUI(current);
       persistStoredVolume(current);
     };
-    this.player.on('volumechange', this.onVolumeChange);
+    this.player.on("volumechange", this.onVolumeChange);
   }
 
   override destroy() {
     if (this.handleIconClick && this.volumeIcon) {
-      this.volumeIcon.removeEventListener('click', this.handleIconClick);
+      this.volumeIcon.removeEventListener("click", this.handleIconClick);
       this.handleIconClick = null;
     }
     if (this.onVolumeChange) {
-      this.player.off('volumechange', this.onVolumeChange);
+      this.player.off("volumechange", this.onVolumeChange);
       this.onVolumeChange = null;
     }
     this.volumeIcon = null;
@@ -144,7 +147,7 @@ export class VolumeControl extends Plugin {
 }
 
 export class RefreshControl extends Plugin {
-  static override pluginName = 'refreshControl';
+  static override pluginName = "refreshControl";
   static override defaultConfig = {
     position: POSITIONS.CONTROLS_LEFT,
     index: 2,
@@ -165,16 +168,16 @@ export class RefreshControl extends Plugin {
       if (this.isLoading) {
         return;
       }
-      if (typeof this.config.onClick === 'function') {
+      if (typeof this.config.onClick === "function") {
         this.config.onClick();
       }
     };
-    this.bind(['click', 'touchend'], this.handleClick);
+    this.bind(["click", "touchend"], this.handleClick);
   }
 
   override destroy() {
     if (this.handleClick) {
-      this.unbind(['click', 'touchend'], this.handleClick);
+      this.unbind(["click", "touchend"], this.handleClick);
       this.handleClick = null;
     }
     this.setLoading(false);
@@ -182,7 +185,7 @@ export class RefreshControl extends Plugin {
 
   override render() {
     if (this.config.disable) {
-      return '';
+      return "";
     }
     return `<xg-icon class="xgplayer-refresh-control" title="刷新">
       ${ICONS.rotateCcw}
@@ -195,24 +198,26 @@ export class RefreshControl extends Plugin {
     if (!root) {
       return;
     }
-    root.classList.toggle('is-loading', isLoading);
+    root.classList.toggle("is-loading", isLoading);
     if (isLoading) {
-      root.setAttribute('aria-disabled', 'true');
+      root.setAttribute("aria-disabled", "true");
     } else {
-      root.removeAttribute('aria-disabled');
+      root.removeAttribute("aria-disabled");
     }
   }
 }
 
 export class QualityControl extends Plugin {
-  static override pluginName = 'qualityControl';
+  static override pluginName = "qualityControl";
   static override defaultConfig = {
     position: POSITIONS.CONTROLS_RIGHT,
     index: 5,
     disable: false,
     options: [] as string[],
-    getCurrent: (() => '') as () => string,
-    onSelect: (async (_value: string) => {}) as (value: string) => Promise<void> | void,
+    getCurrent: (() => "") as () => string,
+    onSelect: (async (_value: string) => {}) as (
+      value: string,
+    ) => Promise<void> | void,
   };
 
   private dropdown: HTMLElement | null = null;
@@ -239,15 +244,15 @@ export class QualityControl extends Plugin {
       }
       this.toggleDropdown();
     };
-    this.bind(['click', 'touchend'], this.handleToggle);
+    this.bind(["click", "touchend"], this.handleToggle);
 
-    if (typeof document !== 'undefined') {
+    if (typeof document !== "undefined") {
       this.handleDocumentClick = (event: MouseEvent) => {
         if (!this.root.contains(event.target as Node)) {
           this.hideDropdown();
         }
       };
-      document.addEventListener('click', this.handleDocumentClick);
+      document.addEventListener("click", this.handleDocumentClick);
     }
 
     this.handleHoverEnter = () => {
@@ -268,25 +273,25 @@ export class QualityControl extends Plugin {
         this.hideDropdown();
       }, 220);
     };
-    this.bind('mouseenter', this.handleHoverEnter);
-    this.bind('mouseleave', this.handleHoverLeave);
+    this.bind("mouseenter", this.handleHoverEnter);
+    this.bind("mouseleave", this.handleHoverLeave);
   }
 
   override destroy() {
     if (this.handleToggle) {
-      this.unbind(['click', 'touchend'], this.handleToggle);
+      this.unbind(["click", "touchend"], this.handleToggle);
       this.handleToggle = null;
     }
     if (this.handleDocumentClick) {
-      document.removeEventListener('click', this.handleDocumentClick);
+      document.removeEventListener("click", this.handleDocumentClick);
       this.handleDocumentClick = null;
     }
     if (this.handleHoverEnter) {
-      this.unbind('mouseenter', this.handleHoverEnter);
+      this.unbind("mouseenter", this.handleHoverEnter);
       this.handleHoverEnter = null;
     }
     if (this.handleHoverLeave) {
-      this.unbind('mouseleave', this.handleHoverLeave);
+      this.unbind("mouseleave", this.handleHoverLeave);
       this.handleHoverLeave = null;
     }
     if (this.hoverCloseTimer) {
@@ -302,7 +307,7 @@ export class QualityControl extends Plugin {
 
   override render() {
     if (this.config.disable) {
-      return '';
+      return "";
     }
     const current = this.getCurrent();
     return `<xg-icon class="xgplayer-quality-control" title="">
@@ -314,7 +319,7 @@ export class QualityControl extends Plugin {
   }
 
   updateLabel(label: string) {
-    const textEl = this.find('.quality-label') as HTMLElement | null;
+    const textEl = this.find(".quality-label") as HTMLElement | null;
     if (textEl) {
       textEl.textContent = label;
     }
@@ -327,12 +332,14 @@ export class QualityControl extends Plugin {
   }
 
   private getCurrent() {
-    return typeof this.config.getCurrent === 'function' ? this.config.getCurrent() : '';
+    return typeof this.config.getCurrent === "function"
+      ? this.config.getCurrent()
+      : "";
   }
 
   private createDropdown() {
-    this.dropdown = document.createElement('div');
-    this.dropdown.className = 'xgplayer-quality-dropdown';
+    this.dropdown = document.createElement("div");
+    this.dropdown.className = "xgplayer-quality-dropdown";
     this.root.appendChild(this.dropdown);
     this.populateDropdown();
   }
@@ -341,19 +348,21 @@ export class QualityControl extends Plugin {
     if (!this.dropdown) {
       return;
     }
-    this.dropdown.innerHTML = '';
-    const options: string[] = Array.isArray(this.config.options) ? this.config.options : [];
+    this.dropdown.innerHTML = "";
+    const options: string[] = Array.isArray(this.config.options)
+      ? this.config.options
+      : [];
     options.forEach((option) => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'xgplayer-quality-item';
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "xgplayer-quality-item";
       btn.innerHTML = `
         <span class="quality-name">${option}</span>
         <svg class="quality-check" width="12" height="12" viewBox="0 0 12 12" fill="none">
           <path d="M3 6.5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       `;
-      btn.addEventListener('click', (event) => {
+      btn.addEventListener("click", (event) => {
         event.stopPropagation();
         event.preventDefault();
         if (this.isSwitching) {
@@ -362,9 +371,10 @@ export class QualityControl extends Plugin {
         let actionResult: Promise<void> | void;
         try {
           const callback = this.config.onSelect;
-          actionResult = typeof callback === 'function' ? callback(option) : undefined;
+          actionResult =
+            typeof callback === "function" ? callback(option) : undefined;
         } catch (error) {
-          console.error('[QualityControl] onSelect error:', error);
+          console.error("[QualityControl] onSelect error:", error);
           actionResult = undefined;
         }
         Promise.resolve(actionResult).finally(() => {
@@ -382,7 +392,7 @@ export class QualityControl extends Plugin {
     if (this.isSwitching) {
       return;
     }
-    if (this.dropdown?.classList.contains('show')) {
+    if (this.dropdown?.classList.contains("show")) {
       this.hideDropdown();
     } else {
       this.openDropdown();
@@ -397,8 +407,8 @@ export class QualityControl extends Plugin {
       clearTimeout(this.hoverCloseTimer);
       this.hoverCloseTimer = null;
     }
-    this.dropdown.classList.add('show');
-    this.root.classList.add('menu-open');
+    this.dropdown.classList.add("show");
+    this.root.classList.add("menu-open");
     this.updateActiveState(this.getCurrent());
   }
 
@@ -408,19 +418,21 @@ export class QualityControl extends Plugin {
       this.hoverCloseTimer = null;
     }
     if (this.dropdown) {
-      this.dropdown.classList.remove('show');
+      this.dropdown.classList.remove("show");
     }
-    this.root.classList.remove('menu-open');
+    this.root.classList.remove("menu-open");
   }
 
   private updateActiveState(current: string) {
     if (!this.dropdown) {
       return;
     }
-    const items = this.dropdown.querySelectorAll<HTMLButtonElement>('.xgplayer-quality-item');
+    const items = this.dropdown.querySelectorAll<HTMLButtonElement>(
+      ".xgplayer-quality-item",
+    );
     items.forEach((item) => {
-      const label = item.querySelector('.quality-name')?.textContent?.trim();
-      item.classList.toggle('active', label === current);
+      const label = item.querySelector(".quality-name")?.textContent?.trim();
+      item.classList.toggle("active", label === current);
     });
   }
 
@@ -435,11 +447,13 @@ export class QualityControl extends Plugin {
   private applySwitchingState() {
     const root = this.root as HTMLElement | null;
     if (root) {
-      root.classList.toggle('is-switching', this.isSwitching);
+      root.classList.toggle("is-switching", this.isSwitching);
     }
     if (this.dropdown) {
-      this.dropdown.classList.toggle('disabled', this.isSwitching);
-      const buttons = this.dropdown.querySelectorAll<HTMLButtonElement>('.xgplayer-quality-item');
+      this.dropdown.classList.toggle("disabled", this.isSwitching);
+      const buttons = this.dropdown.querySelectorAll<HTMLButtonElement>(
+        ".xgplayer-quality-item",
+      );
       buttons.forEach((button) => {
         button.disabled = this.isSwitching;
       });
@@ -453,15 +467,17 @@ export interface LineOption {
 }
 
 export class LineControl extends Plugin {
-  static override pluginName = 'lineControl';
+  static override pluginName = "lineControl";
   static override defaultConfig = {
     position: POSITIONS.CONTROLS_RIGHT,
     index: 5.2,
     disable: false,
     options: [] as LineOption[],
-    getCurrentKey: (() => '') as () => string,
-    getCurrentLabel: (() => '线路') as () => string,
-    onSelect: (async (_value: string) => {}) as (value: string) => Promise<void> | void,
+    getCurrentKey: (() => "") as () => string,
+    getCurrentLabel: (() => "线路") as () => string,
+    onSelect: (async (_value: string) => {}) as (
+      value: string,
+    ) => Promise<void> | void,
   };
 
   private dropdown: HTMLElement | null = null;
@@ -490,15 +506,15 @@ export class LineControl extends Plugin {
       }
       this.toggleDropdown();
     };
-    this.bind(['click', 'touchend'], this.handleToggle);
+    this.bind(["click", "touchend"], this.handleToggle);
 
-    if (typeof document !== 'undefined') {
+    if (typeof document !== "undefined") {
       this.handleDocumentClick = (event: MouseEvent) => {
         if (!this.root.contains(event.target as Node)) {
           this.hideDropdown();
         }
       };
-      document.addEventListener('click', this.handleDocumentClick);
+      document.addEventListener("click", this.handleDocumentClick);
     }
 
     this.handleHoverEnter = () => {
@@ -519,25 +535,25 @@ export class LineControl extends Plugin {
         this.hideDropdown();
       }, 220);
     };
-    this.bind('mouseenter', this.handleHoverEnter);
-    this.bind('mouseleave', this.handleHoverLeave);
+    this.bind("mouseenter", this.handleHoverEnter);
+    this.bind("mouseleave", this.handleHoverLeave);
   }
 
   override destroy() {
     if (this.handleToggle) {
-      this.unbind(['click', 'touchend'], this.handleToggle);
+      this.unbind(["click", "touchend"], this.handleToggle);
       this.handleToggle = null;
     }
     if (this.handleDocumentClick) {
-      document.removeEventListener('click', this.handleDocumentClick);
+      document.removeEventListener("click", this.handleDocumentClick);
       this.handleDocumentClick = null;
     }
     if (this.handleHoverEnter) {
-      this.unbind('mouseenter', this.handleHoverEnter);
+      this.unbind("mouseenter", this.handleHoverEnter);
       this.handleHoverEnter = null;
     }
     if (this.handleHoverLeave) {
-      this.unbind('mouseleave', this.handleHoverLeave);
+      this.unbind("mouseleave", this.handleHoverLeave);
       this.handleHoverLeave = null;
     }
     if (this.hoverCloseTimer) {
@@ -553,11 +569,11 @@ export class LineControl extends Plugin {
 
   override render() {
     if (this.config.disable) {
-      return '';
+      return "";
     }
     const current = this.getCurrentLabel();
     return `<xg-icon class="xgplayer-line-control" title="">
-      <span class="line-label">${current || '线路'}</span>
+      <span class="line-label">${current || "线路"}</span>
       <svg class="line-caret" width="10" height="10" viewBox="0 0 10 10" fill="none">
         <path d="M2.5 3.5L5 6l2.5-2.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
@@ -565,9 +581,9 @@ export class LineControl extends Plugin {
   }
 
   updateLabel(label: string) {
-    const textEl = this.find('.line-label') as HTMLElement | null;
+    const textEl = this.find(".line-label") as HTMLElement | null;
     if (textEl) {
-      textEl.textContent = label || '线路';
+      textEl.textContent = label || "线路";
     }
     this.updateActiveState(this.getCurrentKey());
   }
@@ -587,20 +603,20 @@ export class LineControl extends Plugin {
   }
 
   private getCurrentKey() {
-    return typeof this.config.getCurrentKey === 'function'
+    return typeof this.config.getCurrentKey === "function"
       ? this.config.getCurrentKey()
-      : '';
+      : "";
   }
 
   private getCurrentLabel() {
-    return typeof this.config.getCurrentLabel === 'function'
+    return typeof this.config.getCurrentLabel === "function"
       ? this.config.getCurrentLabel()
-      : '线路';
+      : "线路";
   }
 
   private createDropdown() {
-    this.dropdown = document.createElement('div');
-    this.dropdown.className = 'xgplayer-line-dropdown';
+    this.dropdown = document.createElement("div");
+    this.dropdown.className = "xgplayer-line-dropdown";
     this.root.appendChild(this.dropdown);
     this.populateDropdown();
   }
@@ -609,12 +625,14 @@ export class LineControl extends Plugin {
     if (!this.dropdown) {
       return;
     }
-    this.dropdown.innerHTML = '';
-    const options: LineOption[] = Array.isArray(this.config.options) ? this.config.options : [];
+    this.dropdown.innerHTML = "";
+    const options: LineOption[] = Array.isArray(this.config.options)
+      ? this.config.options
+      : [];
     options.forEach((option) => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'xgplayer-quality-item';
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "xgplayer-quality-item";
       btn.dataset.lineKey = option.key;
       btn.innerHTML = `
         <span class="quality-name">${option.label}</span>
@@ -622,7 +640,7 @@ export class LineControl extends Plugin {
           <path d="M3 6.5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       `;
-      btn.addEventListener('click', (event) => {
+      btn.addEventListener("click", (event) => {
         event.stopPropagation();
         event.preventDefault();
         if (this.isSwitching) {
@@ -631,9 +649,10 @@ export class LineControl extends Plugin {
         let actionResult: Promise<void> | void;
         try {
           const callback = this.config.onSelect;
-          actionResult = typeof callback === 'function' ? callback(option.key) : undefined;
+          actionResult =
+            typeof callback === "function" ? callback(option.key) : undefined;
         } catch (error) {
-          console.error('[LineControl] onSelect error:', error);
+          console.error("[LineControl] onSelect error:", error);
           actionResult = undefined;
         }
         Promise.resolve(actionResult).finally(() => {
@@ -651,7 +670,7 @@ export class LineControl extends Plugin {
     if (this.isSwitching) {
       return;
     }
-    if (this.dropdown?.classList.contains('show')) {
+    if (this.dropdown?.classList.contains("show")) {
       this.hideDropdown();
     } else {
       this.openDropdown();
@@ -666,8 +685,8 @@ export class LineControl extends Plugin {
       clearTimeout(this.hoverCloseTimer);
       this.hoverCloseTimer = null;
     }
-    this.dropdown.classList.add('show');
-    this.root.classList.add('menu-open');
+    this.dropdown.classList.add("show");
+    this.root.classList.add("menu-open");
     this.updateActiveState(this.getCurrentKey());
   }
 
@@ -677,30 +696,34 @@ export class LineControl extends Plugin {
       this.hoverCloseTimer = null;
     }
     if (this.dropdown) {
-      this.dropdown.classList.remove('show');
+      this.dropdown.classList.remove("show");
     }
-    this.root.classList.remove('menu-open');
+    this.root.classList.remove("menu-open");
   }
 
   private updateActiveState(currentKey: string) {
     if (!this.dropdown) {
       return;
     }
-    const items = this.dropdown.querySelectorAll<HTMLButtonElement>('.xgplayer-quality-item');
+    const items = this.dropdown.querySelectorAll<HTMLButtonElement>(
+      ".xgplayer-quality-item",
+    );
     items.forEach((item) => {
-      const key = item.dataset.lineKey ?? '';
-      item.classList.toggle('active', key === currentKey);
+      const key = item.dataset.lineKey ?? "";
+      item.classList.toggle("active", key === currentKey);
     });
   }
 
   private applySwitchingState() {
     const root = this.root as HTMLElement | null;
     if (root) {
-      root.classList.toggle('is-switching', this.isSwitching);
+      root.classList.toggle("is-switching", this.isSwitching);
     }
     if (this.dropdown) {
-      this.dropdown.classList.toggle('disabled', this.isSwitching);
-      const buttons = this.dropdown.querySelectorAll<HTMLButtonElement>('.xgplayer-quality-item');
+      this.dropdown.classList.toggle("disabled", this.isSwitching);
+      const buttons = this.dropdown.querySelectorAll<HTMLButtonElement>(
+        ".xgplayer-quality-item",
+      );
       buttons.forEach((button) => {
         button.disabled = this.isSwitching;
       });
@@ -712,7 +735,9 @@ export class LineControl extends Plugin {
     if (!root) {
       return;
     }
-    const options: LineOption[] = Array.isArray(this.config.options) ? this.config.options : [];
-    root.style.display = options.length === 0 ? 'none' : '';
+    const options: LineOption[] = Array.isArray(this.config.options)
+      ? this.config.options
+      : [];
+    root.style.display = options.length === 0 ? "none" : "";
   }
 }
