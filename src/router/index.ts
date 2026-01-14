@@ -7,52 +7,18 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
-      path: '/',
-      name: 'DouyuHome',
+      path: '/:platform?',
+      name: 'PlatformHome',
       component: PlatformHomeView,
-      meta: { platform: 'douyu' }
     },
     {
-      path: '/douyin',
-      name: 'DouyinHome',
-      component: PlatformHomeView,
-      meta: { platform: 'douyin' }
-    },
-    {
-      path: '/huya',
-      name: 'HuyaHome',
-      component: PlatformHomeView,
-      meta: { platform: 'huya' }
-    },
-    {
-      path: '/bilibili',
-      name: 'BilibiliHome',
-      component: PlatformHomeView,
-      meta: { platform: 'bilibili' }
-    },
-    {
-      path: '/player/douyu/:roomId', 
-      name: 'douyuPlayer',
+      path: '/player/:platform/:roomId',
+      name: 'UniversalPlayer',
       component: UniversalPlayerView,
-      props: route => ({ roomId: route.params.roomId, platform: Platform.DOUYU })
-    },
-    {
-      path: '/player/douyin/:roomId',
-      name: 'douyinPlayer',
-      component: UniversalPlayerView,
-      props: route => ({ roomId: route.params.roomId, platform: Platform.DOUYIN })
-    },
-    {
-      path: '/player/huya/:roomId',
-      name: 'huyaPlayer',
-      component: UniversalPlayerView,
-      props: route => ({ roomId: route.params.roomId, platform: Platform.HUYA })
-    },
-    {
-      path: '/player/bilibili/:roomId',
-      name: 'bilibiliPlayer',
-      component: UniversalPlayerView,
-      props: route => ({ roomId: route.params.roomId, platform: Platform.BILIBILI })
+      props: route => ({
+        roomId: route.params.roomId,
+        platform: (route.params.platform as string).toUpperCase() as Platform
+      })
     }
   ]
 })

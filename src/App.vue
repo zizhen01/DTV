@@ -49,11 +49,8 @@ const themeStore = useThemeStore();
 const theme = computed(() => themeStore.getEffectiveTheme());
 
 const routePlatform = computed<UiPlatform>(() => {
-  const name = route.name as string | undefined;
-  const path = route.path;
-  if (name === 'douyinPlayer' || name === 'DouyinHome' || path.startsWith('/douyin')) return 'douyin';
-  if (name === 'huyaPlayer' || name === 'HuyaHome' || path.startsWith('/huya')) return 'huya';
-  if (name === 'bilibiliPlayer' || name === 'BilibiliHome' || path.startsWith('/bilibili')) return 'bilibili';
+  const platform = route.params.platform as string | undefined;
+  if (platform) return platform.toLowerCase() as UiPlatform;
   return 'douyu';
 });
 
@@ -90,13 +87,7 @@ onBeforeUnmount(async () => {
 });
 
 const isPlayerRoute = computed(() => {
-  const name = route.name as string | undefined;
-  return (
-    name === 'douyuPlayer' ||
-    name === 'douyinPlayer' ||
-    name === 'huyaPlayer' ||
-    name === 'bilibiliPlayer'
-  );
+  return route.name === 'UniversalPlayer';
 });
 
 const shouldHidePlayerChrome = computed(() => (
@@ -109,15 +100,13 @@ const toggleTheme = () => {
 
 
 const handleSelectAnchor = (streamer: FollowedStreamer) => {
-  if (streamer.platform === Platform.DOUYIN) {
-    router.push({ name: 'douyinPlayer', params: { roomId: streamer.id } });
-  } else if (streamer.platform === Platform.HUYA) {
-    router.push({ name: 'huyaPlayer', params: { roomId: streamer.id } });
-  } else if (streamer.platform === Platform.BILIBILI) {
-    router.push({ name: 'bilibiliPlayer', params: { roomId: streamer.id } });
-  } else {
-    router.push({ name: 'douyuPlayer', params: { roomId: streamer.id } });
-  }
+  router.push({ 
+    name: 'UniversalPlayer', 
+    params: { 
+      platform: streamer.platform.toLowerCase(), 
+      roomId: streamer.id 
+    } 
+  });
 };
 
 const handleSelectAnchorFromSearch = (payload: { id: string; platform: Platform; nickname?: string; avatarUrl?: string | null }) => {

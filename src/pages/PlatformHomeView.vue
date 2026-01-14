@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-1 min-h-0 justify-center px-3 pb-3 ">
     <!-- Center Panel Inline -->
-    <div class="relative flex w-full max-w-[1200px] flex-1 min-h-0 flex-col gap-5 rounded-md h-full bg-linear-to-b from-indigo-500 from-10% via-sky-500 via-30% to-neutral-950 to-90% p-6 shadow-[var(--shadow-lg)]">
+    <div class="relative flex w-full max-w-300 flex-1 min-h-0 flex-col gap-5 rounded-md h-full bg-linear-to-b from-indigo-500 from-10% via-sky-500 via-30% to-neutral-950 to-90% p-6 shadow-[var(--shadow-lg)]">
       <!-- Tabs Section -->
       <div class="flex sticky top-0 items-center justify-between gap-4 w-full z-10 px-4 pt-6 pb-2">
         <!-- Platform Tabs Inline -->
@@ -29,7 +29,7 @@
         <div v-if="isDouyu" class="min-h-0 h-full pb-6 ">
           <div v-if="selectedCategoryInfo" class="min-h-0 h-full pb-6">
             <CommonStreamerList class="h-full" :douyu-category="selectedCategoryInfo" platformName="douyu"
-              playerRouteName="douyuPlayer" :key="selectedCategoryInfo.type + '-' + selectedCategoryInfo.id" />
+              playerRouteName="UniversalPlayer" :key="selectedCategoryInfo.type + '-' + selectedCategoryInfo.id" />
           </div>
           <div v-else-if="isCategoryLoading" class="flex min-h-80 items-center justify-center">
             正在加载分类...
@@ -80,21 +80,14 @@ interface SelectedCategoryInfo {
 const router = useRouter()
 const route = useRoute()
 
-const platformRouteMap: Record<UiPlatform, string> = {
-  douyu: 'DouyuHome',
-  douyin: 'DouyinHome',
-  huya: 'HuyaHome',
-  bilibili: 'BilibiliHome'
-}
-
 const platformConfigMap: Record<UiPlatform, { playerRouteName: string; defaultPageSize?: number }> = {
-  douyu: { playerRouteName: 'douyuPlayer' },
-  douyin: { playerRouteName: 'douyinPlayer' },
-  huya: { playerRouteName: 'huyaPlayer', defaultPageSize: 120 },
-  bilibili: { playerRouteName: 'bilibiliPlayer' }
+  douyu: { playerRouteName: 'UniversalPlayer' },
+  douyin: { playerRouteName: 'UniversalPlayer' },
+  huya: { playerRouteName: 'UniversalPlayer', defaultPageSize: 120 },
+  bilibili: { playerRouteName: 'UniversalPlayer' }
 }
 
-const activePlatform = computed<UiPlatform>(() => (route.meta.platform as UiPlatform) ?? 'douyu')
+const activePlatform = computed<UiPlatform>(() => (route.params.platform as UiPlatform) || 'douyu')
 const platformConfig = computed(() => platformConfigMap[activePlatform.value])
 const isDouyu = computed(() => activePlatform.value === 'douyu')
 
@@ -153,10 +146,8 @@ const categoryGroups = computed<CategoryGroup[]>(() => {
 })
 
 const handlePlatformChange = (platform: UiPlatform) => {
-  const target = platformRouteMap[platform]
-  if (!target) return
   if (platform === activePlatform.value) return
-  router.push({ name: target })
+  router.push({ name: 'PlatformHome', params: { platform } })
 }
 
 const handleCategorySelect = (item: CategoryItem) => {

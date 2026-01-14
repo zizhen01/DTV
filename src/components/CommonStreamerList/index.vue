@@ -273,7 +273,13 @@ watch([rooms, isLoading, isLoadingMore], () => {
 
 const goToPlayer = (roomId: string) => {
   if (roomId && props.playerRouteName) {
-    router.push({ name: props.playerRouteName, params: { roomId } });
+    router.push({ 
+      name: props.playerRouteName, 
+      params: { 
+        roomId,
+        platform: platformName.value
+      } 
+    });
   }
 };
 </script>

@@ -272,21 +272,10 @@ const proxify = (url?: string | null): string | null => {
 };
 
 const currentPlatform = computed<Platform>(() => {
-  const name = route.name as string | undefined;
-  const path = route.path;
-
-  if (name) {
-    if (name === 'douyinPlayer' || name === 'DouyinHome') return Platform.DOUYIN;
-    if (name === 'huyaPlayer' || name === 'HuyaHome') return Platform.HUYA;
-    if (name === 'bilibiliPlayer' || name === 'BilibiliHome') return Platform.BILIBILI;
-    if (name === 'douyuPlayer' || name === 'DouyuHome') return Platform.DOUYU;
+  const platformParam = route.params.platform as string | undefined;
+  if (platformParam) {
+    return platformParam.toUpperCase() as Platform;
   }
-
-  if (path.startsWith('/player/douyin') || path.startsWith('/douyin')) return Platform.DOUYIN;
-  if (path.startsWith('/player/huya') || path.startsWith('/huya')) return Platform.HUYA;
-  if (path.startsWith('/player/bilibili') || path.startsWith('/bilibili')) return Platform.BILIBILI;
-  if (path.startsWith('/player/douyu') || path.startsWith('/')) return Platform.DOUYU;
-
   return Platform.DOUYU;
 });
 
