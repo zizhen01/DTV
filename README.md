@@ -4,17 +4,9 @@
   <p>基于 Tauri 2.0 的跨平台斗鱼、虎牙、抖音、bilibili直播桌面客户端</p>
 </div>
 
-<p align="center">
-  <a href="https://apps.microsoft.com/detail/9mt8kdt169xf?referrer=appbadge&mode=direct">
-    <img src="https://get.microsoft.com/images/en-us%20dark.svg" width="200" alt="Download DTV from Microsoft Store">
-  </a>
-</p>
-
 ## 说明
 
-1. 本项目基于 Tauri 2.0 开发，体积小，占用率低，实测可以在10年前的双核、4GB内存的电脑上流畅运行
-2. 平台接口可能有访问频率限制，过于频繁的请求会触发验证码校验，建议合理使用搜索功能
-3. 本项目仅供学习编程目的使用，未进行任何逆向工程
+1. 基于[DTV](https://github.com/chen-zeong/DTV)的ui重构
 
 ### 支持平台
 
@@ -33,58 +25,40 @@
 - 📋 支持平台：Mac(Intel+Arm)，Windows(Win7需要自行安装Webview2)，Linux(包括Ubuntu和各类发行版)
 - 🌓 主题切换：支持明暗主题切换
 
+## 修改
+
+1. ui界面重构，着重优化了分区列表，左右边栏可以折叠，灵感来源spotify
+2. 优化了搜索栏，现在可以搜索任意平台的内容， 包括主播名称，房间号，分区名
+3. 添加了主题色切换按钮
+4. 在直播界面添加了状态胶囊，占用屏幕空间更小
+5. 弹幕列表可以折叠了
+6. css使用tailwind重构，后续考虑切换到react
+7. 本人只有mac电脑，win客户端由CI自动构建未经测试。
+
 ## 软件截图
 
 <div align="center">
-  <p>夜间模式</p>
-  <img src="images/iShot_dark.webp" alt="mac-夜间模式" style="width: 100%; max-width: 800px; display: block; margin-left: auto; margin-right: auto;">
-</div>
-
-<br>
-
-<div align="center">
-  <p>日间模式</p>
-  <img src="images/iShot_light.png" alt="win-日间模式" style="width: 100%; max-width: 800px; display: block; margin-left: auto; margin-right: auto;">
-</div>
-
-<br>
-
-<div align="center">
-  <p>日间模式 - 关注列表悬浮窗</p>
-  <img src="images/iShot_light2.webp" alt="日间模式关注列表悬浮窗" style="width: 100%; max-width: 800px; display: block; margin-left: auto; margin-right: auto;">
+<img src="images/SCR-20260115-mafl.jpeg" alt="App Screenshot 1" style="width: 100%; max-width: 800px; display: block; margin-left: auto; margin-right: auto; margin-bottom: 20px;">
+  <img src="images/SCR-20260115-lhka.jpeg" alt="App Screenshot 1" style="width: 100%; max-width: 800px; display: block; margin-left: auto; margin-right: auto; margin-bottom: 20px;">
+  <img src="images/SCR-20260115-lhlw.jpeg" alt="App Screenshot 2" style="width: 100%; max-width: 800px; display: block; margin-left: auto; margin-right: auto; margin-bottom: 20px;">
+  <img src="images/SCR-20260115-lhnm.jpeg" alt="App Screenshot 3" style="width: 100%; max-width: 800px; display: block; margin-left: auto; margin-right: auto; margin-bottom: 20px;">
+  <img src="images/SCR-20260115-lhsc.jpeg" alt="App Screenshot 4" style="width: 100%; max-width: 800px; display: block; margin-left: auto; margin-right: auto; margin-bottom: 20px;">
+  <img src="images/SCR-20260115-lhtz.png" alt="App Screenshot 5" style="width: 100%; max-width: 800px; display: block; margin-left: auto; margin-right: auto; margin-bottom: 20px;">
 </div>
 
 <br>
 
 ## 安装方式
 
-可以在 [release](https://github.com/chen-zeong/dtv/releases) 目录下载对应系统的安装包, 也可以通过源码编译安装
-
-## 编译
-
-```bash
-安装protobuf
-
-# 克隆项目
-git clone https://github.com/c-zeong/dtv.git
-cd dtv
-
-# 安装依赖
-pnpm install
-
-# 开发调试
-pnpm tauri dev
-
-# 打包构建
-pnpm tauri build      # 构建当前系统的安装包
-
-# 打包 ARM64 版本（Intel Mac 上交叉编译）
-pnpm tauri build --target aarch64-apple-darwin
-```
+请参考原项目
 
 ## 参考
 
-- 斗鱼直播流获取参考了 [@wbt5/real-url](https://github.com/wbt5/real-url)
-- 抖音弹幕参考了[@saermart/DouyinLiveWebFetcher](https://github.com/saermart/DouyinLiveWebFetcher)
-- 虎牙参考了https://github.com/liuchuancong/pure_live https://github.com/ihmily/DouyinLiveRecorder
-- b站弹幕参考了https://github.com/xfgryujk/blivedm
+- 斗鱼直播流获取参考了 [@wbt5/real-url](https://github.com/wbt5/real-url) (GPL-2.0)
+- 抖音弹幕参考了 [@saermart/DouyinLiveWebFetcher](https://github.com/saermart/DouyinLiveWebFetcher) (AGPL-3.0)
+- 虎牙参考了 [liuchuancong/pure_live](https://github.com/liuchuancong/pure_live) (AGPL-3.0) 和 [ihmily/DouyinLiveRecorder](https://github.com/ihmily/DouyinLiveRecorder) (MIT)
+- b站弹幕参考了 [xfgryujk/blivedm](https://github.com/xfgryujk/blivedm) (MIT)
+
+## 许可证
+
+本项目遵循 [AGPL-3.0](./LICENSE) 开源协议。

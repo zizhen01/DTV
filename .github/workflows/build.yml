@@ -8,9 +8,7 @@ permissions:
 on:
   push:
     tags:
-      - "v*.*.*"
-      - "*.*"
-      - "*.*.*"
+      - "v*"
   workflow_dispatch:
     inputs:
       version:
@@ -34,6 +32,10 @@ jobs:
           - platform: "macos-latest"
             args: ""
             arch: "aarch64"
+
+          - platform: "windows-latest"
+            args: ""
+            arch: "x64"
 
     runs-on: ${{ matrix.platform }}
     steps:
