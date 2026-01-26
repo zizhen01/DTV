@@ -1,3 +1,5 @@
+// Resolving quality '原画' from variants: [DouyuRateVariant { name: "原画720P60", rate: 0, bit: Some(10057) }, DouyuRateVariant { name: "蓝光4M", rate: 4, bit: Some(4000) }, DouyuRateVariant { name: "超清", rate: 3, bit: Some(2000) }, DouyuRateVariant { name: "高清", rate: 2, bit: Some(900) }]
+
 var $DATA = {
     "seoKeyword": "热门游戏直播,游戏直播,高清游戏直播,手机游戏直播,电子竞技直播",
     "cate1Name": "全部分类",

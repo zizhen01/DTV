@@ -12,6 +12,8 @@ use crate::platforms::douyu::sign_worker;
 
 use crate::platforms::common::errors::DtvError;
 
+type BoxError = Box<dyn std::error::Error + Send + Sync>;
+
 #[derive(Deserialize, Debug)]
 struct BetardRoomInfo {
     room_id: Option<Value>,
@@ -80,10 +82,7 @@ impl DouYu {
     async fn new(rid: &str) -> Result<Self, Box<dyn std::error::Error>> {
         // 迁移到 reqwest：禁用系统代理、限制重定向、设置默认 UA/语言等头部
         let mut default_headers = HeaderMap::new();
-        default_headers.insert(
-            "User-Agent",
-            HeaderValue::from_static(DEFAULT_DOUYU_UA),
-        );
+        default_headers.insert("User-Agent", HeaderValue::from_static(DEFAULT_DOUYU_UA));
         default_headers.insert(
             "Accept-Language",
             HeaderValue::from_static("zh-CN,zh;q=0.9"),
@@ -101,7 +100,7 @@ impl DouYu {
         })
     }
 
-    async fn fetch_room_detail(&self) -> Result<(String, bool), Box<dyn std::error::Error>> {
+    async fn fetch_room_detail(&self) -> Result<(String, bool), BoxError> {
         let url = format!("https://www.douyu.com/betard/{}", self.rid);
         let json = self
             .client
@@ -123,7 +122,7 @@ impl DouYu {
         Ok((room_id, show_status == 1))
     }
 
-    async fn get_h5_enc(&self, room_id: &str) -> Result<String, Box<dyn std::error::Error>> {
+    async fn get_h5_enc(&self, room_id: &str) -> Result<String, BoxError> {
         let url = format!("https://www.douyu.com/swf_api/homeH5Enc?rids={}", room_id);
         let json = self
             .client
@@ -148,28 +147,106 @@ impl DouYu {
         Ok(crptext.to_string())
     }
 
-    async fn build_sign_params(
-        &self,
-        room_id: &str,
-    ) -> Result<String, Box<dyn std::error::Error>> {
+    async fn build_sign_params(&self, room_id: &str) -> Result<String, BoxError> {
         let crptext = self.get_h5_enc(room_id).await?;
         let ts = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs() as i64;
         let params = sign_worker::execute_js_sign(&crptext, room_id, &self.did, ts)
             .await
-            .map_err(|e| -> Box<dyn std::error::Error> { e.into() })?;
+            .map_err(|e| -> BoxError { e.into() })?;
         Ok(params)
     }
+
+    // async fn get_play_qualities(
+    //     &self,
+    //     room_id: &str,
+    //     sign_data: &str,
+    // ) -> Result<DouyuPlayInfo, Box<dyn std::error::Error>> {
+    //     let payload = format!(
+    //         "{}&cdn=&rate=-1&ver=Douyu_223061205&iar=1&ive=1&hevc=0&fa=0",
+    //         sign_data
+    //     );
+    //     let url = format!("https://www.douyu.com/lapi/live/getH5Play/{}", room_id);
+    //     let json = self
+    //         .client
+    //         .post(url)
+    //         .header("Content-Type", "application/x-www-form-urlencoded")
+    //         .body(payload)
+    //         .send()
+    //         .await?
+    //         .json::<Value>()
+    //         .await?;
+
+    //     let error_code = json.get("error").and_then(value_to_i32).unwrap_or(-1);
+    //     if error_code != 0 {
+    //         let msg = json
+    //             .get("msg")
+    //             .and_then(|v| v.as_str())
+    //             .unwrap_or("getH5Play failed");
+    //         return Err(format!("getH5Play error {}: {}", error_code, msg).into());
+    //     }
+
+    //     let data = json.get("data").ok_or("No data field in response")?;
+    //     let cdns = data
+    //         .get("cdnsWithName")
+    //         .and_then(|v| v.as_array())
+    //         .map(|arr| {
+    //             arr.iter()
+    //                 .filter_map(|item| {
+    //                     item.get("cdn")
+    //                         .and_then(|v| v.as_str())
+    //                         .map(|s| s.to_string())
+    //                 })
+    //                 .collect::<Vec<String>>()
+    //         })
+    //         .unwrap_or_default();
+
+    //     let mut cdns_sorted = cdns;
+    //     cdns_sorted.sort_by(|a, b| {
+    //         let a_is_scdn = a.starts_with("scdn");
+    //         let b_is_scdn = b.starts_with("scdn");
+    //         (a_is_scdn, a).cmp(&(b_is_scdn, b))
+    //     });
+
+    //     let variants = data
+    //         .get("multirates")
+    //         .and_then(|v| v.as_array())
+    //         .map(|arr| {
+    //             arr.iter()
+    //                 .filter_map(|item| {
+    //                     let name = item
+    //                         .get("name")
+    //                         .and_then(|v| v.as_str())
+    //                         .map(|s| s.to_string())?;
+    //                     let rate_value = item.get("rate").and_then(value_to_i32)?;
+    //                     let bit_value = item.get("bit").and_then(value_to_i32);
+    //                     Some(DouyuRateVariant {
+    //                         name,
+    //                         rate: rate_value,
+    //                         bit: bit_value,
+    //                     })
+    //                 })
+    //                 .collect::<Vec<DouyuRateVariant>>()
+    //         })
+    //         .unwrap_or_default();
+
+    //     Ok(DouyuPlayInfo {
+    //         variants,
+    //         cdns: cdns_sorted,
+    //     })
+    // }
 
     async fn get_play_qualities(
         &self,
         room_id: &str,
         sign_data: &str,
-    ) -> Result<DouyuPlayInfo, Box<dyn std::error::Error>> {
+    ) -> Result<DouyuPlayInfo, BoxError> {
         let payload = format!(
             "{}&cdn=&rate=-1&ver=Douyu_223061205&iar=1&ive=1&hevc=0&fa=0",
             sign_data
         );
         let url = format!("https://www.douyu.com/lapi/live/getH5Play/{}", room_id);
+
+        // Match douyu_sample behavior: parse JSON dynamically first.
         let json = self
             .client
             .post(url)
@@ -238,20 +315,23 @@ impl DouYu {
             cdns: cdns_sorted,
         })
     }
-
     async fn get_play_url(
         &self,
         room_id: &str,
         sign_data: &str,
         rate: i32,
         cdn: &str,
-    ) -> Result<String, Box<dyn std::error::Error>> {
+    ) -> Result<String, BoxError> {
+        // 关键：去掉多余的 ver, iar, ive 等参数，只保留 sign_data, cdn 和 rate
         let payload = format!("{}&cdn={}&rate={}", sign_data, cdn, rate);
+
         let url = format!("https://www.douyu.com/lapi/live/getH5Play/{}", room_id);
+
         let json = self
             .client
             .post(url)
             .header("Content-Type", "application/x-www-form-urlencoded")
+            // Referer 对斗鱼来说非常重要，保持现状即可
             .header("Referer", format!("https://www.douyu.com/{}", room_id))
             .body(payload)
             .send()
@@ -277,9 +357,56 @@ impl DouYu {
             .get("rtmp_live")
             .and_then(|v| v.as_str())
             .ok_or("No rtmp_live field")?;
+
+        // 这里的 html entity 解码是必须的，防止 URL 中的字符被转义导致无法播放
         let rtmp_live = decode_html_entities(rtmp_live).to_string();
+
         Ok(format!("{}/{}", rtmp_url, rtmp_live))
     }
+    // async fn get_play_url(
+    //     &self,
+    //     room_id: &str,
+    //     sign_data: &str,
+    //     rate: i32,
+    //     cdn: &str,
+    // ) -> Result<String, BoxError> {
+    //     let payload = format!(
+    //         "{}&cdn={}&rate={}&ver=Douyu_223061205&iar=1&ive=1&hevc=0&fa=0",
+    //         sign_data, cdn, rate
+    //     );
+    //     let url = format!("https://www.douyu.com/lapi/live/getH5Play/{}", room_id);
+    //     let json = self
+    //         .client
+    //         .post(url)
+    //         .header("Content-Type", "application/x-www-form-urlencoded")
+    //         .header("Referer", format!("https://www.douyu.com/{}", room_id))
+    //         .body(payload)
+    //         .send()
+    //         .await?
+    //         .json::<Value>()
+    //         .await?;
+
+    //     let error_code = json.get("error").and_then(value_to_i32).unwrap_or(-1);
+    //     if error_code != 0 {
+    //         let msg = json
+    //             .get("msg")
+    //             .and_then(|v| v.as_str())
+    //             .unwrap_or("getH5Play failed");
+    //         return Err(format!("getH5Play error {}: {}", error_code, msg).into());
+    //     }
+
+    //     let data = json.get("data").ok_or("No data field in response")?;
+    //     let rtmp_url = data
+    //         .get("rtmp_url")
+    //         .and_then(|v| v.as_str())
+    //         .ok_or("No rtmp_url field")?;
+    //     let rtmp_live = data
+    //         .get("rtmp_live")
+    //         .and_then(|v| v.as_str())
+    //         .ok_or("No rtmp_live field")?;
+    //     let rtmp_live = decode_html_entities(rtmp_live).to_string();
+    //     Ok(format!("{}/{}", rtmp_url, rtmp_live))
+    // }
 
     fn select_cdn(requested: Option<&str>, available: &[String]) -> String {
         if let Some(cdn) = requested {
@@ -305,27 +432,32 @@ impl DouYu {
         quality: &str,
         cdn: Option<&str>,
     ) -> Result<String, DtvError> {
-        let (real_room_id, is_live) = self.fetch_room_detail()
+        let (real_room_id, is_live) = self
+            .fetch_room_detail()
             .await
             .map_err(|e| DtvError::api(e.to_string()))?;
         if !is_live {
             return Err(DtvError::offline("主播未开播"));
         }
 
-        let sign_data = self.build_sign_params(&real_room_id)
+        let sign_data = self
+            .build_sign_params(&real_room_id)
             .await
             .map_err(|e| DtvError::api(e.to_string()))?;
-        let play_info = self.get_play_qualities(&real_room_id, &sign_data)
+        let play_info = self
+            .get_play_qualities(&real_room_id, &sign_data)
             .await
             .map_err(|e| DtvError::api(e.to_string()))?;
-        let selected_rate = Self::resolve_rate_for_quality(quality, &play_info.variants)
+        let selected_rate: i32 = Self::resolve_rate_for_quality(quality, &play_info.variants)
             .or_else(|| play_info.variants.iter().map(|v| v.rate).max())
             .unwrap_or(0);
         tracing::debug!(
-            "[Douyu Stream URL] Requested quality '{}', resolved rate {} (variants: {:?})",
-            quality, selected_rate, play_info.variants
+            "[Douyu Stream URL] Requested quality '{}', resolved rate {}",
+            quality,
+            selected_rate
         );
         let selected_cdn = Self::select_cdn(cdn, &play_info.cdns);
+
         self.get_play_url(&real_room_id, &sign_data, selected_rate, &selected_cdn)
             .await
             .map_err(|e| DtvError::api(e.to_string()))
@@ -440,7 +572,9 @@ pub async fn get_stream_url_with_quality(
     quality: &str,
     cdn: Option<&str>,
 ) -> Result<String, DtvError> {
-    let douyu = DouYu::new(room_id).await.map_err(|e| DtvError::internal(e.to_string()))?;
+    let douyu = DouYu::new(room_id)
+        .await
+        .map_err(|e| DtvError::internal(e.to_string()))?;
     let url = douyu.get_real_url_with_quality(quality, cdn).await?;
     Ok(url)
 }

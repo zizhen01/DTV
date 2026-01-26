@@ -113,7 +113,32 @@ export const usePlayerStore = defineStore("player", () => {
       const storedMode = localStorage.getItem("player_grid_mode");
       
       if (stored) {
-        activeStreamers.value = JSON.parse(stored);
+        const raw = JSON.parse(stored);
+        if (Array.isArray(raw)) {
+          activeStreamers.value = raw
+            .map((item: any) => {
+              const roomId = String(item?.roomId ?? "");
+              const platform = String(item?.platform ?? "").toUpperCase() as Platform;
+              const title = String(item?.title ?? "");
+              const anchorName = String(item?.anchorName ?? "");
+              const avatar = String(item?.avatar ?? "");
+              const isLive = Boolean(item?.isLive);
+              const isMuted = Boolean(item?.isMuted);
+              if (!roomId || !platform) {
+                return null;
+              }
+              return {
+                roomId,
+                platform,
+                title,
+                anchorName,
+                avatar,
+                isLive,
+                isMuted,
+              };
+            })
+            .filter(Boolean) as StreamerInfoState[];
+        }
       }
       if (lastKey) {
         lastActiveKey.value = lastKey;

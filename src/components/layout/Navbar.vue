@@ -553,7 +553,12 @@ const availableColors = [
 ];
 
 const goHome = () => {
-  router.push({ name: "ChannelList" });
+  const fallbackPlatform =
+    route.params.platform?.toString().toLowerCase() || "douyu";
+  router.push({
+    name: "ChannelList",
+    params: { platform: fallbackPlatform },
+  });
 };
 
 const draggedIndex = ref<number | null>(null);

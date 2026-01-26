@@ -9,6 +9,7 @@ use std::net::TcpStream;
 use std::sync::Mutex as StdMutex;
 use std::time::Duration;
 use tauri::{AppHandle, State};
+use tokio::time::sleep;
 
 // Define a struct to hold the server handle in a Tauri managed state
 #[derive(Default)]
@@ -231,48 +232,96 @@ pub async fn start_proxy(
     // stream_url_data_for_actix can be created once and cloned, as StreamUrlStore is Arc based and Send + Sync
     let stream_url_data_for_actix = web::Data::new(stream_url_store.inner().clone());
 
-    let server = match HttpServer::new(move || {
-        let app_data_stream_url = stream_url_data_for_actix.clone();
-        // Create reqwest::Client inside the closure for each worker thread (for images)
-        let app_data_reqwest_client = web::Data::new(
-            Client::builder()
-                .no_proxy()
-                .http1_only()
-                .gzip(false)
-                .brotli(false)
-                .no_deflate()
-                .pool_idle_timeout(None)
-                .pool_max_idle_per_host(4)
-                .tcp_keepalive(Duration::from_secs(60))
-                .timeout(Duration::from_secs(7200))
-                .build()
-                .expect("failed to build client"),
-        );
-        App::new()
-            .app_data(app_data_stream_url)
-            .app_data(app_data_reqwest_client)
-            .wrap(actix_cors::Cors::permissive())
-            .route("/live/{platform}/{room_id}", web::get().to(flv_proxy_handler))
-            .route("/image", web::get().to(image_proxy_handler))
-    })
-    .keep_alive(Duration::from_secs(120))
-    .bind(("127.0.0.1", port))
-    {
-        Ok(srv) => srv,
-        Err(e) => {
-            // If address already in use, assume server is running
-            if e.kind() == ErrorKind::AddrInUse {
-                return Ok(format!("http://127.0.0.1:{}", port));
+    let mut last_bind_error: Option<String> = None;
+    let mut server = None;
+
+    for attempt in 0..10 {
+        // HttpServer::new takes a `move` closure. Clone the shared state per
+        // attempt so we don't move the original into the first iteration.
+        let stream_url_data_for_actix = stream_url_data_for_actix.clone();
+
+        // Keep the HttpServer value scoped so it doesn't live across await.
+        let should_retry_delay = {
+            let bind_result = HttpServer::new(move || {
+                let app_data_stream_url = stream_url_data_for_actix.clone();
+                // Create reqwest::Client inside the closure for each worker thread (for images)
+                let app_data_reqwest_client = web::Data::new(
+                    Client::builder()
+                        .no_proxy()
+                        .http1_only()
+                        .gzip(false)
+                        .brotli(false)
+                        .no_deflate()
+                        .pool_idle_timeout(None)
+                        .pool_max_idle_per_host(4)
+                        .tcp_keepalive(Duration::from_secs(60))
+                        .timeout(Duration::from_secs(7200))
+                        .build()
+                        .expect("failed to build client"),
+                );
+                App::new()
+                    .app_data(app_data_stream_url)
+                    .app_data(app_data_reqwest_client)
+                    .wrap(actix_cors::Cors::permissive())
+                    .route("/live/{platform}/{room_id}", web::get().to(flv_proxy_handler))
+                    .route("/image", web::get().to(image_proxy_handler))
+            })
+            .keep_alive(Duration::from_secs(120))
+            .bind(("127.0.0.1", port));
+
+            match bind_result {
+                Ok(srv) => {
+                    server = Some(srv.run());
+                    false
+                }
+                Err(e) => {
+                    if e.kind() == ErrorKind::AddrInUse {
+                        // Port is in use. Only treat it as "already running" if we
+                        // can actually connect.
+                        if TcpStream::connect(("127.0.0.1", port)).is_ok() {
+                            return Ok(format!("http://127.0.0.1:{}", port));
+                        }
+                        last_bind_error = Some(format!(
+                            "[Rust/proxy.rs] Port {} in use but server unreachable (attempt {}): {}",
+                            port,
+                            attempt + 1,
+                            e
+                        ));
+                        true
+                    } else {
+                        let err_msg = format!(
+                            "[Rust/proxy.rs] Failed to bind server to port {}: {}",
+                            port, e
+                        );
+                        tracing::error!("{}", err_msg);
+                        return Err(err_msg);
+                    }
+                }
             }
-            let err_msg = format!(
-                "[Rust/proxy.rs] Failed to bind server to port {}: {}",
-                port, e
-            );
-            tracing::error!("{}", err_msg);
-            return Err(err_msg);
+        };
+
+        if server.is_some() {
+            break;
+        }
+
+        if should_retry_delay {
+            sleep(Duration::from_millis(150)).await;
         }
     }
-    .run();
+
+    let server = match server {
+        Some(srv) => srv,
+        None => {
+            let msg = last_bind_error.unwrap_or_else(|| {
+                format!(
+                    "[Rust/proxy.rs] Failed to bind proxy server to port {} (unknown error)",
+                    port
+                )
+            });
+            tracing::error!("{}", msg);
+            return Err(msg);
+        }
+    };
 
     let server_handle_for_state = server.handle();
     {

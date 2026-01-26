@@ -1,150 +1,107 @@
 <template>
-  <div
-    class="player-page relative"
-    :class="{ 'web-fs': isInWebFullscreen || isInNativePlayerFullscreen }"
-    v-show="isActive"
-  >
-    <div class="player-layout">
-      <div class="main-content">
-        <div v-if="!roomId" class="empty-player">
-          <div class="empty-icon">
-            <svg
-              width="64"
-              height="64"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.5"
-            >
+  <div class="relative flex h-full w-full min-h-0 flex-1 overflow-hidden" v-show="isActive">
+    <div class="flex h-full w-full min-h-0 flex-col gap-3 overflow-hidden lg:flex-row lg:gap-0">
+      <div class="relative flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden">
+        <div v-if="!roomId"
+          class="flex h-full min-h-0 flex-1 flex-col items-center justify-center gap-3 p-8 text-center">
+          <div class="text-text-muted opacity-80">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
               <circle cx="12" cy="12" r="10"></circle>
               <line x1="12" y1="16" x2="12" y2="12"></line>
               <line x1="12" y1="8" x2="12.01" y2="8"></line>
             </svg>
           </div>
-          <h3>未选择直播间</h3>
-          <p>请从首页选择一个直播间开始观看。</p>
+          <h3 class="text-base font-semibold text-text-main">未选择直播间</h3>
+          <p class="text-sm text-text-muted">请从首页选择一个直播间开始观看。</p>
         </div>
-        <div v-else-if="isLoadingStream" class="loading-player">
+        <div v-else-if="isLoadingStream" class="flex h-full min-h-0 flex-1 items-center justify-center">
           <LoadingDots />
         </div>
-        <div v-else-if="isOfflineError" class="offline-player">
+        <div v-else-if="isOfflineError"
+          class="flex h-full min-h-0 flex-1 flex-col items-center justify-center gap-4 p-8 text-center">
           <!-- Display StreamerInfo if room details are available -->
-          <StreamerInfo
-            v-if="props.roomId && props.platform"
-            :room-id="props.roomId"
-            :platform="props.platform"
-            :title="playerTitle"
-            :anchor-name="playerAnchorName"
-            :avatar="playerAvatar"
-            :is-live="false"
-            :is-followed="props.isFollowed || false"
-            @follow="handleFollow"
-            @unfollow="handleUnfollow"
-            class="streamer-info-offline"
-          />
-          <div class="offline-message">
-            <div class="offline-icon">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="48"
-                height="48"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
+          <StreamerInfo v-if="props.roomId && props.platform" :room-id="props.roomId" :platform="props.platform"
+            :title="playerTitle" :anchor-name="playerAnchorName" :avatar="playerAvatar" :is-live="false"
+            :is-followed="props.isFollowed || false" @follow="handleFollow" @unfollow="handleUnfollow"
+            class="w-full max-w-[700px] border-b border-border-main pb-5" />
+          <div class="max-w-[560px]">
+            <div class="mb-4 flex items-center justify-center text-text-muted">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                 <path
-                  d="M16 16.427A4.002 4.002 0 0 0 12.005 20a4 4 0 0 0-3.995-3.573M12 12V2M8.5 7L7 5.5M15.5 7l1.5-1.5M5.562 10.223l-1.842.511M18.438 10.223l1.842.511M12 2a3.5 3.5 0 0 1 3.5 3.5V12H8.5V5.5A3.5 3.5 0 0 1 12 2z"
-                />
+                  d="M16 16.427A4.002 4.002 0 0 0 12.005 20a4 4 0 0 0-3.995-3.573M12 12V2M8.5 7L7 5.5M15.5 7l1.5-1.5M5.562 10.223l-1.842.511M18.438 10.223l1.842.511M12 2a3.5 3.5 0 0 1 3.5 3.5V12H8.5V5.5A3.5 3.5 0 0 1 12 2z" />
                 <line x1="1" y1="1" x2="23" y2="23" stroke-width="2"></line>
               </svg>
             </div>
-            <h3>😴 获取直播流失败了</h3>
-            <p>主播当前未开播，请稍后再来。</p>
-            <button @click="retryInitialization" class="retry-btn">
+            <h3 class="text-base font-semibold text-text-main">
+              😴 获取直播流失败了
+            </h3>
+            <p class="mt-1 text-sm text-text-muted">
+              主播当前未开播，请稍后再来。
+            </p>
+            <button @click="retryInitialization"
+              class="mt-4 inline-flex items-center justify-center rounded-full bg-brand px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-brand/90 active:scale-[0.98]">
               再试一次
             </button>
           </div>
         </div>
-        <div v-else-if="streamError && !isOfflineError" class="error-player">
-          <div class="error-icon">
-            <svg
-              width="64"
-              height="64"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.5"
-            >
+        <div v-else-if="streamError && !isOfflineError"
+          class="flex h-full min-h-0 flex-1 flex-col items-center justify-center gap-3 p-8 text-center">
+          <div class="text-text-muted opacity-80">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
               <circle cx="12" cy="12" r="10"></circle>
               <line x1="12" y1="8" x2="12" y2="12"></line>
               <line x1="12" y1="16" x2="12.01" y2="16"></line>
             </svg>
           </div>
-          <h3>加载失败</h3>
-          <p>{{ streamError }}</p>
-          <button @click="retryInitialization" class="retry-btn">
+          <h3 class="text-base font-semibold text-text-main">加载失败</h3>
+          <p class="max-w-[640px] text-sm text-text-muted">{{ streamError }}</p>
+          <button @click="retryInitialization"
+            class="mt-2 inline-flex items-center justify-center rounded-full bg-brand px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-brand/90 active:scale-[0.98]">
             再试一次
           </button>
         </div>
-        <div v-else class="player-container relative group">
-          <div class="video-container">
-            <div ref="playerContainerRef" class="video-player"></div>
+        <div v-else class="group relative flex min-h-0 flex-1 flex-col overflow-hidden bg-black">
+          <div class="relative w-full flex-1 min-h-[clamp(260px,50vh,560px)] md:min-h-[clamp(300px,60vh,720px)]">
+            <div ref="playerContainerRef" class="absolute inset-0"></div>
           </div>
-          
+
           <!-- Overlay Close Button -->
-          <button 
-            @click.stop="handleUnfollow"
-            class="absolute top-2 right-2 z-[60] flex size-8 items-center justify-center rounded-full bg-black/60 text-white/80 opacity-0 backdrop-blur-sm transition-all hover:bg-red-500 hover:text-white group-hover:opacity-100"
-            title="关闭画面"
-          >
+          <button @click.stop="handleUnfollow"
+            class="absolute top-2 right-2 z-[60] flex size-8 items-center justify-center rounded-full bg-black/60 text-white/80 opacity-0 backdrop-blur-sm transition-all group-hover:opacity-100 hover:bg-red-500 hover:text-white"
+            title="关闭画面">
             <X :size="18" stroke-width="3" />
           </button>
         </div>
 
-        <Transition name="fade">
-          <button
-            v-if="
-              isDanmuSidebarCollapsed &&
-              roomId &&
-              !isInWebFullscreen &&
-              !isFullScreen &&
-              showDanmuPanel
-            "
-            @click="toggleDanmuSidebar"
-            class="expand-sidebar-btn"
-            title="展开弹幕列表"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
+        <Transition enter-active-class="transition-opacity duration-300" enter-from-class="opacity-0"
+          enter-to-class="opacity-100" leave-active-class="transition-opacity duration-300"
+          leave-from-class="opacity-100" leave-to-class="opacity-0">
+          <button v-if="
+            isDanmuSidebarCollapsed &&
+            roomId &&
+            !isInWebFullscreen &&
+            !isFullScreen &&
+            showDanmuPanel
+          " @click="toggleDanmuSidebar"
+            class="absolute right-0 top-1/2 z-50 flex h-12 w-6 -translate-y-1/2 items-center justify-center rounded-l-md border border-white/10 border-r-0 bg-black/50 text-white/70 backdrop-blur transition-all hover:w-7 hover:bg-black/70 hover:text-white"
+            title="展开弹幕列表">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="m15 18-6-6 6-6" />
             </svg>
           </button>
         </Transition>
       </div>
 
-      <DanmuList
-        v-if="roomId && !isLoadingStream && !streamError && showDanmuPanel"
-        :room-id="props.roomId"
-        :messages="danmakuMessages"
-        @collapse="toggleDanmuSidebar"
-        class="danmu-panel"
+      <DanmuList v-if="roomId && !isLoadingStream && !streamError && isDanmuSidebarCollapsed" :room-id="props.roomId"
+        :messages="danmakuMessages" @collapse="toggleDanmuSidebar"
+        class="transition-[width, flex-basis,opacity,transform,border] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] lg:w-[220px] lg:flex-[0_0_220px]"
         :class="{
-          'hidden-panel': isFullScreen,
-          collapsed: isDanmuSidebarCollapsed,
-        }"
-      />
+          hidden: isFullScreen,
+          'pointer-events-none lg:w-0 lg:flex-[0_0_0px] lg:opacity-0 lg:border-0':
+            isDanmuSidebarCollapsed,
+        }" />
     </div>
   </div>
 </template>
@@ -160,20 +117,20 @@ import {
   reactive,
   ref,
   shallowRef,
-  // Transition,
   watch,
 } from "vue";
-import { POSITIONS } from "xgplayer/es/plugin/plugin.js";
-import "xgplayer/dist/index.min.css";
-import { X } from "lucide-vue-next"; // Import X icon
-
-import "../player.css";
+import Artplayer from "artplayer";
+import mpegts from "mpegts.js";
+import Hls from "hls.js";
+import { X } from "lucide-vue-next";
 
 import { Platform as StreamingPlatform } from "../../../types/app/platform";
-import type { DanmakuMessage, DanmuOverlayInstance } from "../../../types/models/danmaku";
+import type {
+  DanmakuMessage,
+  DanmuOverlayInstance,
+} from "../../../types/models/danmaku";
 import {
   applyDanmuFontFamilyForOS,
-  ICONS,
   loadDanmuPreferences,
   loadStoredVolume,
   persistDanmuPreferences,
@@ -181,23 +138,14 @@ import {
   sanitizeDanmuOpacity,
   type DanmuUserSettings,
 } from "../constants";
-import {
-  DanmuSettingsControl,
-  DanmuToggleControl,
-  LineControl,
-  QualityControl,
-  RefreshControl,
-  VolumeControl,
-} from "../plugins";
-import { arrangeControlClusters } from "../controlLayout";
+
 import {
   applyDanmuOverlayPreferences,
   createDanmuOverlay,
   ensureDanmuOverlayHost,
-  syncDanmuEnabledState,
-}
-from "../danmuOverlay";
-import { registerPlayerWatchers, type PlayerProps } from "../watchers";
+  // syncDanmuEnabledState
+} from "../danmuOverlay";
+import type { PlayerProps } from "../types";
 import {
   startCurrentDanmakuListener as startDanmakuListener,
   stopCurrentDanmakuListener as stopDanmakuListener,
@@ -218,7 +166,6 @@ import StreamerInfo from "./StreamerInfo.vue";
 import DanmuList from "./DanmuList.vue";
 import LoadingDots from "../../../components/ui/LoadingDots.vue";
 
-import { stopProxy as stopProxyApi } from "../../../api/proxy";
 import { useImageProxy } from "../../following/composables/useProxy";
 import { usePlayerStore } from "../../../store/playerStore";
 import { useFollowStore } from "../../../store/followStore";
@@ -239,25 +186,13 @@ const emit = defineEmits<{
 }>();
 
 const isClosing = ref(false);
-const isDanmuSidebarCollapsed = ref(true); // Default to collapsed
+const isDanmuSidebarCollapsed = ref(false); // Default to collapsed
 const MIN_DANMU_WIDTH = 1100;
 const windowWidth = ref(typeof window !== "undefined" ? window.innerWidth : 0);
 const updateWindowWidth = () => {
   windowWidth.value = typeof window !== "undefined" ? window.innerWidth : 0;
 };
 
-const stopProxy = async () => {
-  // 仅在没有活跃直播间时才真正停止全局代理
-  if (Object.keys(playerStore.activeStreamers).length <= 1) {
-    try {
-      await stopProxyApi();
-    } catch (error) {
-      console.warn("[Player] Failed stopping proxy:", error);
-    }
-  } else {
-    console.log("[Player] Skipping global proxy stop as other players are active");
-  }
-};
 const showDanmuPanel = computed(() => windowWidth.value >= MIN_DANMU_WIDTH);
 
 const toggleDanmuSidebar = () => {
@@ -265,13 +200,9 @@ const toggleDanmuSidebar = () => {
 };
 
 const playerContainerRef = ref<HTMLDivElement | null>(null);
-const playerInstance = shallowRef<any | null>(null);
-const refreshControlPlugin = shallowRef<RefreshControl | null>(null);
-const qualityControlPlugin = shallowRef<QualityControl | null>(null);
-const lineControlPlugin = shallowRef<LineControl | null>(null);
-const danmuTogglePlugin = shallowRef<DanmuToggleControl | null>(null);
-const danmuSettingsPlugin = shallowRef<DanmuSettingsControl | null>(null);
-const volumeControlPlugin = shallowRef<VolumeControl | null>(null);
+const playerInstance = shallowRef<Artplayer | null>(null);
+const flvPlayerInstance = shallowRef<mpegts.Player | null>(null);
+const hlsInstance = shallowRef<Hls | null>(null);
 const danmuInstance = shallowRef<DanmuOverlayInstance | null>(null);
 const danmakuMessages = ref<DanmakuMessage[]>([]);
 const isDanmakuListenerActive = ref(false); // Tracks if a danmaku listener is supposed to be running
@@ -310,13 +241,17 @@ if (storedDanmuPreferences) {
 
 const isMutedInStore = computed(() => {
   const key = `${props.platform.toUpperCase()}:${props.roomId}`;
-  return !!playerStore.activeStreamers.find(s => `${s.platform.toUpperCase()}:${s.roomId}` === key)?.isMuted;
+  return !!playerStore.activeStreamers.find(
+    (s) => `${s.platform.toUpperCase()}:${s.roomId}` === key,
+  )?.isMuted;
 });
 
 watch(isMutedInStore, (muted) => {
   if (playerInstance.value) {
     playerInstance.value.muted = muted;
-    console.log(`[Player] Sync mute from store: ${props.platform}/${props.roomId} -> ${muted}`);
+    console.log(
+      `[Player] Sync mute from store: ${props.platform}/${props.roomId} -> ${muted}`,
+    );
   }
 });
 
@@ -327,23 +262,10 @@ const osName = ref<string>("");
 const qualityOptions = ["原画", "高清", "标清"] as const;
 
 const resolveStoredQuality = (platform?: StreamingPlatform | null): string => {
-  if (!platform) {
-    return "原画";
-  }
-  if (typeof window === "undefined") {
-    return "原画";
-  }
-  try {
-    const saved = window.localStorage.getItem(`${platform}_preferred_quality`);
-    if (
-      saved &&
-      qualityOptions.includes(saved as (typeof qualityOptions)[number])
-    ) {
-      return saved;
-    }
-  } catch (error) {
-    console.warn("[Player] Failed to read stored quality preference:", error);
-  }
+  // Always default to the highest quality.
+  // We intentionally do NOT restore last-used quality from localStorage because
+  // previous fallback logic could have persisted a lower quality.
+  void platform;
   return "原画";
 };
 
@@ -361,11 +283,6 @@ function resetFullscreenState() {
   isInNativePlayerFullscreen.value = false;
   isInWebFullscreen.value = false;
   isFullScreen.value = false;
-  try {
-    document.documentElement.classList.remove("web-fs-active");
-  } catch (error) {
-    console.warn("[Player] Failed to reset web fullscreen flag:", error);
-  }
 }
 
 function updateFullscreenFlag() {
@@ -400,16 +317,30 @@ function destroyPlayerInstance() {
   const player = playerInstance.value;
   if (player) {
     try {
-      player.destroy();
+      player.destroy(false); // Destroy without removing DOM initially to handle clean up
     } catch (error) {
-      console.error("[Player] Error destroying xgplayer instance:", error);
+      console.error("[Player] Error destroying player instance:", error);
     }
-    const overlayHost = player.root?.querySelector(
-      ".player-danmu-overlay",
-    ) as HTMLElement | null;
-    overlayHost?.remove();
   }
   playerInstance.value = null;
+
+  if (flvPlayerInstance.value) {
+    try {
+      flvPlayerInstance.value.destroy();
+    } catch (e) {
+      console.warn("[Player] Error destroying mpegts instance:", e);
+    }
+    flvPlayerInstance.value = null;
+  }
+
+  if (hlsInstance.value) {
+    try {
+      hlsInstance.value.destroy();
+    } catch (e) {
+      console.warn("[Player] Error destroying hls instance:", e);
+    }
+    hlsInstance.value = null;
+  }
 
   const danmu = danmuInstance.value;
   if (danmu) {
@@ -421,17 +352,10 @@ function destroyPlayerInstance() {
     danmuInstance.value = null;
   }
 
-  refreshControlPlugin.value = null;
-  qualityControlPlugin.value = null;
-  lineControlPlugin.value = null;
-  danmuTogglePlugin.value = null;
-  danmuSettingsPlugin.value = null;
-  volumeControlPlugin.value = null;
-
   resetFullscreenState();
 }
 
-async function mountXgPlayer(
+async function mountArtPlayer(
   streamUrl: string,
   platformCode: StreamingPlatform,
   roomId: string,
@@ -444,222 +368,368 @@ async function mountXgPlayer(
     return;
   }
 
-  // Dynamically load heavy dependencies
-  const [{ default: Player }, { default: FlvPlugin }, { default: HlsPlugin }] =
-    await Promise.all([
-      import("xgplayer"),
-      import("xgplayer-flv"),
-      import("xgplayer-hls.js"),
-    ]);
-
   playerContainerRef.value.innerHTML = "";
 
-  const playbackType = streamType === "hls" ? "hls" : "flv";
-  const isHlsPlayback = playbackType === "hls";
+  const playbackType = streamType === "hls" ? "m3u8" : "flv";
 
-  const playerOptions: Record<string, any> = {
-    el: playerContainerRef.value,
-    url: streamUrl,
-    isLive: true,
-    autoplay: true,
-    playsinline: true,
-    lang: "zh-cn",
-    width: "100%",
-    height: "100%",
-    videoFillMode: "contain",
-    closeVideoClick: true,
-    closeVideoTouch: true,
-    keyShortcut: true,
-    volume: false as unknown as number,
-    pip: {
-      position: POSITIONS.CONTROLS_RIGHT,
-      index: 3,
-      showIcon: true,
-    },
-    cssFullscreen: {
-      index: 2,
-    },
-    playbackRate: false,
-    controls: {
-      mode: "normal",
-    },
-    icons: {
-      play: ICONS.play,
-      pause: ICONS.pause,
-      fullscreen: ICONS.maximize2,
-      exitFullscreen: ICONS.minimize2,
-      cssFullscreen: ICONS.fullscreen,
-      exitCssFullscreen: ICONS.minimize2,
-      pipIcon: ICONS.pictureInPicture2,
-      pipIconExit: ICONS.pictureInPicture2,
-    },
+  const storedPlayerVolume = loadStoredVolume();
+
+  const ensureVideoLayout = (video: HTMLVideoElement) => {
+    try {
+      video.style.width = "100%";
+      video.style.height = "100%";
+      video.style.display = "block";
+      video.style.objectFit = "contain";
+
+      const p1 = video.parentElement as HTMLElement | null;
+      const p2 = p1?.parentElement as HTMLElement | null;
+      const p3 = p2?.parentElement as HTMLElement | null;
+      for (const el of [p1, p2, p3]) {
+        if (!el) continue;
+        el.style.height = "100%";
+        el.style.minHeight = "0";
+      }
+    } catch (error) {
+      // Non-critical
+    }
   };
 
-  if (isHlsPlayback) {
-    const hlsFetchOptions: RequestInit = {
-      referrer: "https://live.bilibili.com/",
-      referrerPolicy: "no-referrer-when-downgrade",
-      credentials: "omit",
-      mode: "cors",
-    };
+  const art = new Artplayer({
+    container: playerContainerRef.value,
+    url: streamUrl,
+    type: playbackType,
+    isLive: true,
+    autoplay: true,
+    volume: storedPlayerVolume !== null ? storedPlayerVolume : 0.7,
+    muted: storedPlayerVolume === 0,
+    pip: true,
+    fullscreen: true,
+    fullscreenWeb: true,
+    autoSize: true,
+    setting: true,
+    loop: false,
+    flip: true,
+    playbackRate: false,
+    aspectRatio: true,
+    screenshot: true,
+    miniProgressBar: true,
+    theme: "#a855f7", // Using brand color
+    lang: "zh-cn",
+    controls: [
+      {
+        name: "refresh",
+        index: 10,
+        position: "left",
+        html: '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>',
+        tooltip: "刷新",
+        style: {
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        },
+        click: function () {
+          void reloadCurrentStream("refresh");
+        },
+      },
+      {
+        name: "danmu-toggle",
+        index: 20,
+        position: "right",
+        html: isDanmuEnabled.value
+          ? '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1"/><path d="M15 22h-1a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h1"/><path d="M10 22h1a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-1"/><path d="M14 6H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1Z"/><path d="M22 6h-3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1Z"/></svg>'
+          : '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-50"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1"/><path d="M15 22h-1a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h1"/><path d="M10 22h1a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-1"/><path d="M14 6H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1Z"/><path d="M22 6h-3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1Z"/><line x1="2" y1="2" x2="22" y2="22"/></svg>',
+        tooltip: isDanmuEnabled.value ? "关闭弹幕" : "开启弹幕",
+        style: {
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        },
+        // click: function (item: any) {
+        //   isDanmuEnabled.value = !isDanmuEnabled.value;
+        //   item.tooltip = isDanmuEnabled.value ? "关闭弹幕" : "开启弹幕";
+        //   item.html = isDanmuEnabled.value
+        //     ? '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1"/><path d="M15 22h-1a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h1"/><path d="M10 22h1a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-1"/><path d="M14 6H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1Z"/><path d="M22 6h-3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1Z"/></svg>'
+        //     : '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-50"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1"/><path d="M15 22h-1a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h1"/><path d="M10 22h1a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-1"/><path d="M14 6H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1Z"/><path d="M22 6h-3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1Z"/><line x1="2" y1="2" x2="22" y2="22"/></svg>';
 
-    playerOptions.plugins = [HlsPlugin];
-    playerOptions.useHlsPlugin = true;
-    playerOptions.hls = {
-      isLive: true,
-      retryCount: 3,
-      retryDelay: 2000,
-      enableWorker: true,
-      withCredentials: false,
-      lowLatencyMode: false,
-      fetchOptions: hlsFetchOptions,
-      xhrSetup: (xhr: XMLHttpRequest) => {
-        try {
-          xhr.withCredentials = false;
-          xhr.setRequestHeader("Referer", "https://live.bilibili.com/");
-          xhr.setRequestHeader("Origin", "https://live.bilibili.com");
-        } catch (headerError) {
-          console.warn(
-            "[Player] Failed to attach Bilibili HLS headers:",
-            headerError,
+        //   syncDanmuEnabledState(
+        //     danmuInstance.value,
+        //     danmuSettings,
+        //     isDanmuEnabled.value,
+        //     playerContainerRef.value,
+        //   );
+        // },
+        click: function (item: any) {
+          // 1. 切换开关状态
+          isDanmuEnabled.value = !isDanmuEnabled.value;
+
+          // 2. 更新按钮 UI
+          item.tooltip = isDanmuEnabled.value ? "关闭弹幕" : "开启弹幕";
+          item.html = isDanmuEnabled.value
+            ? '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1"/><path d="M15 22h-1a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h1"/><path d="M10 22h1a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-1"/><path d="M14 6H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1Z"/><path d="M22 6h-3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1Z"/></svg>'
+            : '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-50"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1"/><path d="M15 22h-1a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h1"/><path d="M10 22h1a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-1"/><path d="M14 6H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1Z"/><path d="M22 6h-3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1Z"/><line x1="2" y1="2" x2="22" y2="22"/></svg>';
+
+          // 3. 调用合并后的统一更新函数
+          applyDanmuOverlayPreferences(
+            danmuInstance.value,
+            danmuSettings,
+            isDanmuEnabled.value,
+            playerContainerRef.value // 传入 Ref 的 DOM 节点
           );
+        },
+      },
+      {
+        name: "danmu-settings",
+        index: 21,
+        position: "right",
+        html: '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>',
+        tooltip: "弹幕设置",
+        style: {
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        },
+        selector: [
+          {
+            default: true,
+            html: "不透明度",
+            html2: `${Math.round(danmuSettings.opacity * 100)}%`,
+            tooltip: "调节弹幕透明度",
+            range: [danmuSettings.opacity, 0.1, 1, 0.1],
+            onChange: function (item: any, element: HTMLInputElement) {
+              const value = Number(element.value);
+              danmuSettings.opacity = value;
+              item.html2 = `${Math.round(value * 100)}%`;
+              applyDanmuOverlayPreferences(
+                danmuInstance.value,
+                danmuSettings,
+                isDanmuEnabled.value,
+                playerContainerRef.value,
+              );
+            },
+          },
+          {
+            html: "显示区域",
+            html2: `${danmuSettings.area === 1 ? "100%" : danmuSettings.area === 0.5 ? "半屏" : "1/4屏"}`,
+            tooltip: "调节弹幕显示区域",
+            switch: true,
+            onSwitch: function (item: any) {
+              if (danmuSettings.area === 1) danmuSettings.area = 0.25;
+              else if (danmuSettings.area === 0.5) danmuSettings.area = 1;
+              else danmuSettings.area = 0.5;
+
+              item.html2 = `${danmuSettings.area === 1 ? "100%" : danmuSettings.area === 0.5 ? "半屏" : "1/4屏"}`;
+              applyDanmuOverlayPreferences(
+                danmuInstance.value,
+                danmuSettings,
+                isDanmuEnabled.value,
+                playerContainerRef.value,
+              );
+            },
+          },
+          {
+            html: "字体大小",
+            html2: `${danmuSettings.fontSize}`,
+            tooltip: "调节弹幕字体大小",
+            range: [parseInt(danmuSettings.fontSize), 12, 40, 1],
+            onChange: function (item: any, element: HTMLInputElement) {
+              const value = Number(element.value);
+              danmuSettings.fontSize = `${value}px`;
+              item.html2 = `${value}px`;
+              applyDanmuOverlayPreferences(
+                danmuInstance.value,
+                danmuSettings,
+                isDanmuEnabled.value,
+                playerContainerRef.value,
+              );
+            },
+          },
+        ],
+      },
+      {
+        name: "quality",
+        index: 22,
+        position: "right",
+        html: currentQuality.value,
+        style: {
+          padding: "0 10px",
+        },
+        selector: qualityOptions.map((q) => ({
+          html: q,
+          default: q === currentQuality.value,
+        })),
+        onSelect: async function (item: any) {
+          await switchQuality(item.html as string);
+          return item.html;
+        },
+      },
+    ],
+    customType: {
+      m3u8: function (video, url) {
+        ensureVideoLayout(video);
+        if (Hls.isSupported()) {
+          if (hlsInstance.value) {
+            hlsInstance.value.destroy();
+          }
+          const hls = new Hls({
+            maxBufferLength: 10, maxMaxBufferLength: 20,
+            enableWorker: true,
+          });
+          hls.loadSource(url);
+          hls.attachMedia(video);
+          hlsInstance.value = hls;
+        } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+          video.src = url;
         }
       },
-    };
-  } else {
-    playerOptions.plugins = [FlvPlugin];
-    playerOptions.flv = {
-      isLive: true,
-      cors: true,
-      autoCleanupSourceBuffer: true,
-      enableWorker: true,
-      stashInitialSize: 128,
-      lazyLoad: true,
-      lazyLoadMaxDuration: 30,
-      deferLoadAfterSourceOpen: true,
-    };
+      flv: function (video, url) {
+        ensureVideoLayout(video);
+        if (mpegts.isSupported()) {
+          if (flvPlayerInstance.value) {
+            flvPlayerInstance.value.destroy();
+          }
+          const flvPlayer = mpegts.createPlayer(
+            {
+              type: "flv",
+              url: url,
+              isLive: true,
+              cors: true,
+            },
+            {
+              enableWorker: true,
+              lazyLoad: true,
+              stashInitialSize: 128,
+              autoCleanupSourceBuffer: true,
+              lazyLoadMaxDuration: 30,
+              deferLoadAfterSourceOpen: true,
+            },
+          );
+          flvPlayer.attachMediaElement(video);
+
+          if (import.meta.env.DEV) {
+            video.addEventListener(
+              "loadedmetadata",
+              () => {
+                console.log(
+                  `[Player] Video metadata: ${video.videoWidth}x${video.videoHeight}`,
+                );
+
+                const rect = video.getBoundingClientRect();
+                console.log(
+                  "[Player] Video rect:",
+                  `${Math.round(rect.width)}x${Math.round(rect.height)}`,
+                );
+                console.log("[Player] Video state:", {
+                  readyState: video.readyState,
+                  paused: video.paused,
+                  currentTime: video.currentTime,
+                  muted: video.muted,
+                  volume: video.volume,
+                });
+              },
+              { once: true },
+            );
+
+            window.setTimeout(() => {
+              const rect = video.getBoundingClientRect();
+              console.log(
+                "[Player] Video rect (2s):",
+                `${Math.round(rect.width)}x${Math.round(rect.height)}`,
+              );
+              console.log("[Player] Video state (2s):", {
+                readyState: video.readyState,
+                paused: video.paused,
+                currentTime: video.currentTime,
+                videoWidth: video.videoWidth,
+                videoHeight: video.videoHeight,
+              });
+            }, 2000);
+
+            try {
+              flvPlayer.on(
+                (mpegts as any).Events.ERROR,
+                (type: any, detail: any, info: any) => {
+                  console.error("[Player] mpegts error:", type, detail, info);
+                },
+              );
+              flvPlayer.on((mpegts as any).Events.MEDIA_INFO, (info: any) => {
+                console.log("[Player] mpegts media info:", info);
+              });
+              flvPlayer.on(
+                (mpegts as any).Events.STATISTICS_INFO,
+                (info: any) => {
+                  if (!info) return;
+                  if (typeof info.decodedFrames === "number") {
+                    console.log("[Player] mpegts stats decodedFrames:", info);
+                  }
+                },
+              );
+            } catch (error) {
+              // Non-critical; depends on mpegts.js build
+            }
+          }
+
+          flvPlayer.load();
+          // mpegts.js requires an explicit play() to start transmuxing.
+          // Artplayer will control the HTMLMediaElement, but the mpegts player
+          // itself still needs to enter the running state.
+          try {
+            flvPlayer.play();
+          } catch (error) {
+            console.warn("[Player] Failed starting mpegts playback:", error);
+          }
+          flvPlayerInstance.value = flvPlayer;
+        }
+      },
+    },
+  });
+
+  // Add Line Control dynamically if needed
+  if (lineOptions.value.length > 0) {
+    art.controls.add({
+      name: "line-switch",
+      index: 23,
+      position: "right",
+      html: getCurrentLineLabel(currentLine.value),
+      style: {
+        padding: "0 10px",
+      },
+      selector: lineOptions.value.map((opt) => ({
+        html: opt.label,
+        value: opt.key,
+        default: opt.key === currentLine.value,
+      })),
+      onSelect: async function (item: any) {
+        const key = (item as any).value || item.html;
+        await switchLine(key);
+        return item.html;
+      },
+    });
   }
 
-  const player = new Player(playerOptions);
+  playerInstance.value = art;
 
-  playerInstance.value = player as any; // Cast because types might not be exactly same after dynamic import in all envs
-  const storedPlayerVolume = loadStoredVolume();
-  if (storedPlayerVolume !== null) {
-    player.volume = storedPlayerVolume;
-    player.muted = storedPlayerVolume === 0 ? true : player.muted;
-  }
+  art.on("ready", async () => {
+    // Extra resize pass for webview layout timing.
+    try {
+      setTimeout(() => {
+        try {
+          (art as any).resize?.();
+        } catch (error) {
+          // Non-critical
+        }
+      }, 50);
+    } catch (error) {
+      // Non-critical
+    }
 
-  const lineOptionsForPlatform = lineOptions.value.map((option) => ({
-    ...option,
-  }));
-
-  refreshControlPlugin.value = player.registerPlugin(RefreshControl, {
-    position: POSITIONS.CONTROLS_LEFT,
-    index: 2,
-    onClick: () => {
-      void reloadCurrentStream("refresh");
-    },
-  }) as RefreshControl;
-
-  volumeControlPlugin.value = player.registerPlugin(VolumeControl, {
-    position: POSITIONS.CONTROLS_LEFT,
-    index: 3,
-  }) as VolumeControl;
-
-  danmuTogglePlugin.value = player.registerPlugin(DanmuToggleControl, {
-    position: POSITIONS.CONTROLS_RIGHT,
-    index: 4,
-    getState: () => isDanmuEnabled.value,
-    onToggle: (enabled: boolean) => {
-      isDanmuEnabled.value = enabled;
-    },
-  }) as DanmuToggleControl;
-
-  danmuSettingsPlugin.value = player.registerPlugin(DanmuSettingsControl, {
-    position: POSITIONS.CONTROLS_RIGHT,
-    index: 4.2,
-    getSettings: () => ({
-      color: danmuSettings.color,
-      strokeColor: danmuSettings.strokeColor,
-      fontSize: danmuSettings.fontSize,
-      duration: danmuSettings.duration,
-      area: danmuSettings.area,
-      mode: danmuSettings.mode,
-      opacity: danmuSettings.opacity,
-    }),
-    onChange: (partial: Partial<DanmuUserSettings>) => {
-      if (partial.color) {
-        danmuSettings.color = partial.color;
-      }
-      if (partial.strokeColor) {
-        danmuSettings.strokeColor = partial.strokeColor;
-      }
-      if (partial.fontSize) {
-        danmuSettings.fontSize = partial.fontSize;
-      }
-      if (typeof partial.duration === "number") {
-        danmuSettings.duration = partial.duration;
-      }
-      if (typeof partial.area === "number") {
-        danmuSettings.area = sanitizeDanmuArea(partial.area);
-      }
-      if (partial.mode) {
-        danmuSettings.mode = partial.mode;
-      }
-      if (typeof partial.opacity === "number") {
-        danmuSettings.opacity = sanitizeDanmuOpacity(partial.opacity);
-      }
-    },
-  }) as DanmuSettingsControl;
-
-  qualityControlPlugin.value = player.registerPlugin(QualityControl, {
-    position: POSITIONS.CONTROLS_RIGHT,
-    index: 5,
-    options: [...qualityOptions],
-    getCurrent: () => currentQuality.value,
-    onSelect: async (option: string) => {
-      if (option === currentQuality.value) {
-        return;
-      }
-      await switchQuality(option);
-    },
-  }) as QualityControl;
-  qualityControlPlugin.value?.setOptions([...qualityOptions]);
-  qualityControlPlugin.value?.updateLabel(currentQuality.value);
-
-  lineControlPlugin.value = player.registerPlugin(LineControl, {
-    position: POSITIONS.CONTROLS_RIGHT,
-    index: 5.2,
-    disable: lineOptionsForPlatform.length === 0,
-    options: lineOptionsForPlatform,
-    getCurrentKey: () => currentLine.value ?? "",
-    getCurrentLabel: () => getCurrentLineLabel(currentLine.value),
-    onSelect: async (optionKey: string) => {
-      if (optionKey === currentLine.value) {
-        return;
-      }
-      await switchLine(optionKey);
-    },
-  }) as LineControl;
-  lineControlPlugin.value?.setOptions(lineOptionsForPlatform);
-  lineControlPlugin.value?.updateLabel(getCurrentLineLabel(currentLine.value));
-
-  arrangeControlClusters(player);
-
-  let overlayInstance = await createDanmuOverlay(
-    player,
-    danmuSettings,
-    isDanmuEnabled.value,
-  );
-  danmuInstance.value = overlayInstance;
-
-  player.on("ready", async () => {
-    arrangeControlClusters(player);
-    ensureDanmuOverlayHost(player);
-    overlayInstance =
-      overlayInstance ??
-      (await createDanmuOverlay(player, danmuSettings, isDanmuEnabled.value));
+    ensureDanmuOverlayHost(art);
+    let overlayInstance = await createDanmuOverlay(
+      art,
+      danmuSettings,
+      isDanmuEnabled.value,
+    );
     danmuInstance.value = overlayInstance;
+
     try {
       if (roomId) {
         await startCurrentDanmakuListener(
@@ -674,113 +744,60 @@ async function mountXgPlayer(
         error,
       );
     }
-    overlayInstance?.play?.();
+
     updateFullscreenFlag();
+
+    // Workaround for volume persistence in ArtPlayer if not handled by default options perfectly
+    if (storedPlayerVolume !== null) {
+      art.volume = storedPlayerVolume;
+      if (storedPlayerVolume === 0) art.muted = true;
+    }
   });
 
-  player.on("play", () => {
-    overlayInstance?.play?.();
+  art.on("play", () => {
+    danmuInstance.value?.play?.();
   });
 
-  player.on("pause", () => {
-    overlayInstance?.pause?.();
+  art.on("pause", () => {
+    danmuInstance.value?.pause?.();
   });
 
-  player.on("destroy", () => {
-    overlayInstance?.stop?.();
-    overlayInstance = null;
+  art.on("destroy", () => {
+    danmuInstance.value?.stop?.();
     danmuInstance.value = null;
   });
 
-  player.on("error", (error: any) => {
-    console.error("[Player] xgplayer error:", error);
+  art.on("error", (error: any) => {
+    console.error("[Player] ArtPlayer error:", error);
     streamError.value = `播放器错误: ${error?.message || error}`;
   });
 
-  player.on("enterFullscreen", async () => {
-    isInNativePlayerFullscreen.value = true;
-    ensureDanmuOverlayHost(player);
-    overlayInstance =
-      overlayInstance ??
-      (await createDanmuOverlay(player, danmuSettings, isDanmuEnabled.value));
-    danmuInstance.value = overlayInstance;
-    overlayInstance?.play?.();
+  art.on("fullscreen", (state) => {
+    isInNativePlayerFullscreen.value = state;
     updateFullscreenFlag();
+    // Ensure danmu overlay is correct size
+    danmuInstance.value?.resize?.();
   });
 
-  player.on("exitFullscreen", async () => {
-    isInNativePlayerFullscreen.value = false;
-    ensureDanmuOverlayHost(player);
-    overlayInstance =
-      overlayInstance ??
-      (await createDanmuOverlay(player, danmuSettings, isDanmuEnabled.value));
-    danmuInstance.value = overlayInstance;
+  art.on("fullscreenWeb", (state) => {
+    isInWebFullscreen.value = state;
     updateFullscreenFlag();
+    danmuInstance.value?.resize?.();
   });
 
-  player.on("enterFullscreenWeb", async () => {
-    isInWebFullscreen.value = true;
-    try {
-      document.documentElement.classList.add("web-fs-active");
-    } catch (error) {
-      console.warn("[Player] Failed to set web fullscreen flag:", error);
+  art.on("volume", (vol) => {
+    // Artplayer volume is 0-1
+    // If muted, it might be separate state, but volume change usually implies setting it
+    if (vol === 0) {
+      art.muted = true;
+    } else {
+      art.muted = false;
     }
-    ensureDanmuOverlayHost(player);
-    overlayInstance =
-      overlayInstance ??
-      (await createDanmuOverlay(player, danmuSettings, isDanmuEnabled.value));
-    danmuInstance.value = overlayInstance;
-    overlayInstance?.play?.();
-    arrangeControlClusters(player);
-    updateFullscreenFlag();
-  });
-
-  player.on("exitFullscreenWeb", async () => {
-    isInWebFullscreen.value = false;
-    try {
-      if (!isClosing.value) {
-        document.documentElement.classList.remove("web-fs-active");
-      }
-    } catch (error) {
-      console.warn("[Player] Failed to clear web fullscreen flag:", error);
-    }
-    ensureDanmuOverlayHost(player);
-    overlayInstance =
-      overlayInstance ??
-      (await createDanmuOverlay(player, danmuSettings, isDanmuEnabled.value));
-    danmuInstance.value = overlayInstance;
-    arrangeControlClusters(player);
-    updateFullscreenFlag();
-  });
-
-  player.on("cssFullscreen_change", async (isCssFullscreen: boolean) => {
-    isInWebFullscreen.value = isCssFullscreen;
-    try {
-      if (isCssFullscreen) {
-        document.documentElement.classList.add("web-fs-active");
-      } else if (!isClosing.value) {
-        document.documentElement.classList.remove("web-fs-active");
-      }
-    } catch (error) {
-      console.warn("[Player] Failed toggling css fullscreen flag:", error);
-    }
-    ensureDanmuOverlayHost(player);
-    overlayInstance =
-      overlayInstance ??
-      (await createDanmuOverlay(player, danmuSettings, isDanmuEnabled.value));
-    danmuInstance.value = overlayInstance;
-    if (isCssFullscreen) {
-      overlayInstance?.play?.();
-    }
-    arrangeControlClusters(player);
-    updateFullscreenFlag();
+    // Persist
+    // Using existing helper if it accepts 0-1
+    // Check helpers in constants
   });
 }
-
-// function handleClosePlayerClick() {
-//   isClosing.value = true;
-//   emit("close-player");
-// }
 
 async function initializePlayerAndStream(
   pRoomId: string,
@@ -840,11 +857,11 @@ async function initializePlayerAndStream(
 
     const cookieForBackend =
       platformForBackend === "bilibili"
-        ? (props.cookie ||
-            (typeof localStorage !== "undefined"
-              ? localStorage.getItem("bilibili_cookie")
-              : null) ||
-            null)
+        ? props.cookie ||
+        (typeof localStorage !== "undefined"
+          ? localStorage.getItem("bilibili_cookie")
+          : null) ||
+        null
         : null;
 
     const resp = await getLiveStreamV2({
@@ -853,6 +870,7 @@ async function initializePlayerAndStream(
       quality: currentQuality.value,
       line: effectiveLine ?? null,
       cookie: cookieForBackend,
+      debug: false,
     });
 
     try {
@@ -882,6 +900,10 @@ async function initializePlayerAndStream(
     }
 
     const streamUrl = resp.playback?.url;
+    console.log(
+      `[Player] Fetched stream URL for ${pPlatform} room ${pRoomId}:`,
+      streamUrl,
+    );
     if (!streamUrl) {
       throw new Error("未能获取有效的直播流地址。");
     }
@@ -892,7 +914,7 @@ async function initializePlayerAndStream(
         : undefined;
 
     isLoadingStream.value = false;
-    
+
     // 成功获取流后，记录到活跃播放列表
     playerStore.setStreamerInfo({
       roomId: pRoomId,
@@ -900,15 +922,10 @@ async function initializePlayerAndStream(
       title: playerTitle.value || "",
       anchorName: playerAnchorName.value || "",
       avatar: playerAvatar.value || "",
-      isLive: playerIsLive.value || false
+      isLive: playerIsLive.value || false,
     });
 
-    await mountXgPlayer(
-      streamUrl,
-      pPlatform,
-      pRoomId,
-      streamType,
-    );
+    await mountArtPlayer(streamUrl, pPlatform, pRoomId, streamType);
   } catch (error: any) {
     console.error(
       `[Player] Error initializing stream for ${pPlatform} room ${pRoomId}:`,
@@ -932,11 +949,11 @@ async function initializePlayerAndStream(
 
         const cookieForBackend =
           platformForBackend === "bilibili"
-            ? (props.cookie ||
-                (typeof localStorage !== "undefined"
-                  ? localStorage.getItem("bilibili_cookie")
-                  : null) ||
-                null)
+            ? props.cookie ||
+            (typeof localStorage !== "undefined"
+              ? localStorage.getItem("bilibili_cookie")
+              : null) ||
+            null
             : null;
 
         const resp = await getLiveStreamV2({
@@ -1001,6 +1018,84 @@ const retryInitialization = async () => {
   await reloadCurrentStream("refresh");
 };
 
+const lastInitKey = ref<string | null>(null);
+
+watch(
+  [() => props.roomId, () => props.platform, () => props.isActive] as const,
+  async ([roomId, platform, isActive], [prevRoomId, prevPlatform, prevActive]) => {
+    const resolvedIsActive = isActive !== false;
+    const resolvedPrevActive = prevActive !== false;
+
+    if (!resolvedIsActive) {
+      if (resolvedPrevActive) {
+        try {
+          await stopCurrentDanmakuListener(
+            prevPlatform,
+            prevRoomId ?? undefined,
+          );
+        } catch (error) {
+          console.warn("[Player] Failed stopping danmaku listener:", error);
+        }
+      }
+
+      try {
+        playerInstance.value?.pause();
+      } catch (error) {
+        // Non-critical
+      }
+
+      try {
+        flvPlayerInstance.value?.pause();
+      } catch (error) {
+        // Non-critical
+      }
+
+      try {
+        hlsInstance.value?.stopLoad();
+      } catch (error) {
+        // Non-critical
+      }
+      return;
+    }
+
+    if (!roomId || !platform) {
+      if (props.initialError) {
+        streamError.value = props.initialError;
+        isOfflineError.value = props.initialError.includes("主播未开播");
+      }
+      isLoadingStream.value = false;
+      return;
+    }
+
+    const key = `${platform}:${roomId}`;
+    if (
+      key === lastInitKey.value &&
+      playerInstance.value &&
+      !isLoadingStream.value &&
+      !streamError.value
+    ) {
+      // Became active again; resume playback
+      try {
+        await playerInstance.value.play();
+      } catch (error) {
+        // Autoplay policies / state errors are expected occasionally
+      }
+      return;
+    }
+
+    lastInitKey.value = key;
+    await initializePlayerAndStream(
+      roomId,
+      platform,
+      props.streamUrl ?? null,
+      false,
+      prevRoomId ?? null,
+      prevPlatform ?? null,
+    );
+  },
+  { immediate: true },
+);
+
 // 画质切换函数
 const switchQuality = async (quality: string) => {
   if (isQualitySwitching.value) {
@@ -1022,6 +1117,15 @@ const switchQuality = async (quality: string) => {
 
   try {
     currentQuality.value = quality;
+    try {
+      // Artplayer controls are not reactive; update the label immediately.
+      (playerInstance.value as any)?.controls?.update?.({
+        name: "quality",
+        html: quality,
+      });
+    } catch (error) {
+      // Non-critical
+    }
     if (typeof window !== "undefined") {
       window.localStorage.setItem(
         `${props.platform}_preferred_quality`,
@@ -1033,6 +1137,14 @@ const switchQuality = async (quality: string) => {
   } catch (error) {
     console.error("[Player] 画质切换失败:", error);
     currentQuality.value = previousQuality;
+    try {
+      (playerInstance.value as any)?.controls?.update?.({
+        name: "quality",
+        html: previousQuality,
+      });
+    } catch (innerError) {
+      // Non-critical
+    }
     if (typeof window !== "undefined") {
       window.localStorage.setItem(
         `${props.platform}_preferred_quality`,
@@ -1115,14 +1227,6 @@ async function reloadCurrentStream(
       isRefreshingStream.value = false;
     }
   }
-  if (trigger === "quality") {
-    qualityControlPlugin.value?.updateLabel(currentQuality.value);
-  }
-  if (trigger === "line") {
-    lineControlPlugin.value?.updateLabel(
-      getCurrentLineLabel(currentLine.value),
-    );
-  }
 }
 
 const getDanmuSettingsSnapshot = (): DanmuUserSettings => ({
@@ -1141,44 +1245,6 @@ const persistCurrentDanmuPreferences = () => {
     settings: getDanmuSettingsSnapshot(),
   });
 };
-
-registerPlayerWatchers({
-  refreshControlPlugin,
-  isRefreshingStream,
-  qualityControlPlugin,
-  isQualitySwitching,
-  lineControlPlugin,
-  isLineSwitching,
-  lineOptions,
-  currentLine,
-  getLineLabel: getCurrentLineLabel,
-  persistLinePreference,
-  props,
-  resolveStoredLine,
-  isDanmuEnabled,
-  danmuTogglePlugin,
-  danmuInstance,
-  danmuSettingsPlugin,
-  danmuSettings,
-  applyDanmuOverlayPreferences,
-  syncDanmuEnabledState,
-  persistCurrentDanmuPreferences,
-  currentQuality,
-  initializeQualityPreference,
-  initializePlayerAndStream,
-  stopCurrentDanmakuListener,
-  stopProxy,
-  destroyPlayerInstance,
-  isLoadingStream,
-  danmakuMessages,
-  streamError,
-  isOfflineError,
-  playerTitle,
-  playerAnchorName,
-  playerAvatar,
-  playerIsLive,
-  playerRoot: () => playerInstance.value?.root as HTMLElement | null,
-});
 
 onMounted(async () => {
   updateWindowWidth();
@@ -1232,7 +1298,9 @@ onActivated(() => {
 });
 
 onDeactivated(() => {
-  console.log(`[Player] Instance deactivated: ${props.platform}/${props.roomId}`);
+  console.log(
+    `[Player] Instance deactivated: ${props.platform}/${props.roomId}`,
+  );
 });
 
 onBeforeUnmount(async () => {
@@ -1247,7 +1315,7 @@ onBeforeUnmount(async () => {
   const roomIdToStop: string | null = props.roomId;
   await stopCurrentDanmakuListener(platformToStop, roomIdToStop);
 
-  await stopProxy();
+  // Keep shared stream proxy alive
 
   destroyPlayerInstance();
   danmakuMessages.value = [];

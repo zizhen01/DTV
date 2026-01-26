@@ -46,6 +46,7 @@ export interface DanmuOverlayInstance {
   setFontSize?(size: number): void;
   setArea?(area: { start: number; end: number }): void;
   setAllDuration?(mode: string, duration: number): void;
+  resize?(): void;
 }
 
 export interface DanmuRenderOptions {

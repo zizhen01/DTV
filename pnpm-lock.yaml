@@ -23,6 +23,9 @@ importers:
       '@vueuse/core':
         specifier: ^12.5.0
         version: 12.8.2(typescript@5.6.3)
+      artplayer:
+        specifier: ^5.3.0
+        version: 5.3.0
       biome:
         specifier: ^0.3.3
         version: 0.3.3
@@ -32,12 +35,18 @@ importers:
       fuse.js:
         specifier: ^7.1.0
         version: 7.1.0
+      hls.js:
+        specifier: ^1.6.15
+        version: 1.6.15
       lucide-vue-next:
         specifier: ^0.546.0
         version: 0.546.0(vue@3.5.18(typescript@5.6.3))
       motion-v:
         specifier: ^1.7.4
         version: 1.7.4(@vueuse/core@12.8.2(typescript@5.6.3))(vue@3.5.18(typescript@5.6.3))
+      mpegts.js:
+        specifier: ^1.8.0
+        version: 1.8.0
       pinia:
         specifier: ^2.1.7
         version: 2.3.1(typescript@5.6.3)(vue@3.5.18(typescript@5.6.3))
@@ -53,15 +62,6 @@ importers:
       vue-virtual-scroller:
         specifier: ^2.0.0-beta.8
         version: 2.0.0-beta.8(vue@3.5.18(typescript@5.6.3))
-      xgplayer:
-        specifier: ^3.0.23
-        version: 3.0.23(core-js@3.46.0)
-      xgplayer-flv:
-        specifier: ^3.0.23
-        version: 3.0.23(core-js@3.46.0)(xgplayer@3.0.23(core-js@3.46.0))
-      xgplayer-hls.js:
-        specifier: ^3.0.23
-        version: 3.0.23(core-js@3.46.0)(xgplayer@3.0.23(core-js@3.46.0))
     devDependencies:
       '@biomejs/biome':
         specifier: ^2.3.11
@@ -114,10 +114,6 @@ packages:
     resolution: {integrity: sha512-jVZGvOxOuNSsuQuLRTh13nU0AogFlw32w/MT+LV6D3sP5WdbW61E77RnkbaO2dUvmPAYrBDJXGn5gGS6tH4j8g==}
     engines: {node: '>=6.0.0'}
     hasBin: true
-
-  '@babel/runtime@7.28.4':
-    resolution: {integrity: sha512-Q/N6JNWvIvPnLDvjlE1OUBLPQHH6l3CltCEsHIujp45zQUSSh8K+gHnaEX45yAT1nyngnINhvWtzN+Nb9D8RAQ==}
-    engines: {node: '>=6.9.0'}
 
   '@babel/types@7.28.1':
     resolution: {integrity: sha512-x0LvFTekgSX+83TI28Y9wYPUfzrnl2aT5+5QLnO6v7mSJYtEEevuDRN0F0uSHRk1G1IWZC43o00Y0xDDrpBGPQ==}
@@ -725,6 +721,9 @@ packages:
   any-promise@1.3.0:
     resolution: {integrity: sha512-7UvmKalWRt1wgjL1RrGxoSJW/0QZFIegpeGvZG9kjp8vrRu55XTHbwnqq2GpXm9uLbcuhxm3IqX9OB4MZR1b2A==}
 
+  artplayer@5.3.0:
+    resolution: {integrity: sha512-yExO39MpEg4P+bxgChxx1eJfiUPE4q1QQRLCmqGhlsj+ANuaoEkR8hF93LdI5ZyrAcIbJkuEndxEiUoKobifDw==}
+
   asn1@0.2.6:
     resolution: {integrity: sha512-ix/FxPn0MDjeyJ7i/yoHGFt/EX6LyNbxSEhPPXODPL+KB0VPk86UYfL0lMdy+KCnv+fmvIzySwaK5COwqVbWTQ==}
 
@@ -788,23 +787,12 @@ packages:
   concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
-  concat-typed-array@1.0.2:
-    resolution: {integrity: sha512-aC878bxeWSlrY6h60cCDwBUXpKwovZrB7+C4+VHNO1CIXW2gBLxbQ757jWtOXUscLGgYI8R84N6uy9fTJPe+0g==}
-    engines: {node: '>=0.10.0'}
-    deprecated: 'WARNING: This package has been renamed to typed-array-concat.'
-
   core-js@2.6.12:
     resolution: {integrity: sha512-Kb2wC0fvsWfQrgk8HU5lW6U/Lcs8+9aaYcy4ZFc6DDlo4nZ7n70dEgE5rtR0oG6ufKDUnrwfWL1mXR5ljDatrQ==}
     deprecated: core-js@<3.23.3 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Some versions have web compatibility issues. Please, upgrade your dependencies to the actual version of core-js.
 
-  core-js@3.46.0:
-    resolution: {integrity: sha512-vDMm9B0xnqqZ8uSBpZ8sNtRtOdmfShrvT6h2TuQGLs0Is+cR0DYbj/KWP6ALVNbWPpqA/qPLoOuppJN07humpA==}
-
   core-util-is@1.0.2:
     resolution: {integrity: sha512-3lqz5YjWTYnW6dlDa5TLaTCcShfar1e40rmcJVwCBJC6mWlFuj0eCHIElmG1g5kyuJ/GD+8Wn4FFCcz4gJPfaQ==}
-
-  crypto-es@1.2.7:
-    resolution: {integrity: sha512-UUqiVJ2gUuZFmbFsKmud3uuLcNP2+Opt+5ysmljycFCyhA0+T16XJmo1ev/t5kMChMqWh7IEvURNCqsg+SjZGQ==}
 
   csstype@3.1.3:
     resolution: {integrity: sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw==}
@@ -812,9 +800,6 @@ packages:
   d@1.0.2:
     resolution: {integrity: sha512-MOqHvMWF9/9MX6nza0KgvFH4HpMU0EF5uUDXqX/BtxtU8NfB0QzRtJ8Oe/6SuS4kbhyzVJwjd97EA4PKrzJ8bw==}
     engines: {node: '>=0.12'}
-
-  danmu.js@1.1.13:
-    resolution: {integrity: sha512-knFd0/cB2HA4FFWiA7eB2suc5vCvoHdqio33FyyCSfP7C+1A+zQcTvnvwfxaZhrxsGj4qaQI2I8XiTqedRaVmg==}
 
   danmu.js@1.1.13-douyin-1.5:
     resolution: {integrity: sha512-GMKwBdGjCeBpEjFamV8A0f83pkVNMJFC/W1r/eqkDPlUa3P598lBKGOXhFiJf7FDkg2mt+fppjB53SS0bHAtKQ==}
@@ -826,23 +811,13 @@ packages:
   de-indent@1.0.2:
     resolution: {integrity: sha512-e/1zu3xH5MQryN2zdVaF0OrdNLUbvWxzMbi+iNA6Bky7l1RoP8a2fIbRocyHclXt/arDrrR6lL3TqFD9pMQTsg==}
 
-  deepmerge@2.0.1:
-    resolution: {integrity: sha512-VIPwiMJqJ13ZQfaCsIFnp5Me9tnjURiaIFxfz7EH0Ci0dTSQpZtSLrqOicXqEd/z2r+z+Klk9GzmnRsgpgbOsQ==}
-    engines: {node: '>=0.10.0'}
-
   delayed-stream@1.0.0:
     resolution: {integrity: sha512-ZySD7Nf91aLB0RxL4KGrKHBXl7Eds1DAmEdcoVawXnLD7SDhpNgtuII2aAkg7a7QS41jxPSZ17p4VdGnMHk3MQ==}
     engines: {node: '>=0.4.0'}
 
-  delegate@3.2.0:
-    resolution: {integrity: sha512-IofjkYBZaZivn0V8nnsMJGBr4jVLxHDheKSW88PyxS5QC4Vo9ZbZVvhzlSxY87fVq3STR6r+4cGepyHkcWOQSw==}
-
   detect-libc@2.1.2:
     resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
     engines: {node: '>=8'}
-
-  downloadjs@1.4.7:
-    resolution: {integrity: sha512-LN1gO7+u9xjU5oEScGFKvXhYf7Y/empUIIEAGBs1LzUq/rg5duiDrkuH5A2lQGd5jfMOb9X9usDa2oVXwJ0U/Q==}
 
   earlgrey-runtime@0.1.2:
     resolution: {integrity: sha512-T4qoScXi5TwALDv8nlGTvOuCT8jXcKcxtO8qVdqv46IA2GHJfQzwoBPbkOmORnyhu3A98cVVuhWLsM2CzPljJg==}
@@ -868,6 +843,9 @@ packages:
   es6-iterator@2.0.3:
     resolution: {integrity: sha512-zw4SRzoUkd+cl+ZoE15A9o1oQd920Bb0iOJMQkQhl3jNc03YqVjAhG7scf9C5KWRU/R13Orf588uCC6525o02g==}
 
+  es6-promise@4.2.8:
+    resolution: {integrity: sha512-HJDGx5daxeIvxdBxvG2cb9g4tEvwIk3i8+nhX0yGrYmZUzbkdg8QbDevheDB8gd0//uPj4c1EQua8Q+MViT0/w==}
+
   es6-symbol@3.1.4:
     resolution: {integrity: sha512-U9bFFjX8tFiATgtkJ1zg25+KviIXpgRvRHS8sau3GfhVzThRQrOeksPeT0BWW2MNZs1OEWJ1DPXOQMn0KKRkvg==}
     engines: {node: '>=0.12'}
@@ -890,9 +868,6 @@ packages:
 
   event-emitter@0.3.5:
     resolution: {integrity: sha512-D9rRn9y7kLPnJ+hMq7S/nhvoKwwvVJahBi2BPmx3bvbsEdK3W9ii8cBSGjP+72/LnM4n6fo3+dkCX5FeTQruXA==}
-
-  eventemitter3@4.0.7:
-    resolution: {integrity: sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==}
 
   exit-hook@1.1.1:
     resolution: {integrity: sha512-MsG3prOVw1WtLXAZbM3KiYtooKR1LvxHh3VHsVtIy0uiUu8usxgB/94DP2HxtD/661lLdB6yzQ09lGJSQr6nkg==}
@@ -996,8 +971,8 @@ packages:
   hey-listen@1.0.8:
     resolution: {integrity: sha512-COpmrF2NOg4TBWUJ5UVyaCU2A88wEMkUPK4hNqyCkqHbxT92BbvfjoSozkAIIm6XhicGlJHhFdullInrdhwU8Q==}
 
-  hls.js@1.6.14:
-    resolution: {integrity: sha512-CSpT2aXsv71HST8C5ETeVo+6YybqCpHBiYrCRQSn3U5QUZuLTSsvtq/bj+zuvjLVADeKxoebzo16OkH8m1+65Q==}
+  hls.js@1.6.15:
+    resolution: {integrity: sha512-E3a5VwgXimGHwpRGV+WxRTKeSp2DW5DI5MWv34ulL3t5UNmyJWCQ1KmLEHbYzcfThfXG8amBL+fCYPneGHC4VA==}
 
   http-signature@1.2.0:
     resolution: {integrity: sha512-CAbnr6Rz4CYQkLYUtSNXxQPUH2gK8f3iWexVlsnMeD+GjlsQ0Xsy1cOX+mN3dtxYomRy21CiOzU8Uhw6OwncEQ==}
@@ -1051,6 +1026,10 @@ packages:
 
   kaiser@0.0.4:
     resolution: {integrity: sha512-m8ju+rmBqvclZmyrOXgGGhOYSjKJK6RN1NhqEltemY87UqZOxEkizg9TOy1vQSyJ01Wx6SAPuuN0iO2Mgislvw==}
+
+  kind-of@6.0.3:
+    resolution: {integrity: sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==}
+    engines: {node: '>=0.10.0'}
 
   klaw@1.3.1:
     resolution: {integrity: sha512-TED5xi9gGQjGpNnvRWknrwAB1eL5GciPfVFOt3Vk1OJCVDQbzuSfrF3hkUQKlsgKrG1F+0t5W0m+Fje1jIt8rw==}
@@ -1172,6 +1151,9 @@ packages:
       '@vueuse/core': '>=10.0.0'
       vue: '>=3.0.0'
 
+  mpegts.js@1.8.0:
+    resolution: {integrity: sha512-ZtujqtmTjWgcDDkoOnLvrOKUTO/MKgLHM432zGDI8oPaJ0S+ebPxg1nEpDpLw6I7KmV/GZgUIrfbWi3qqEircg==}
+
   muggle-string@0.4.1:
     resolution: {integrity: sha512-VNTrAak/KhO2i8dqqnqnAHOa3cYBwXEZe9h+D5h/1ZqFSTEFHdM65lR7RoIqq3tBBYavsOXV84NoHXZ0AkPyqQ==}
 
@@ -1206,6 +1188,9 @@ packages:
   onetime@1.1.0:
     resolution: {integrity: sha512-GZ+g4jayMqzCRMgB2sol7GiCLjKfS1PINkjmx8spcKce1LiVqcbQreXwqs2YAFXC6R03VIG28ZS31t8M866v6A==}
     engines: {node: '>=0.10.0'}
+
+  option-validator@2.0.6:
+    resolution: {integrity: sha512-tmZDan2LRIRQyhUGvkff68/O0R8UmF+Btmiiz0SmSw2ng3CfPZB9wJlIjHpe/MKUZqyIZkVIXCrwr1tIN+0Dzg==}
 
   os-homedir@1.0.2:
     resolution: {integrity: sha512-B5JU3cabzk8c67mRRd3ECmROafjYMXbuzlwtqdM8IbS8ktlTix8aFGb2bAGKrSRIlnfKwovGUUr72JUPyOb6kQ==}
@@ -1529,40 +1514,12 @@ packages:
       typescript:
         optional: true
 
+  webworkify-webpack@https://codeload.github.com/xqq/webworkify-webpack/tar.gz/24d1e719b4a6cac37a518b2bb10fe124527ef4ef:
+    resolution: {tarball: https://codeload.github.com/xqq/webworkify-webpack/tar.gz/24d1e719b4a6cac37a518b2bb10fe124527ef4ef}
+    version: 2.1.5
+
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
-
-  xgplayer-flv@3.0.23:
-    resolution: {integrity: sha512-CyjUsgSmHZt51RoA+hywFOnQ0A1ADMOdZV7KCkblqIvn/AMb0xvDzJvFDjgHK795ZauwMyTeebakYuNI0S/yDw==}
-    peerDependencies:
-      core-js: '>=3.12.1'
-      xgplayer: '>=3.0.1'
-
-  xgplayer-hls.js@3.0.23:
-    resolution: {integrity: sha512-oJR9m4+Bcjzdl4irpUszByt8xP/irCzFpV3Q/bePp8WG5uBnPHa8ApMNkau/EuggvsrS71Tnp4DMfxOZxeVLGQ==}
-    peerDependencies:
-      core-js: '>=3.12.1'
-      xgplayer: '>=3.0.13'
-
-  xgplayer-streaming-shared@3.0.23:
-    resolution: {integrity: sha512-j14MKqjSpEisd97hAV8ykg+txSkECZ3Z6AtCxZnRT4Jj0G5QRZAObAA1IIHv7wPN4tjNdtGm9odHiQOpsYYXuw==}
-    peerDependencies:
-      core-js: '>=3.12.1'
-
-  xgplayer-subtitles@3.0.23:
-    resolution: {integrity: sha512-deGdV75giVzfTTdG9XATmji39NHwKTpEelWt2rRx/RyXGgU2bQFp0Ft7yWaK2Uu8A/WVrP5fpxEAj4MstREMkQ==}
-    peerDependencies:
-      core-js: '>=3.12.1'
-
-  xgplayer-transmuxer@3.0.23:
-    resolution: {integrity: sha512-BVI0FT96nWUwJ7cYyT2bK7CSp6PWdztgb9kO0dIcCoJUBU5yxelqoKd43luHFFAM73GyYZ0hCm/Yw/GSjQrPJA==}
-    peerDependencies:
-      core-js: '>=3.12.1'
-
-  xgplayer@3.0.23:
-    resolution: {integrity: sha512-Bn3zQfMMAZimlVG9EeIDybMcklc+6FH8Sv47KpTq4K6ofCzyhPG/KenxailDedlHmxjb5B2o+240TpJtMQ3oJA==}
-    peerDependencies:
-      core-js: '>=3.12.1'
 
 snapshots:
 
@@ -1573,8 +1530,6 @@ snapshots:
   '@babel/parser@7.28.0':
     dependencies:
       '@babel/types': 7.28.1
-
-  '@babel/runtime@7.28.4': {}
 
   '@babel/types@7.28.1':
     dependencies:
@@ -2037,6 +1992,10 @@ snapshots:
 
   any-promise@1.3.0: {}
 
+  artplayer@5.3.0:
+    dependencies:
+      option-validator: 2.0.6
+
   asn1@0.2.6:
     dependencies:
       safer-buffer: 2.1.2
@@ -2104,15 +2063,9 @@ snapshots:
 
   concat-map@0.0.1: {}
 
-  concat-typed-array@1.0.2: {}
-
   core-js@2.6.12: {}
 
-  core-js@3.46.0: {}
-
   core-util-is@1.0.2: {}
-
-  crypto-es@1.2.7: {}
 
   csstype@3.1.3: {}
 
@@ -2120,10 +2073,6 @@ snapshots:
     dependencies:
       es5-ext: 0.10.64
       type: 2.7.3
-
-  danmu.js@1.1.13:
-    dependencies:
-      event-emitter: 0.3.5
 
   danmu.js@1.1.13-douyin-1.5:
     dependencies:
@@ -2135,15 +2084,9 @@ snapshots:
 
   de-indent@1.0.2: {}
 
-  deepmerge@2.0.1: {}
-
   delayed-stream@1.0.0: {}
 
-  delegate@3.2.0: {}
-
   detect-libc@2.1.2: {}
-
-  downloadjs@1.4.7: {}
 
   earlgrey-runtime@0.1.2:
     dependencies:
@@ -2178,6 +2121,8 @@ snapshots:
       d: 1.0.2
       es5-ext: 0.10.64
       es6-symbol: 3.1.4
+
+  es6-promise@4.2.8: {}
 
   es6-symbol@3.1.4:
     dependencies:
@@ -2228,8 +2173,6 @@ snapshots:
     dependencies:
       d: 1.0.2
       es5-ext: 0.10.64
-
-  eventemitter3@4.0.7: {}
 
   exit-hook@1.1.1: {}
 
@@ -2320,7 +2263,7 @@ snapshots:
 
   hey-listen@1.0.8: {}
 
-  hls.js@1.6.14: {}
+  hls.js@1.6.15: {}
 
   http-signature@1.2.0:
     dependencies:
@@ -2388,6 +2331,8 @@ snapshots:
   kaiser@0.0.4:
     dependencies:
       earlgrey-runtime: 0.1.2
+
+  kind-of@6.0.3: {}
 
   klaw@1.3.1:
     optionalDependencies:
@@ -2492,6 +2437,11 @@ snapshots:
       - react
       - react-dom
 
+  mpegts.js@1.8.0:
+    dependencies:
+      es6-promise: 4.2.8
+      webworkify-webpack: https://codeload.github.com/xqq/webworkify-webpack/tar.gz/24d1e719b4a6cac37a518b2bb10fe124527ef4ef
+
   muggle-string@0.4.1: {}
 
   mute-stream@0.0.5: {}
@@ -2517,6 +2467,10 @@ snapshots:
       wrappy: 1.0.2
 
   onetime@1.1.0: {}
+
+  option-validator@2.0.6:
+    dependencies:
+      kind-of: 6.0.3
 
   os-homedir@1.0.2: {}
 
@@ -2779,46 +2733,6 @@ snapshots:
     optionalDependencies:
       typescript: 5.6.3
 
+  webworkify-webpack@https://codeload.github.com/xqq/webworkify-webpack/tar.gz/24d1e719b4a6cac37a518b2bb10fe124527ef4ef: {}
+
   wrappy@1.0.2: {}
-
-  xgplayer-flv@3.0.23(core-js@3.46.0)(xgplayer@3.0.23(core-js@3.46.0)):
-    dependencies:
-      core-js: 3.46.0
-      eventemitter3: 4.0.7
-      xgplayer: 3.0.23(core-js@3.46.0)
-      xgplayer-streaming-shared: 3.0.23(core-js@3.46.0)
-      xgplayer-transmuxer: 3.0.23(core-js@3.46.0)
-
-  xgplayer-hls.js@3.0.23(core-js@3.46.0)(xgplayer@3.0.23(core-js@3.46.0)):
-    dependencies:
-      core-js: 3.46.0
-      deepmerge: 2.0.1
-      event-emitter: 0.3.5
-      hls.js: 1.6.14
-      xgplayer: 3.0.23(core-js@3.46.0)
-
-  xgplayer-streaming-shared@3.0.23(core-js@3.46.0):
-    dependencies:
-      core-js: 3.46.0
-      eventemitter3: 4.0.7
-
-  xgplayer-subtitles@3.0.23(core-js@3.46.0):
-    dependencies:
-      core-js: 3.46.0
-      eventemitter3: 4.0.7
-
-  xgplayer-transmuxer@3.0.23(core-js@3.46.0):
-    dependencies:
-      '@babel/runtime': 7.28.4
-      concat-typed-array: 1.0.2
-      core-js: 3.46.0
-      crypto-es: 1.2.7
-
-  xgplayer@3.0.23(core-js@3.46.0):
-    dependencies:
-      core-js: 3.46.0
-      danmu.js: 1.1.13
-      delegate: 3.2.0
-      downloadjs: 1.4.7
-      eventemitter3: 4.0.7
-      xgplayer-subtitles: 3.0.23(core-js@3.46.0)

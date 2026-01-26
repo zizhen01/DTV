@@ -1,40 +1,23 @@
 <template>
   <div
-    class="relative z-[2] w-full flex-shrink-0 overflow-hidden rounded-b-none px-6 pt-5 pb-5 max-lg:mb-[-18px] max-lg:rounded-b-[22px] max-lg:px-5 max-lg:pt-5 max-lg:pb-6 max-md:mb-[-14px] max-md:rounded-b-[18px] max-md:px-4 max-md:pt-4 max-md:pb-5"
-  >
+    class="relative z-[2] w-full flex-shrink-0 overflow-hidden rounded-b-none px-6 pt-5 pb-5 max-lg:mb-[-18px] max-lg:rounded-b-[22px] max-lg:px-5 max-lg:pt-5 max-lg:pb-6 max-md:mb-[-14px] max-md:rounded-b-[18px] max-md:px-4 max-md:pt-4 max-md:pb-5">
     <div
-      class="relative z-[1] grid [grid-template-columns:auto_minmax(0,1fr)_auto] items-center gap-5 max-lg:gap-[18px] max-md:gap-4"
-    >
-      <div
-        class="h-12 w-12 flex-shrink-0 overflow-hidden rounded-2xl border border-border-main bg-surface-mid shadow-md transition-all hover:-translate-y-1"
-      >
-        <img
-          v-if="avatarUrl && !showAvatarText"
-          :src="avatarUrl"
-          :alt="computedNickname"
-          @error="handleAvatarError"
-          class="h-full w-full object-cover"
-        />
-        <div
-          v-else
-          class="flex h-full w-full items-center justify-center bg-brand text-lg text-white"
-        >
+      class="relative z-[1] grid [grid-template-columns:auto_minmax(0,1fr)_auto] items-center gap-5 max-lg:gap-[18px] max-md:gap-4">
+      <div class="h-12 w-12 flex-shrink-0 overflow-hidden bg-surface-mid shadow-md transition-all hover:-translate-y-1">
+        <img v-if="avatarUrl && !showAvatarText" :src="avatarUrl" :alt="computedNickname" @error="handleAvatarError"
+          class="h-full w-full object-cover" />
+        <div v-else class="flex h-full w-full items-center justify-center bg-brand text-lg text-white">
           {{ computedNickname.charAt(0).toUpperCase() }}
         </div>
       </div>
 
       <div class="flex min-w-0 flex-col gap-2.5">
-        <h3
-          class="line-clamp-2 text-left text-[1.05rem] leading-[1.35] font-bold tracking-[0.25px] text-text-main"
-          :title="computedRoomTitle"
-        >
+        <h3 class="line-clamp-2 text-left text-[1.05rem] leading-[1.35] font-bold tracking-[0.25px] text-text-main"
+          :title="computedRoomTitle">
           {{ computedRoomTitle }}
         </h3>
         <div class="flex flex-wrap items-center gap-4 text-text-dim">
-          <span
-            class="text-[0.88rem] font-medium tracking-[0.03em] text-text-main"
-            >{{ computedNickname }}</span
-          >
+          <span class="text-[0.88rem] font-medium tracking-[0.03em] text-text-main">{{ computedNickname }}</span>
           <span
             class="inline-flex items-center rounded-full border border-border-main bg-surface-high/50 px-2.5 py-[3px] text-[0.72rem] leading-[1.3] tracking-[0.05em] text-text-main"
             :class="{
@@ -42,68 +25,37 @@
                 statusClass === 'live',
               'border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400':
                 statusClass === 'looping',
-            }"
-            >{{ getStatusText }}</span
-          >
+            }">{{ getStatusText }}</span>
           <!-- Bilibili login button -->
-          <span
-            v-if="props.platform === Platform.BILIBILI"
-            class="inline-flex items-center gap-2"
-          >
+          <span v-if="props.platform === Platform.BILIBILI" class="inline-flex items-center gap-2">
             <button
               class="inline-flex items-center gap-1.5 rounded-md bg-surface-high/50 px-2.5 py-1 text-[0.75rem] text-text-muted transition-colors hover:bg-surface-high hover:text-text-main active:scale-95"
-              @click="handleBilibiliLogin"
-              :disabled="isLoggingIn"
-              :title="
-                hasRequiredBilibiliCookie ? '点击重新登录' : '登录以同步 Cookie'
-              "
-            >
+              @click="handleBilibiliLogin" :disabled="isLoggingIn" :title="hasRequiredBilibiliCookie ? '点击重新登录' : '登录以同步 Cookie'
+                ">
               <span v-if="isLoggingIn">登录中...</span>
-              <span
-                v-else-if="hasRequiredBilibiliCookie"
-                class="inline-flex items-center gap-1"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="1em"
-                  height="1em"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    fill="currentColor"
-                    d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
-                  />
+              <span v-else-if="hasRequiredBilibiliCookie" class="inline-flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                 </svg>
                 已登录
               </span>
               <span v-else> 登录 </span>
             </button>
-            <button
-              v-if="hasRequiredBilibiliCookie && !isLoggingIn"
+            <button v-if="hasRequiredBilibiliCookie && !isLoggingIn"
               class="rounded-md border-transparent bg-transparent px-2 py-1 text-[0.75rem] text-text-muted transition-colors hover:text-text-main active:scale-95"
-              @click="handleBilibiliLogout"
-            >
+              @click="handleBilibiliLogout">
               退出
             </button>
             <span v-if="loginError" class="text-[0.72rem] text-red-500">{{
               loginError
             }}</span>
           </span>
-          <span
-            v-if="computedViewerCount > 0"
-            class="inline-flex items-center gap-1.5 rounded-full border border-border-main bg-surface-high/80 px-3 py-1 text-[0.78rem] text-text-main shadow-sm backdrop-blur-sm"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="1em"
-              height="1em"
-              viewBox="0 0 24 24"
-              class="h-[13px] w-[13px] text-brand"
-            >
-              <path
-                fill="currentColor"
-                d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5M12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5s5 2.24 5 5s-2.24 5-5 5m0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3s3-1.34 3-3s-1.34-3-3-3"
-              />
+          <span v-if="computedViewerCount > 0"
+            class="inline-flex items-center gap-1.5 rounded-full border border-border-main bg-surface-high/80 px-3 py-1 text-[0.78rem] text-text-main shadow-sm backdrop-blur-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"
+              class="h-[13px] w-[13px] text-brand">
+              <path fill="currentColor"
+                d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5M12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5s5 2.24 5 5s-2.24 5-5 5m0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3s3-1.34 3-3s-1.34-3-3-3" />
             </svg>
             {{ formattedViewerCount }}
           </span>
@@ -113,62 +65,31 @@
       <div class="ml-auto flex flex-shrink-0 items-center justify-end">
         <div
           class="relative flex min-w-[210px] items-stretch overflow-hidden rounded-[14px] border border-border-main bg-surface-mid/90 p-0.5 shadow-md backdrop-blur-md"
-          ref="idFollowContainerRef"
-        >
-          <span
-            class="absolute top-[3px] bottom-[3px] rounded-[12px] bg-brand/90 transition-all duration-300"
-          ></span>
+          ref="idFollowContainerRef">
+          <span class="absolute top-[3px] bottom-[3px] rounded-[12px] bg-brand/90 transition-all duration-300"></span>
           <span
             class="relative z-[1] flex max-w-[140px] min-w-[90px] flex-1 items-center justify-center overflow-hidden rounded-[12px] px-3.5 py-2 text-[0.78rem] text-ellipsis whitespace-nowrap text-text-muted transition-colors duration-300"
-            ref="streamerIdRef"
-            :class="{ 'font-bold text-white dark:text-app-bg': isFollowing }"
-            >ID:{{ props.roomId }}</span
-          >
+            ref="streamerIdRef" :class="{ 'font-bold text-white dark:text-app-bg': isFollowing }">ID:{{ props.roomId
+            }}</span>
           <button
             class="relative z-[1] flex min-w-[92px] items-center justify-center gap-2 rounded-[12px] px-3.5 py-2 text-[0.82rem] font-bold whitespace-nowrap text-text-main transition-colors duration-300"
-            ref="followBtnRef"
-            :class="{ 'text-white dark:text-app-bg': !isFollowing }"
-            @click="toggleFollow"
-          >
+            ref="followBtnRef" :class="{ 'text-white dark:text-app-bg': !isFollowing }" @click="toggleFollow">
             <span class="relative flex h-4 w-4 items-center justify-center">
-              <span
-                class="absolute inset-0 flex items-center justify-center transition-all"
-                :class="
-                  isFollowing
-                    ? 'scale-50 -rotate-90 opacity-0'
-                    : 'scale-100 rotate-0 opacity-100'
-                "
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="1em"
-                  height="1em"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    fill="currentColor"
-                    d="M19 12.998h-6v6h-2v-6H5v-2h6v-6h2v6h6z"
-                  />
+              <span class="absolute inset-0 flex items-center justify-center transition-all" :class="isFollowing
+                ? 'scale-50 -rotate-90 opacity-0'
+                : 'scale-100 rotate-0 opacity-100'
+                ">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M19 12.998h-6v6h-2v-6H5v-2h6v-6h2v6h6z" />
                 </svg>
               </span>
-              <span
-                class="absolute inset-0 flex items-center justify-center transition-all"
-                :class="
-                  isFollowing
-                    ? 'scale-100 rotate-0 opacity-100'
-                    : 'scale-50 rotate-90 opacity-0'
-                "
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="1em"
-                  height="1em"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    fill="currentColor"
-                    d="M18.3 5.71a.996.996 0 0 0-1.41 0L12 10.59L7.11 5.7A.996.996 0 1 0 5.7 7.11L10.59 12L5.7 16.89a.996.996 0 1 0 1.41 1.41L12 13.41l4.89 4.89a.996.996 0 1 0 1.41-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z"
-                  />
+              <span class="absolute inset-0 flex items-center justify-center transition-all" :class="isFollowing
+                ? 'scale-100 rotate-0 opacity-100'
+                : 'scale-50 rotate-90 opacity-0'
+                ">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+                  <path fill="currentColor"
+                    d="M18.3 5.71a.996.996 0 0 0-1.41 0L12 10.59L7.11 5.7A.996.996 0 1 0 5.7 7.11L10.59 12L5.7 16.89a.996.996 0 1 0 1.41 1.41L12 13.41l4.89 4.89a.996.996 0 1 0 1.41-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z" />
                 </svg>
               </span>
             </span>

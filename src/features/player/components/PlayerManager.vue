@@ -11,14 +11,14 @@
   >
     <!-- Unified Container -->
     <div 
-      class="w-full h-full p-2 gap-2"
-      :class="isMultiView ? ('grid ' + gridClasses) : 'block'"
+      class="relative w-full h-full overflow-y-auto"
+      :class="isMultiView ? ('grid ' + gridClasses + ' auto-rows-[50%]') : ''"
     >
       <!-- Active Players -->
       <div 
         v-for="(s, index) in playerStore.activeStreamers" 
         :key="`${s.platform}:${s.roomId}`"
-        class="bg-neutral-900 overflow-hidden relative transition-all duration-300"
+        class="bg-neutral-900 overflow-hidden transition-all duration-300"
         :class="getWrapperClass(s, index)"
         v-show="shouldShowWrapper(s, index)"
       >
@@ -76,9 +76,9 @@ const isMultiView = computed(() => route.name === "MultiView");
 
 const gridClasses = computed(() => {
   switch (playerStore.gridMode) {
-    case 6: return 'grid-cols-3 grid-rows-2';
-    case 9: return 'grid-cols-3 grid-rows-3';
-    case 4: default: return 'grid-cols-2 grid-rows-2';
+    case 6: return 'grid-cols-3';
+    case 9: return 'grid-cols-3';
+    case 4: default: return 'grid-cols-2';
   }
 });
 
@@ -87,25 +87,21 @@ const isCurrentPlayer = (s: any) => {
   const routePlatform = route.params.platform?.toString().toLowerCase();
   const routeRoomId = route.params.roomId?.toString();
   return (
-    routePlatform === s.platform.toLowerCase() &&
-    routeRoomId === s.roomId
+    routePlatform === String(s.platform).toLowerCase() &&
+    routeRoomId === String(s.roomId)
   );
 };
 
-const shouldShowWrapper = (s: any, index: number) => {
-  if (isMultiView.value) return index < playerStore.gridMode;
+const shouldShowWrapper = (s: any, _index: number) => {
+  if (isMultiView.value) return true;
   if (isPlayerRoute.value) return isCurrentPlayer(s);
   return false;
 };
 
 const getWrapperClass = (_s: any, _index: number) => {
-  if (isMultiView.value) {
-    return 'rounded-lg border-2 border-brand/50 bg-black shadow-lg';
-  }
-  if (isPlayerRoute.value) {
-    return 'absolute inset-0';
-  }
-  return '';
+  if (isMultiView.value) return "relative";
+  if (isPlayerRoute.value) return "absolute inset-0";
+  return "";
 };
 
 

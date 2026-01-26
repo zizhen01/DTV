@@ -1,5 +1,5 @@
 import { Platform as StreamingPlatform } from "../../types/app/platform";
-import type { LineOption } from "./plugins";
+import type { LineOption } from "./types";
 
 const lineOptionsByPlatform: Partial<Record<StreamingPlatform, LineOption[]>> =
   {

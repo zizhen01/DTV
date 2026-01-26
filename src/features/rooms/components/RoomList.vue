@@ -1,78 +1,45 @@
 <template>
   <div class="flex h-full w-full flex-col overflow-hidden">
-    <div
-      v-if="isLoading && rooms.length === 0"
-      class="flex min-h-100 flex-1 flex-col items-center justify-center gap-3 p-6"
-    >
+    <div v-if="isLoading && rooms.length === 0"
+      class="flex min-h-100 flex-1 flex-col items-center justify-center gap-3 p-6">
       <LoadingDots />
     </div>
-    <div
-      v-else-if="!isLoading && rooms.length === 0 && hasCategory"
-      class="flex min-h-100 flex-col items-center justify-center gap-3 p-6"
-    >
+    <div v-else-if="!isLoading && rooms.length === 0 && hasCategory"
+      class="flex min-h-100 flex-col items-center justify-center gap-3 p-6">
       <p>分类下暂无主播</p>
     </div>
-    <div
-      v-else-if="!hasCategory && !isLoading"
-      class="flex min-h-100 flex-col items-center justify-center gap-3 p-6"
-    >
+    <div v-else-if="!hasCategory && !isLoading" class="flex min-h-100 flex-col items-center justify-center gap-3 p-6">
       <p>请选择一个分类开始浏览</p>
     </div>
 
     <div ref="scrollComponentRef" class="flex-1 [--card-radius:18px]">
-      <div
-        class="grid gap-x-4 gap-y-8 pb-3"
-        :style="{
-          gridTemplateColumns: `repeat(${itemsPerRow}, minmax(0, 1fr))`,
-        }"
-      >
-        <div
-          v-for="room in rooms"
-          :key="room.room_id"
-          class="relative will-change-transform"
-          :class="isScrolling ? 'hover:translate-y-0' : ''"
-          @click="goToPlayer(room.room_id)"
-        >
+      <div class="grid gap-x-4 gap-y-8 pb-3" :style="{
+        gridTemplateColumns: `repeat(${itemsPerRow}, minmax(0, 1fr))`,
+      }">
+        <div v-for="room in rooms" :key="room.room_id" class="relative will-change-transform"
+          :class="isScrolling ? 'hover:translate-y-0' : ''" @click="goToPlayer(room.room_id)">
           <div
-            class="group z-9999 flex cursor-pointer flex-col overflow-hidden rounded-sm border-border-main duration-100 hover:-translate-y-2 hover:border-border-strong"
-          >
+            class="group flex cursor-pointer flex-col overflow-hidden rounded-sm border-border-main duration-100 hover:-translate-y-2 hover:border-border-strong">
             <div class="relative aspect-video w-full overflow-hidden">
               <div class="relative h-full w-full">
-                <SmoothImage
-                  :src="room.room_cover || ''"
-                  :alt="room.title"
-                  class="h-full w-full"
-                />
-                <div
-                  class="pointer-events-none absolute inset-0 bg-black/5 group-hover:bg-transparent"
-                ></div>
+                <SmoothImage :src="room.room_cover || ''" :alt="room.title" class="h-full w-full" />
+                <div class="pointer-events-none absolute inset-0 bg-black/5 group-hover:bg-transparent"></div>
                 <span
-                  class="absolute top-2 right-2 flex items-center gap-1 rounded-full border border-border-main bg-surface-low/80 px-1.5 py-0.5 text-[10px] font-bold text-text-main shadow-sm backdrop-blur-sm"
-                >
-                  <svg
-                    class="size-3 text-brand"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                  >
+                  class="absolute top-2 right-2 flex items-center gap-1 rounded-full border border-border-main bg-surface-low/80 px-1.5 py-0.5 text-[10px] font-bold text-text-main shadow-sm backdrop-blur-sm">
+                  <svg class="size-3 text-brand" viewBox="0 0 24 24" fill="currentColor">
                     <path
-                      d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"
-                    />
+                      d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
                   </svg>
                   {{ room.viewer_count_str || "0" }}
                 </span>
                 <div class="absolute bottom-1 left-1.5 flex items-center gap-2">
                   <div class="relative shrink-0">
-                    <SmoothImage
-                      :src="room.avatar || ''"
-                      :alt="room.nickname"
-                      class="size-8 rounded-full border border-border-main object-cover shadow-sm"
-                    />
+                    <SmoothImage :src="room.avatar || ''" :alt="room.nickname"
+                      class="size-8 rounded-full border border-border-main object-cover shadow-sm" />
                   </div>
                   <div class="min-w-0 flex-1">
                     <div class="flex items-center gap-1.5">
-                      <span
-                        class="truncate text-[11px] font-medium text-text-muted hover:text-brand"
-                      >
+                      <span class="truncate text-[11px] font-medium text-text-muted hover:text-brand">
                         {{ room.nickname || "主播" }}
                       </span>
                     </div>
@@ -81,10 +48,7 @@
               </div>
             </div>
 
-            <h3
-              class="mb-0.5 truncate pt-2 pl-3 text-[13px] text-text-main"
-              :title="room.title"
-            >
+            <h3 class="mb-0.5 truncate pt-2 pl-3 text-[13px] text-text-main" :title="room.title">
               {{ room.title }}
             </h3>
           </div>
@@ -92,17 +56,11 @@
       </div>
 
       <!-- Bottom Sentinel for Infinite Loading -->
-      <div
-        ref="loadMoreSentinel"
-        class="flex h-10 w-full items-center justify-center py-4"
-      >
+      <div ref="loadMoreSentinel" class="flex h-10 w-full items-center justify-center py-4">
         <div v-if="isLoadingMore || (isLoading && rooms.length > 0)">
           <LoadingDots />
         </div>
-        <div
-          v-else-if="!hasMore && rooms.length > 0"
-          class="text-xs text-neutral-500"
-        >
+        <div v-else-if="!hasMore && rooms.length > 0" class="text-xs text-neutral-500">
           已经到底啦
         </div>
       </div>

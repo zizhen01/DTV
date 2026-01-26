@@ -19,8 +19,11 @@ import {
 } from "../../services/platforms/huya/danmakuHelper";
 
 import type { DanmuUserSettings } from "./constants";
-import type { PlayerProps } from "./watchers";
-import type { DanmakuMessage, DanmuOverlayInstance } from "../../types/models/danmaku";
+import type { PlayerProps } from "./types";
+import type {
+  DanmakuMessage,
+  DanmuOverlayInstance,
+} from "../../types/models/danmaku";
 
 export interface DanmakuManagerContext {
   danmakuMessages: Ref<DanmakuMessage[]>;
