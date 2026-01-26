@@ -28,45 +28,6 @@
           <Home :size="18" />
         </button>
 
-        <div class="relative" ref="gridMenuRef">
-          <button
-            type="button"
-            class="flex size-10 items-center justify-center rounded-full border border-border-main bg-surface-mid text-text-muted hover:scale-[1.03] hover:bg-surface-high"
-            :class="{ 'text-brand border-brand/30 bg-brand/10': route.name === 'MultiView' }"
-            aria-label="分屏模式"
-            title="切换分屏模式"
-            @click="showGridMenu = !showGridMenu"
-          >
-            <LayoutGrid :size="18" />
-          </button>
-
-          <!-- Grid Selection Menu -->
-          <div
-            v-if="showGridMenu"
-            class="absolute top-[calc(100%+12px)] right-0 z-[1001] w-32 rounded-xl border border-border-strong bg-surface-low/95 p-2 shadow-2xl backdrop-blur-xl"
-          >
-            <div
-              class="mb-2 px-2 py-1 text-[10px] font-black tracking-widest text-text-muted uppercase"
-            >
-              分屏布局
-            </div>
-            <div class="flex flex-col gap-1">
-              <button
-                v-for="mode in [4, 6, 9]"
-                :key="mode"
-                @click="switchGridMode(mode)"
-                class="flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-bold transition-colors hover:bg-surface-high"
-                :class="playerStore.gridMode === mode ? 'text-brand bg-brand/10' : 'text-text-main'"
-              >
-                <div class="grid gap-0.5 size-4" :class="mode === 4 ? 'grid-cols-2' : 'grid-cols-3'">
-                  <span v-for="i in mode" :key="i" class="bg-current rounded-[1px] opacity-50"></span>
-                </div>
-                <span>{{ mode }}宫格</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
         <div
           class="relative max-w-full transition-all duration-300 ease-in-out"
           :class="playerStore.currentStreamer ? 'w-90' : 'w-130'"
@@ -286,11 +247,9 @@
             :anchor-name="streamer.anchorName"
             :avatar="streamer.avatar"
             :is-live="streamer.isLive"
-            :is-muted="!!streamer.isMuted"
             :is-active="isTabActive(streamer.platform, streamer.roomId)"
             @select="switchToPlayer(streamer)"
             @close="closePlayer(streamer)"
-            @toggle-mute="playerStore.toggleMute(streamer.platform, streamer.roomId)"
             @dragstart="onDragStart(index)"
             @drop="onDrop(index)"
           />
@@ -301,85 +260,6 @@
         class="flex flex-1 items-center justify-end gap-2"
         data-tauri-drag-region="false"
       >
-        <button
-          type="button"
-          class="flex h-10 w-10 items-center justify-center rounded-full border border-border-main bg-surface-mid text-text-muted hover:scale-[1.03] hover:bg-surface-high"
-          @click="openGithub"
-        >
-          <Github :size="18" />
-        </button>
-        <div class="relative" ref="colorPaletteRef">
-          <button
-            type="button"
-            class="flex h-10 w-10 items-center justify-center rounded-full border border-border-main bg-surface-mid text-text-muted hover:scale-[1.03] hover:bg-surface-high"
-            @click="changeThemeColor"
-            :class="{
-              'border-brand/30 bg-brand/10 text-brand': showColorPalette,
-            }"
-            title="切换主题色"
-          >
-            <Palette :size="18" />
-          </button>
-
-          <!-- Color Palette Popover -->
-          <div
-            v-if="showColorPalette"
-            class="absolute top-[calc(100%+12px)] right-0 z-[1001] w-48 rounded-xl border border-border-strong bg-surface-low/95 p-3 shadow-2xl backdrop-blur-xl"
-          >
-            <div
-              class="mb-3 px-1 text-[10px] font-black tracking-widest text-text-muted uppercase"
-            >
-              选择主题色
-            </div>
-            <div class="grid grid-cols-4 gap-2">
-              <button
-                v-for="color in availableColors"
-                :key="color.value"
-                @click="selectThemeColor(color.value)"
-                class="size-8 rounded-full border-2 transition-transform hover:scale-110 active:scale-95"
-                :style="{
-                  backgroundColor: color.value,
-                  borderColor:
-                    themeStore.primaryColor === color.value
-                      ? 'white'
-                      : 'transparent',
-                }"
-                :title="color.name"
-              ></button>
-            </div>
-
-            <!-- RGB Picker -->
-            <div class="mt-4 flex flex-col gap-2 border-t border-white/5 pt-3">
-              <div
-                class="px-1 text-[10px] font-black tracking-widest text-text-muted uppercase"
-              >
-                自定义 RGB
-              </div>
-              <div
-                class="flex items-center gap-3 rounded-lg border border-border-main bg-surface-mid p-2"
-              >
-                <input
-                  type="color"
-                  :value="themeStore.primaryColor"
-                  @input="
-                    (e) =>
-                      selectThemeColor((e.target as HTMLInputElement).value)
-                  "
-                  class="size-10 cursor-pointer rounded border-0 bg-transparent"
-                />
-                <div class="flex min-w-0 flex-col">
-                  <span class="font-mono text-[10px] text-text-muted uppercase"
-                    >Hex Code</span
-                  >
-                  <span
-                    class="truncate font-mono text-xs font-bold text-text-main uppercase"
-                    >{{ themeStore.primaryColor }}</span
-                  >
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
       <div
@@ -395,23 +275,17 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { platform as detectPlatform } from "@tauri-apps/plugin-os";
-import { openUrl } from "@tauri-apps/plugin-opener";
 import { useRoute, useRouter } from "vue-router";
 import {
-  Github,
   Search,
   X,
   Tag,
   User,
   Hash,
   Home,
-  Palette,
-  LayoutGrid,
 } from "lucide-vue-next";
-import { onClickOutside } from "@vueuse/core";
 import WindowsWindowControls from "../window-controls/WindowsWindowControls.vue";
 import NavbarPlayerTab from "./NavbarPlayerTab.vue";
-import { useThemeStore } from "../../store/theme";
 import { usePlayerStore } from "../../store/playerStore";
 import { Platform, type UiPlatform } from "../../types/app/platform";
 import { huyaCategoriesData } from "../../services/platforms/huya/huyaCategoriesData";
@@ -516,41 +390,10 @@ const searchError = ref<string | null>(null);
 const isLoadingSearch = ref(false);
 const isSearchFocused = ref(false);
 const searchContainerRef = ref<HTMLElement | null>(null);
-const colorPaletteRef = ref<HTMLElement | null>(null);
-const showGridMenu = ref(false);
-const gridMenuRef = ref<HTMLElement | null>(null);
-const showColorPalette = ref(false);
 
-const themeStore = useThemeStore();
 const playerStore = usePlayerStore();
 const route = useRoute();
 const router = useRouter();
-
-const switchGridMode = (mode: number) => {
-  playerStore.setGridMode(mode);
-  showGridMenu.value = false;
-  if (route.name !== 'MultiView') {
-    router.push({ name: 'MultiView' });
-  }
-};
-
-onClickOutside(gridMenuRef, () => {
-  showGridMenu.value = false;
-});
-
-const availableColors = [
-  { name: "红色", value: "#ef4444" },
-  { name: "橙色", value: "#f97316" },
-  { name: "琥珀", value: "#f59e0b" },
-  { name: "翠绿", value: "#10b981" },
-  { name: "青色", value: "#06b6d4" },
-  { name: "蓝色", value: "#3b82f6" },
-  { name: "靛蓝", value: "#6366f1" },
-  { name: "紫罗兰", value: "#8b5cf6" },
-  { name: "紫色", value: "#a855f7" },
-  { name: "洋红", value: "#d946ef" },
-  { name: "粉色", value: "#ec4899" },
-];
 
 const goHome = () => {
   router.push({ name: "ChannelList" });
@@ -601,19 +444,6 @@ const closePlayer = (streamer: any) => {
   }
 };
 
-const changeThemeColor = () => {
-  showColorPalette.value = !showColorPalette.value;
-};
-
-const selectThemeColor = (color: string) => {
-  themeStore.setPrimaryColor(color);
-  showColorPalette.value = false;
-};
-
-onClickOutside(colorPaletteRef, () => {
-  showColorPalette.value = false;
-});
-
 const performLocalCategorySearch = (query: string): CategorySearchResult[] => {
   if (!query) return [];
 
@@ -649,7 +479,7 @@ const performLocalCategorySearch = (query: string): CategorySearchResult[] => {
 
 const selectCategory = (cat: CategorySearchResult) => {
   router.push({
-    name: "PlatformHome",
+    name: "ChannelList",
     params: { platform: cat.platform.toLowerCase() },
   });
   showResults.value = false;
@@ -733,22 +563,6 @@ onMounted(() => {
 onBeforeUnmount(() => {
   document.removeEventListener("mousedown", handleDocumentMouseDown);
 });
-
-const openGithub = async () => {
-  try {
-    await openUrl("https://github.com/chen-zeong/DTV/releases");
-  } catch (error) {
-    if (typeof window !== "undefined") {
-      window.open(
-        "https://github.com/chen-zeong/DTV/releases",
-        "_blank",
-        "noopener,noreferrer",
-      );
-      return;
-    }
-    console.error("[Navbar] Failed to open GitHub", error);
-  }
-};
 
 let searchTimeout: number | null = null;
 

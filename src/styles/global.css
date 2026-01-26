@@ -44,11 +44,11 @@
   --bg-secondary: rgba(20, 20, 36, 0.7);
   --bg-tertiary: rgba(26, 26, 45, 0.7);
 
-  --text-primary: #f5f3ff;
-  --text-secondary: #b8b4d6;
-  --text-muted: #9c97c3;
+  --text-primary: #e7e7e7;
+  --text-secondary: #aeacbc;
+  --text-muted: #686578;
 
-  --accent: #a855f7;
+  --accent: #26be89;
   --accent-glow: color-mix(in srgb, var(--accent), transparent 80%);
 
   --border: color-mix(in srgb, var(--accent), transparent 85%);

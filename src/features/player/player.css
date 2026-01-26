@@ -19,6 +19,28 @@
   position: relative;
 }
 
+/*
+ * Single live room mode (rendered via PlayerManager overlay).
+ * Ensure the height chain is explicit so 100% heights don't collapse to min-height.
+ */
+.single-view {
+  height: 100%;
+  width: 100%;
+  min-height: 0;
+}
+
+.single-view .player-container {
+  min-height: 0;
+}
+
+.single-view .video-container {
+  min-height: 0;
+}
+
+.single-view .video-player {
+  min-height: 0;
+}
+
 /* Web 全屏全局标记下，强制移除页面 padding 与容器圆角 */
 .web-fs-active .player-page {
   padding: 0 !important;

@@ -1,9 +1,9 @@
 <template>
   <div
-    class="group relative flex items-center gap-2 rounded-full border border-border-main py-1 pl-1 pr-2 shadow-sm transition-all cursor-pointer select-none"
+    class="group relative flex items-center gap-2 rounded-full border border-border-main py-1 pl-1 pr-2 shadow-sm transition-all duration-300 ease-out cursor-pointer select-none overflow-hidden"
     :class="isActive 
-      ? 'bg-brand/10 border-brand/30 ring-1 ring-brand/20' 
-      : 'bg-surface-high/40 hover:bg-surface-high border-transparent'"
+      ? 'w-auto bg-brand/10 border-brand/30 ring-1 ring-brand/20' 
+      : 'w-8 hover:w-40 bg-surface-high/40 hover:bg-surface-high border-transparent'"
     draggable="true"
     @dragstart="$emit('dragstart', $event)"
     @dragover.prevent
@@ -29,8 +29,9 @@
       </span>
     </div>
 
-    <!-- Info -->
-    <div class="flex max-w-[100px] flex-col justify-center overflow-hidden">
+    <!-- Info (Hidden when inactive, shown when active or hover) -->
+    <div class="flex max-w-[100px] flex-col justify-center overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-75"
+         :class="{ '!opacity-100': isActive }">
       <div
         class="truncate text-[11px] font-bold text-text-main"
         :class="{ 'text-brand': isActive }"
@@ -40,17 +41,7 @@
     </div>
 
     <!-- Actions -->
-    <div class="flex items-center opacity-0 group-hover:opacity-100 transition-all">
-      <!-- Mute Button -->
-      <button
-        @click.stop="$emit('toggle-mute')"
-        class="flex size-5 items-center justify-center rounded-full text-text-muted hover:bg-surface-mid hover:text-text-main"
-        :title="isMuted ? '取消静音' : '静音'"
-      >
-        <VolumeX v-if="isMuted" :size="12" stroke-width="2.5" class="text-red-500" />
-        <Volume2 v-else :size="12" stroke-width="2.5" />
-      </button>
-
+    <div class="flex items-center opacity-0 group-hover:opacity-100 transition-all ml-auto">
       <!-- Close Button -->
       <button
         @click.stop="$emit('close')"
@@ -64,7 +55,7 @@
 </template>
 
 <script setup lang="ts">
-import { X, Volume2, VolumeX } from "lucide-vue-next";
+import { X } from "lucide-vue-next";
 import type { Platform } from "../../types/app/platform";
 
 defineProps<{
@@ -74,13 +65,11 @@ defineProps<{
   avatar: string;
   isLive: boolean;
   isActive: boolean;
-  isMuted: boolean;
 }>();
 
 defineEmits<{
   (e: "select"): void;
   (e: "close"): void;
-  (e: "toggle-mute"): void;
   (e: "dragstart", event: DragEvent): void;
 }>();
 </script>

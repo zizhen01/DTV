@@ -3,7 +3,6 @@ import type { Platform } from "../types/app/platform";
 
 const ChannelList = () => import("../pages/ChannelList.vue");
 const StreamRoom = () => import("../pages/StreamRoom.vue");
-const MultiView = () => import("../pages/MultiView.vue");
 
 const router = createRouter({
   history: createWebHistory(),
@@ -16,11 +15,6 @@ const router = createRouter({
       path: "/channels/:platform",
       name: "ChannelList",
       component: ChannelList,
-    },
-    {
-      path: "/multi",
-      name: "MultiView",
-      component: MultiView,
     },
     {
       path: "/room/:platform/:roomId",

@@ -1202,7 +1202,33 @@ onMounted(async () => {
   }
 
   persistCurrentDanmuPreferences();
+
+  // Only initialize if active
+  if (props.isActive) {
+    void reloadCurrentStream("refresh");
+  }
 });
+
+watch(
+  () => props.isActive,
+  async (newVal) => {
+    if (newVal) {
+      console.log(`[Player] Activating ${props.platform}/${props.roomId}`);
+      if (!playerInstance.value && !isLoadingStream.value) {
+        await reloadCurrentStream("refresh");
+      } else if (playerInstance.value) {
+        // Just in case it was paused but instance kept (though we destroy on inactive)
+        playerInstance.value.play().catch(() => {});
+      }
+    } else {
+      console.log(`[Player] Deactivating ${props.platform}/${props.roomId}`);
+      // Destroy instance to stop stream and save resources
+      destroyPlayerInstance();
+      // Also ensure loading state is reset so it can re-load next time
+      isLoadingStream.value = false;
+    }
+  }
+);
 
 watch(
   [playerTitle, playerAnchorName, playerAvatar, playerIsLive],

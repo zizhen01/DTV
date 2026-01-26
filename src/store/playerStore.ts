@@ -19,9 +19,6 @@ export const usePlayerStore = defineStore("player", () => {
   // 最后一个激活的直播间 Key
   const lastActiveKey = ref<string | null>(null);
   
-  // 分屏模式：4 | 6 | 9，默认为 4
-  const gridMode = ref<number>(4);
-  
   const getPlayerKey = (platform: string, roomId: string) => 
     `${platform.toUpperCase()}:${roomId}`;
 
@@ -38,12 +35,6 @@ export const usePlayerStore = defineStore("player", () => {
   const _saveToStorage = () => {
     localStorage.setItem("active_streamers_list", JSON.stringify(activeStreamers.value));
     localStorage.setItem("last_active_key", lastActiveKey.value || "");
-    localStorage.setItem("player_grid_mode", String(gridMode.value));
-  };
-
-  const setGridMode = (mode: number) => {
-    gridMode.value = mode;
-    _saveToStorage();
   };
 
   const setStreamerInfo = (info: StreamerInfoState) => {
@@ -110,19 +101,12 @@ export const usePlayerStore = defineStore("player", () => {
     try {
       const stored = localStorage.getItem("active_streamers_list");
       const lastKey = localStorage.getItem("last_active_key");
-      const storedMode = localStorage.getItem("player_grid_mode");
       
       if (stored) {
         activeStreamers.value = JSON.parse(stored);
       }
       if (lastKey) {
         lastActiveKey.value = lastKey;
-      }
-      if (storedMode) {
-        const mode = parseInt(storedMode, 10);
-        if ([4, 6, 9].includes(mode)) {
-          gridMode.value = mode;
-        }
       }
     } catch (e) {
       console.error("[PlayerStore] Failed to restore state", e);
@@ -134,7 +118,6 @@ export const usePlayerStore = defineStore("player", () => {
   return {
     activeStreamers,
     currentStreamer,
-    gridMode, // Export
     isActive, // 新增导出
     setStreamerInfo,
     removeStreamer,
@@ -142,6 +125,5 @@ export const usePlayerStore = defineStore("player", () => {
     clearAllStreamers,
     updateLiveStatus,
     toggleMute,
-    setGridMode, // Export
   };
 });

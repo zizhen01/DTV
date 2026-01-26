@@ -11,16 +11,32 @@ const COLOR_KEY = "primary_color";
 export const useThemeStore = defineStore("theme", {
   state: (): ThemeState => ({
     userPreference: "dark", 
-    primaryColor: "#a855f7", // Default purple
+    primaryColor: "#be8e26", // Default Gold
   }),
   actions: {
     async initTheme() {
-      const storedColor = localStorage.getItem(COLOR_KEY);
-      if (storedColor) {
-        this.primaryColor = storedColor;
+      let storedColor = localStorage.getItem(COLOR_KEY);
+
+      // Migration: Clear the old default purple if it was stored
+      if (storedColor === "#a855f7") {
+        localStorage.removeItem(COLOR_KEY);
+        storedColor = null;
       }
 
-      this._applyTheme();
+      if (storedColor) {
+        this.primaryColor = storedColor;
+        this._applyTheme();
+      } else {
+        // If no stored color, don't overwrite CSS variable.
+        // Just ensure other theme-related attributes are set.
+        document.documentElement.setAttribute("data-theme", "dark");
+        try {
+          const win = WebviewWindow.getCurrent(); 
+          await win.setTheme("dark");
+        } catch (error) {
+          console.error("[ThemeStore] Error setting Tauri window theme:", error);
+        }
+      }
     },
 
     setPrimaryColor(color: string) {

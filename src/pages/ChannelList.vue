@@ -744,7 +744,7 @@ const handleCate3Select = (cate: { id: string; name: string }) => {
 
 const handlePlatformChange = (platform: UiPlatform) => {
   if (platform === activePlatform.value) return;
-  router.push({ name: "PlatformHome", params: { platform } });
+  router.push({ name: "ChannelList", params: { platform } });
 };
 
 watch(
