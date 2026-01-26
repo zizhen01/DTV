@@ -77,7 +77,7 @@ export async function startHuyaDanmakuListener(
         ? renderOptions.shouldDisplay()
         : true;
 
-      if (shouldDisplay && danmuOverlay?.sendComment) {
+      if (shouldDisplay && danmuOverlay?.emit) {
         try {
           const commentOptions =
             renderOptions?.buildCommentOptions?.(frontendDanmaku) ?? {};
@@ -86,11 +86,9 @@ export async function startHuyaDanmakuListener(
             styleFromOptions.color ||
             (frontendDanmaku as any).color ||
             "#FFFFFF";
-          danmuOverlay.sendComment({
-            id: frontendDanmaku.id,
-            txt: frontendDanmaku.content,
-            duration: commentOptions.duration ?? 12000,
-            mode: commentOptions.mode ?? "scroll",
+          danmuOverlay.emit({
+            text: frontendDanmaku.content,
+            mode: (commentOptions.mode === 'scroll' ? 'rtl' : commentOptions.mode) as any || 'rtl',
             style: {
               ...styleFromOptions,
               color: preferredColor,

@@ -29,24 +29,28 @@ export interface DanmakuMessage {
   type?: "error" | "success" | "info" | string;
 }
 
+export interface DanmakuComment {
+  text: string;
+  mode?: "ltr" | "rtl" | "top" | "bottom";
+  time?: number;
+  style?: Record<string, any>;
+  render?: () => HTMLElement | HTMLCanvasElement;
+}
+
 export interface DanmuOverlayInstance {
-  sendComment(comment: {
-    id: string;
-    txt: string;
-    duration: number;
-    mode: "scroll" | "top" | "bottom";
-    style: Record<string, any>;
-  }): void;
+  emit(comment: DanmakuComment): void;
   play(): void;
   pause(): void;
-  stop(): void;
-  show?(mode: string): void;
-  hide?(mode: string): void;
-  setOpacity?(opacity: number): void;
-  setFontSize?(size: number): void;
-  setArea?(area: { start: number; end: number }): void;
-  setAllDuration?(mode: string, duration: number): void;
-  resize?(): void;
+  clear(): void;
+  resize(): void;
+  show(): void;
+  hide(): void;
+  
+  // Custom helpers we will implement in the wrapper or shim
+  _setOpacity?(opacity: number): void;
+  _setFontSize?(size: number): void;
+  _setArea?(area: number): void; // 0-1
+  _setDuration?(duration: number): void;
 }
 
 export interface DanmuRenderOptions {

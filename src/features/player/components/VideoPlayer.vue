@@ -345,7 +345,7 @@ function destroyPlayerInstance() {
   const danmu = danmuInstance.value;
   if (danmu) {
     try {
-      danmu.stop?.();
+      danmu.clear?.();
     } catch (error) {
       console.error("[Player] Error stopping danmu overlay:", error);
     }
@@ -763,7 +763,7 @@ async function mountArtPlayer(
   });
 
   art.on("destroy", () => {
-    danmuInstance.value?.stop?.();
+    danmuInstance.value?.clear?.();
     danmuInstance.value = null;
   });
 

@@ -51,33 +51,20 @@ export async function startDouyinDanmakuListener(
           room_id: rustP.room_id || roomId, // Ensure room_id is present
         };
 
-        const shouldDisplay = renderOptions?.shouldDisplay
-          ? renderOptions.shouldDisplay()
-          : true;
+        const options = renderOptions?.buildCommentOptions?.(frontendDanmaku) ?? {};
+        const shouldDisplay = renderOptions?.shouldDisplay?.() ?? true;
 
-        if (shouldDisplay && danmuOverlay?.sendComment) {
-          try {
-            const commentOptions =
-              renderOptions?.buildCommentOptions?.(frontendDanmaku) ?? {};
-            const styleFromOptions = commentOptions.style ?? {};
-            const preferredColor =
-              styleFromOptions.color || frontendDanmaku.color || "#FFFFFF";
-            danmuOverlay.sendComment({
-              id: frontendDanmaku.id,
-              txt: frontendDanmaku.content,
-              duration: commentOptions.duration ?? 12000,
-              mode: commentOptions.mode ?? "scroll",
-              style: {
-                ...styleFromOptions,
-                color: preferredColor,
-              },
-            });
-          } catch (emitError) {
-            console.warn(
-              "[DouyinPlayerHelper] Failed emitting danmu.js comment:",
-              emitError,
-            );
-          }
+        if (shouldDisplay && danmuOverlay?.emit) {
+          const styleFromOptions = options.style || {};
+          
+          danmuOverlay.emit({
+            text: frontendDanmaku.content,
+            mode: (options.mode === 'scroll' ? 'rtl' : options.mode) as any || 'rtl',
+            style: {
+              ...styleFromOptions,
+              color: styleFromOptions.color || frontendDanmaku.color || "#FFFFFF",
+            },
+          });
         }
         danmakuMessagesRef.value.push(frontendDanmaku);
         if (danmakuMessagesRef.value.length > 200) {

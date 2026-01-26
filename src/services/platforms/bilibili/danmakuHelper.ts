@@ -55,36 +55,21 @@ export async function startBilibiliDanmakuListener(
         room_id: roomId,
       };
 
-      const shouldDisplay = renderOptions?.shouldDisplay
-        ? renderOptions.shouldDisplay()
-        : true;
+        const options = renderOptions?.buildCommentOptions?.(frontendDanmaku) ?? {};
+        const shouldDisplay = renderOptions?.shouldDisplay?.() ?? true;
 
-      if (shouldDisplay && danmuOverlay?.sendComment) {
-        try {
-          const commentOptions =
-            renderOptions?.buildCommentOptions?.(frontendDanmaku) ?? {};
-          const styleFromOptions = commentOptions.style ?? {};
-          const preferredColor =
-            styleFromOptions.color ||
-            (frontendDanmaku as any).color ||
-            "#FFFFFF";
-          danmuOverlay.sendComment({
-            id: frontendDanmaku.id,
-            txt: frontendDanmaku.content,
-            duration: commentOptions.duration ?? 12000,
-            mode: commentOptions.mode ?? "scroll",
+        if (shouldDisplay && danmuOverlay?.emit) {
+          const styleFromOptions = options.style || {};
+          
+          danmuOverlay.emit({
+            text: frontendDanmaku.content,
+            mode: (options.mode === 'scroll' ? 'rtl' : options.mode) as any || 'rtl',
             style: {
               ...styleFromOptions,
-              color: preferredColor,
+              color: (frontendDanmaku as any).color || styleFromOptions.color || "#FFFFFF",
             },
           });
-        } catch (emitError) {
-          console.warn(
-            "[BilibiliPlayerHelper] Failed emitting danmu.js comment:",
-            emitError,
-          );
         }
-      }
 
       danmakuMessagesRef.value.push(frontendDanmaku);
       if (danmakuMessagesRef.value.length > 200) {
