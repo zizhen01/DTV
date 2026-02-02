@@ -1,0 +1,146 @@
+@import "tailwindcss";
+
+@theme {
+  --color-app-bg: var(--bg-primary);
+  --color-surface-low: var(--surface-1);
+  --color-surface-mid: var(--surface-2);
+  --color-surface-high: var(--surface-3);
+
+  --color-text-main: var(--text-primary);
+  --color-text-dim: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+
+  --color-border-main: var(--border);
+  --color-border-strong: var(--border-strong);
+
+  --color-brand: var(--accent);
+  --color-brand-hover: color-mix(in srgb, var(--accent), black 15%);
+  --color-brand-glow: color-mix(in srgb, var(--accent), transparent 80%);
+
+  --shadow-low: var(--shadow-low);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+}
+
+@font-face {
+  font-family: "OPPO Sans";
+  src: url("../assets/fonts/OPPOSans-Regular-subset.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "OPPO Sans";
+  src: url("../assets/fonts/OPPOSans-Bold-subset.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  input::-webkit-inner-spin-button,
+  input::-webkit-outer-spin-button {
+    border-color: transparent !important;
+    background: transparent !important;
+  }
+}
+
+:root {
+  /* Dark Mode by Default */
+  --bg-primary: rgba(11, 11, 18, 0.1);
+  --bg-secondary: rgba(20, 20, 36, 0.7);
+  --bg-tertiary: rgba(26, 26, 45, 0.7);
+
+  --text-primary: #e7e7e7;
+  --text-secondary: #d5d3e3;
+  --text-muted: #ffffff;
+
+  --accent: #26be89;
+  --accent-glow: color-mix(in srgb, var(--accent), transparent 80%);
+
+  --border: color-mix(in srgb, var(--accent), transparent 85%);
+  --border-strong: color-mix(in srgb, var(--accent), transparent 70%);
+
+  --glass-bg: color-mix(in srgb, var(--accent), black 92%);
+  --glass-border: color-mix(in srgb, var(--accent), transparent 85%);
+  --glass-blur: blur(24px);
+
+  --shadow-low: 0 8px 20px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 18px 40px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 30px 70px rgba(0, 0, 0, 0.7);
+
+  --surface-1: color-mix(in srgb, var(--accent), black 94%);
+  --surface-2: color-mix(in srgb, var(--accent), black 90%);
+  --surface-3: color-mix(in srgb, var(--accent), black 82%);
+
+  --sidebar-width: 264px;
+  --sidebar-collapsed-width: 72px;
+  --navbar-height: 56px;
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --panel-gradient: radial-gradient(
+    120% 120% at 10% 0%,
+    color-mix(in srgb, var(--accent), transparent 70%) 0%,
+    color-mix(in srgb, var(--accent), black 80%) 45%,
+    var(--bg-primary) 100%
+  );
+}
+
+[data-theme="light"] {
+  --bg-primary: rgba(248, 249, 252, 0.3);
+  --bg-secondary: rgba(236, 239, 246, 0.78);
+  --bg-tertiary: rgba(228, 232, 242, 0.82);
+
+  --text-primary: #1e2230;
+  --text-secondary: #3a4053;
+  --text-muted: #2c2c2e;
+
+  --border: rgba(38, 190, 137, 0.2);
+  --border-strong: rgba(38, 190, 137, 0.35);
+
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-border: rgba(30, 34, 48, 0.12);
+  --glass-blur: blur(22px);
+
+  --shadow-low: 0 8px 18px rgba(24, 32, 51, 0.08);
+  --shadow-md: 0 16px 32px rgba(24, 32, 51, 0.12);
+  --shadow-lg: 0 24px 54px rgba(24, 32, 51, 0.16);
+
+  --surface-1: rgba(255, 255, 255, 0.28);
+  --surface-2: rgba(248, 250, 255, 0.38);
+  --surface-3: rgba(236, 240, 248, 0.48);
+
+  --panel-gradient: radial-gradient(
+    120% 120% at 10% 0%,
+    color-mix(in srgb, var(--accent), transparent 70%) 0%,
+    rgba(255, 255, 255, 0.65) 45%,
+    rgba(248, 249, 252, 0.6) 100%
+  );
+}
+
+html,
+body {
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  background-color: transparent;
+  color: var(--text-primary);
+  font-family: "OPPO Sans", sans-serif;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
