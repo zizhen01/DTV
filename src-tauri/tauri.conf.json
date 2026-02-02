@@ -1,0 +1,59 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "DTV",
+  "version": "2.4.4",
+  "identifier": "com.dtv.app",
+  "build": {
+    "beforeDevCommand": "pnpm run dev",
+    "devUrl": "http://localhost:2896",
+    "beforeBuildCommand": "pnpm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "macOSPrivateApi": true,
+    "windows": [
+      {
+        "titleBarStyle": "Overlay",
+        "transparent": true,
+        "title": "",
+        "fullscreen": false,
+        "resizable": true,
+        "width": 1440,
+        "height": 810,
+        "minWidth": 533,
+        "minHeight": 300,
+        "center": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self' tauri://localhost http://127.0.0.1:* http://localhost:* http://* https://* data: blob:; connect-src 'self' tauri://localhost ipc://localhost http://127.0.0.1:* http://localhost:* http://* https://* ws://127.0.0.1:* ws://localhost:* ws://* wss://*; media-src 'self' tauri://localhost http://127.0.0.1:* http://localhost:* http://* https://* data: blob:; media-src-elem 'self' tauri://localhost http://127.0.0.1:* http://localhost:* http://* https://* blob:; img-src 'self' tauri://localhost data: blob: http://127.0.0.1:* http://localhost:* http://* https://*; font-src 'self' data: https://*; script-src 'self' 'unsafe-eval' blob: 'wasm-unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; worker-src blob:; child-src blob:; object-src blob:; base-uri 'self'"
+    }
+  },
+  "plugins": {
+    "updater": {
+      "endpoints": [
+        "https://github.com/chen-zeong/dtv/releases/latest/download/latest.json"
+      ],
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEE5MDFGOTRGMjk2NTI0NzEKUldSeEpHVXBUL2tCcWIzZGlnTnppZ3ZYVGxZWHJjOVpxOTUxU3JzbkdTN0JSZUNmVlVpWGRYelkK"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["app", "dmg", "nsis", "msi", "deb", "appimage"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "nsis": {
+        "languages": ["SimpChinese"]
+      },
+      "wix": {
+        "language": ["zh-CN"]
+      }
+    }
+  }
+}

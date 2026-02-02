@@ -1,0 +1,40 @@
+# Dependencies & Build Artifacts
+node_modules/
+target/
+dist/
+dist-ssr/
+.cache/
+
+# Lock Files (High token usage, usually low semantic value for AI)
+package-lock.json
+pnpm-lock.yaml
+Cargo.lock
+
+# Version Control & IDE
+.git/
+.DS_Store
+.vscode/
+.idea/
+.history/
+
+# Assets (Binary files)
+images/
+public/
+src/assets/
+src-tauri/icons/
+*.png
+*.ico
+*.icns
+*.webp
+*.jpg
+*.jpeg
+*.svg
+*.woff2
+*.ttf
+
+# Logs & Temp
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+tmp/
